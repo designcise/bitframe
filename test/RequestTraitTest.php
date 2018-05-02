@@ -46,14 +46,27 @@ class RequestTraitTest extends TestCase
 		$this->assertSame('test', $this->request->getEndpoint(4, 'test'));
 	}
 	
+	public function testRequestHasEndpointWithMatchingEndpointAndAnAppendedCharAtEnd() 
+	{
+		$request = HttpMessageFactory::createServerRequest('GET', 'http://localhost/bitframephp/public_html/middleware/locale/geolocationd');
+		
+		$this->assertFalse($request->hasEndpoint(['geolocation'], '/middleware/locale'));
+		$this->assertTrue($request->hasEndpoint(['geolocationd'], '/middleware/locale'));
+	}
+	
 	public function testRequestHasEndpoint() 
 	{
 		$request = $this->request;
 		
 		// single
 		$this->assertTrue($request->hasEndpoint('foo/'));
+		$this->assertFalse($request->hasEndpoint('food/'));
+		
 		$this->assertTrue($request->hasEndpoint('bar/'));
+		$this->assertFalse($request->hasEndpoint('bard/'));
+		
 		$this->assertTrue($request->hasEndpoint('hello-world/'));
+		$this->assertFalse($request->hasEndpoint('hello-worldd/'));
 		
 		// double
 		$this->assertTrue($request->hasEndpoint('foo/bar/'));
@@ -61,6 +74,7 @@ class RequestTraitTest extends TestCase
 		$this->assertTrue($request->hasEndpoint('bar/hello-world'));
 		$this->assertTrue($request->hasEndpoint('hello-world', 'bar/'));
 		$this->assertTrue($request->hasEndpoint(['hello-world', 'quickstart'], 'bar/'));
+		$this->assertFalse($request->hasEndpoint(['hello-worldd', 'quickstart'], 'bar/'));
 		
 		$this->assertFalse($request->hasEndpoint('foo/hello-world'));
 		
@@ -69,13 +83,19 @@ class RequestTraitTest extends TestCase
 		$this->assertTrue($request->hasEndpoint('bar/hello-world', 'foo/'));
 		$this->assertTrue($request->hasEndpoint('foo/bar/hello-world', ''));
 		$this->assertTrue($request->hasEndpoint('foo/bar/hello-world'));
+		$this->assertFalse($request->hasEndpoint('foo/bar/hello-worldd'));
+		
+		$this->assertTrue($request->hasEndpoint(['hello-world'], '/foo/bar'));
+		$this->assertFalse($request->hasEndpoint(['hello-worldd'], '/foo/bar'));
 		
 		$this->assertTrue($request->hasEndpoint(['hello-world', 'quickstart'], 'foo/bar/'));
 		$this->assertTrue($request->hasEndpoint(['bar/hello-world', 'quickstart'], 'foo/'));
+		$this->assertFalse($request->hasEndpoint(['bar/hello-worldd', 'quickstart'], 'foo/'));
 		
 		$this->assertTrue($request->hasEndpoint('foo/bar/hello-world', '', true));
 		$this->assertTrue($request->hasEndpoint('', 'foo/bar/hello-world', true));
 		$this->assertTrue($request->hasEndpoint('bar/hello-world', 'foo/', true));
+		$this->assertFalse($request->hasEndpoint('bar/hello-worldd', 'foo/', true));
 		
 		$this->assertFalse($request->hasEndpoint('foo/bar/', '', true)); // strict (same as isEndpoint())
 	}

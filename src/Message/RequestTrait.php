@@ -120,14 +120,14 @@ trait RequestTrait
 			$urlPath = trim($urlPath, '/');
 			$urlPath = (($urlPath === '' || $basePath === '') ? "{$basePath}{$urlPath}" : "$basePath/$urlPath");
 			
-			if (($strict || $urlPath === '') ? ($urlPath === $reqUri) : (strpos($reqUri, $urlPath) !== false)) {
+			if (($strict || $urlPath === '') ? ($urlPath === $reqUri) : (preg_match('/\b' . preg_quote($urlPath, '/') . '\b/', $reqUri))) {
 				return true;
 			}
 		}
 		
 		return false;
 	}
-	
+	//strpos($reqUri, $urlPath) !== false
 	/**
 	 * Check if the specified endpoint matches exactly to the one in the url.
 	 *
