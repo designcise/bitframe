@@ -49,11 +49,11 @@ $app = new \BitFrame\Application();
 
 $app->addMiddleware([
     \BitFrame\Message\DiactorosResponseEmitter::class,
-	function ($request, $response, $next) {
-		$response->getBody()->write('Hello World!');
+    function ($request, $response, $next) {
+        $response->getBody()->write('Hello World!');
 
-		return $next($request, $response);
-	}
+        return $next($request, $response);
+    }
 ]);
 
 $app->run();
