@@ -33,19 +33,19 @@ class RouteCollectionTest extends TestCase
         $collection = new RouteCollection;
         $path = '/something';
         $callable = function() {};
-		
-		$route = $collection->map($method, $path, $callable);
-		$this->assertInstanceOf('\BitFrame\Router\Route', $route);
-		$this->assertSame([$method], $route->getMethods());
-		$this->assertSame($path, $route->getPath());
-		$this->assertSame($callable, $route->getCallable());
+        
+        $route = $collection->map($method, $path, $callable);
+        $this->assertInstanceOf('\BitFrame\Router\Route', $route);
+        $this->assertSame([$method], $route->getMethods());
+        $this->assertSame($path, $route->getPath());
+        $this->assertSame($callable, $route->getCallable());
     }
-	
-	public function httpMethods()
+    
+    public function httpMethods()
     {
         return [['get'], ['post'], ['put'], ['patch'], ['delete'], ['head'], ['options']];
     }
-	
+    
     /**
      * Asserts that the collection can map and return a route group object.
      */
@@ -54,7 +54,7 @@ class RouteCollectionTest extends TestCase
         $collection = new RouteCollection;
         $prefix = '/something';
         $callable = function() {};
-		
+        
         $group = $collection->group($prefix, $callable);
         $this->assertInstanceOf('\BitFrame\Router\RouteGroup', $group);
     }

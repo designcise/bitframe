@@ -21,23 +21,23 @@ use BitFrame\Router\{Route, RouteGroup, RouteCollectionInterface};
  */
 class RouteCollection implements RouteCollectionInterface
 {
-	use RouteCollectionMapTrait;
-	
+    use RouteCollectionMapTrait;
+    
     /** @var Route[] */
     private $routes = [];
-	
+    
     /**
      * {@inheritdoc}
      */
     public function map($method, string $path, $handler): Route
     {
         $path  = sprintf('/%s', ltrim($path, '/'));
-		$route = new Route($method, $path, $handler);
+        $route = new Route($method, $path, $handler);
         $this->routes[] = $route;
-		
-		return $route;
+        
+        return $route;
     }
-	
+    
     /**
      * Add a group of routes to the collection.
      *
@@ -49,20 +49,20 @@ class RouteCollection implements RouteCollectionInterface
     public function group($prefix, callable $group): RouteGroup
     {
         $group = new RouteGroup($prefix, $group, $this);
-		
-		// process group: __invoke group object callable
-		$group();
-		
+        
+        // process group: __invoke group object callable
+        $group();
+        
         return $group;
     }
-	
-	/**
-	 * Get stored routes from the collection.
-	 *
-	 * @return Route[]
-	 */
-	public function getData(): array 
-	{
-		return $this->routes;
-	}
+    
+    /**
+     * Get stored routes from the collection.
+     *
+     * @return Route[]
+     */
+    public function getData(): array 
+    {
+        return $this->routes;
+    }
 }

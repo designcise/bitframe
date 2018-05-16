@@ -16,7 +16,7 @@ namespace BitFrame\Exception;
  */
 class InvalidMiddlewareException extends \RuntimeException
 {
-	/**
+    /**
      * @param string $message
      * @param int $code (optional) Status code, defaults to 500
      */

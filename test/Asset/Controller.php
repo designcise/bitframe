@@ -18,29 +18,29 @@ use \BitFrame\Delegate\CallableMiddlewareTrait;
 
 class Controller implements MiddlewareInterface
 {
-	use CallableMiddlewareTrait;
-	
-	/**
+    use CallableMiddlewareTrait;
+    
+    /**
      * {@inheritdoc}
      */
     public function process(
-		ServerRequestInterface $request, 
-		RequestHandlerInterface $handler
-	): ResponseInterface
+        ServerRequestInterface $request, 
+        RequestHandlerInterface $handler
+    ): ResponseInterface
     {
-		$response = $handler->handle($request);
-		return $response->withHeader('process', 'true');
+        $response = $handler->handle($request);
+        return $response->withHeader('process', 'true');
     }
-	
+    
     /**
      * {@inheritdoc}
      */
     public function action(
-		ServerRequestInterface $request, 
-		RequestHandlerInterface $handler
-	): ResponseInterface
+        ServerRequestInterface $request, 
+        RequestHandlerInterface $handler
+    ): ResponseInterface
     {
-		$response = $handler->handle($request);
-		return $response->withHeader('action', 'true');
+        $response = $handler->handle($request);
+        return $response->withHeader('action', 'true');
     }
 }

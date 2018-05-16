@@ -16,26 +16,26 @@ namespace BitFrame\Data;
  */
 class ApplicationData implements \ArrayAccess
 {
-	use ApplicationDataTrait;
-	
-	/** @var array */
+    use ApplicationDataTrait;
+    
+    /** @var array */
     private $data;
-	
-	/**
+    
+    /**
      * @param array $data (optional)
      */
     public function __construct(array $data = [])
     {
-		$this->data = $data;
+        $this->data = $data;
     }
-	
-	/**
+    
+    /**
      * Get stored application data.
      *
      * @return mixed[]
      */
-	public function getData(): array
-	{
-		return $this->data;
-	}
+    public function getData(): array
+    {
+        return $this->data;
+    }
 }

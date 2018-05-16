@@ -20,18 +20,18 @@ use BitFrame\Router\{Route, RouteGroup, RouteCollectionInterface};
  */
 interface RouterInterface extends MiddlewareInterface, RouteCollectionInterface
 {
-	/**
+    /**
      * Route map.
-	 *
-	 * @param array|string $method
-	 * @param string $path
-	 * @param callable|string|array $handler
-	 *
-	 * @return Route
+     *
+     * @param array|string $method
+     * @param string $path
+     * @param callable|string|array $handler
+     *
+     * @return Route
      */
-	public function map($method, string $path, $handler): Route;
-	
-	/**
+    public function map($method, string $path, $handler): Route;
+    
+    /**
      * Add a group of routes to the collection.
      *
      * @param string $prefix
@@ -39,12 +39,12 @@ interface RouterInterface extends MiddlewareInterface, RouteCollectionInterface
      *
      * @return RouteGroup
      */
-	public function group(string $prefix, callable $group): RouteGroup;
-	
-	/**
+    public function group(string $prefix, callable $group): RouteGroup;
+    
+    /**
      * Get stored routes.
      *
      * @return Route[]
      */
-	public function getRoutes(): array;
+    public function getRoutes(): array;
 }

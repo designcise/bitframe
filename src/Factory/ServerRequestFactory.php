@@ -40,10 +40,10 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      */
     public function createServerRequestFromArray(array $server): ServerRequestInterface
     {
-		$headers = self::marshalHeaders($server);
-		$uri = self::marshalUriFromServer($server, $headers);
-		$method = HttpMessageFactory::get('REQUEST_METHOD', $server, 'GET');
-		
+        $headers = self::marshalHeaders($server);
+        $uri = self::marshalUriFromServer($server, $headers);
+        $method = HttpMessageFactory::get('REQUEST_METHOD', $server, 'GET');
+        
         return self::create($server, $method, $uri);
     }
 
@@ -58,81 +58,81 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      */
     private static function create(array $server, $method, $uri): ServerRequestInterface
     {
-		$headers = self::marshalHeaders($server);
-		$version = static::marshalProtocolVersion($server);
-		
+        $headers = self::marshalHeaders($server);
+        $version = static::marshalProtocolVersion($server);
+        
         $uri = ($uri instanceof UriInterface) ? $uri : (
-			(is_string($uri)) ? HttpMessageFactory::createUri($uri) : self::marshalUriFromServer($server, $headers)
-		);
-		
+            (is_string($uri)) ? HttpMessageFactory::createUri($uri) : self::marshalUriFromServer($server, $headers)
+        );
+        
         if (class_exists('Zend\\Diactoros\\ServerRequest')) {
-			$server  = \Zend\Diactoros\ServerRequestFactory::normalizeServer($server ?: $_SERVER);
-			parse_str($uri->getQuery(), $queryStrArray);
+            $server  = \Zend\Diactoros\ServerRequestFactory::normalizeServer($server ?: $_SERVER);
+            parse_str($uri->getQuery(), $queryStrArray);
 
-			return new class($server, $_FILES, $uri, $method, $headers, $_COOKIE, $queryStrArray, $_POST, $version) extends \Zend\Diactoros\ServerRequest {
-				use RequestTrait;
-				
-				public function __construct(
-					array $serverParams,
-					array $uploadedFiles,
-					$uri,
-					$method,
-					array $headers,
-					array $cookies,
-					array $queryParams,
-					$parsedBody,
-					$protocol
-				) {
-					parent::__construct(
-						$serverParams,
-						$uploadedFiles, 
-						$uri,
-						$method,
-						new \Zend\Diactoros\Stream(fopen('php://temp', 'r+')),
-						$headers,
-						$cookies,
-						$queryParams, // query
-						$parsedBody, // body
-						$protocol
-					);
-				}
-			};
+            return new class($server, $_FILES, $uri, $method, $headers, $_COOKIE, $queryStrArray, $_POST, $version) extends \Zend\Diactoros\ServerRequest {
+                use RequestTrait;
+                
+                public function __construct(
+                    array $serverParams,
+                    array $uploadedFiles,
+                    $uri,
+                    $method,
+                    array $headers,
+                    array $cookies,
+                    array $queryParams,
+                    $parsedBody,
+                    $protocol
+                ) {
+                    parent::__construct(
+                        $serverParams,
+                        $uploadedFiles, 
+                        $uri,
+                        $method,
+                        new \Zend\Diactoros\Stream(fopen('php://temp', 'r+')),
+                        $headers,
+                        $cookies,
+                        $queryParams, // query
+                        $parsedBody, // body
+                        $protocol
+                    );
+                }
+            };
         }
 
         if (class_exists('GuzzleHttp\\Psr7\\ServerRequest')) {
-			return new class($method, $uri, $headers, $version, $server) extends \GuzzleHttp\Psr7\ServerRequest {
-				use RequestTrait;
-				
-				public function __construct(
-					$method,
-					$uri,
-					array $headers,
-					$version,
-					array $serverParams
-				) {
-					parent::__construct(
-						$method, 
-						$uri, 
-						$headers, 
-						new \GuzzleHttp\Psr7\LazyOpenStream('php://input', 'r+'), 
-						$version, 
-						$serverParams
-					);
-				}
-			};
+            return new class($method, $uri, $headers, $version, $server) extends \GuzzleHttp\Psr7\ServerRequest {
+                use RequestTrait;
+                
+                public function __construct(
+                    $method,
+                    $uri,
+                    array $headers,
+                    $version,
+                    array $serverParams
+                ) {
+                    parent::__construct(
+                        $method, 
+                        $uri, 
+                        $headers, 
+                        new \GuzzleHttp\Psr7\LazyOpenStream('php://input', 'r+'), 
+                        $version, 
+                        $serverParams
+                    );
+                }
+            };
         }
 
         throw new \RuntimeException('Unable to create a server request; default PSR-7 server request libraries not found.');
     }
-	
-	/**
+    
+    /**
      * Strip the query string from a path.
      *
      * @param mixed $path
-	 *
+     *
      * @return string
-	 *
-	 * @see: \Zend\Diactoros\ServerRequestFactory::stripQueryString()
+     *
+     * @see: \Zend\Diactoros\ServerRequestFactory::stripQueryString()
      */
     public static function stripQueryString($path): string
     {
@@ -141,15 +141,15 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         }
         return $path;
     }
-	
-	/**
+    
+    /**
      * Marshal headers from $_SERVER.
      *
      * @param array $server
-	 *
+     *
      * @return array
-	 *
-	 * @see: \Zend\Diactoros\ServerRequestFactory::marshalHeaders()
+     *
+     * @see: \Zend\Diactoros\ServerRequestFactory::marshalHeaders()
      */
     public static function marshalHeaders(array $server): array
     {
@@ -182,16 +182,16 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
 
         return $headers;
     }
-	
-	/**
+    
+    /**
      * Marshal the URI from the $_SERVER array and headers.
      *
      * @param array $server
      * @param array $headers
-	 *
+     *
      * @return Uri
-	 *
-	 * @see: \Zend\Diactoros\ServerRequestFactory::marshalUriFromServer()
+     *
+     * @see: \Zend\Diactoros\ServerRequestFactory::marshalUriFromServer()
      */
     public static function marshalUriFromServer(array $server, array $headers)
     {
@@ -242,8 +242,8 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             ->withFragment($fragment)
             ->withQuery($query);
     }
-	
-	/**
+    
+    /**
      * Detect the base URI for the request.
      *
      * Looks at a variety of criteria in order to attempt to autodetect a base
@@ -254,10 +254,10 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      * @license   http://framework.zend.com/license/new-bsd New BSD License
      *
      * @param array $server
-	 *
+     *
      * @return string
-	 *
-	 * @see: \Zend\Diactoros\ServerRequestFactory::marshalRequestUri()
+     *
+     * @see: \Zend\Diactoros\ServerRequestFactory::marshalRequestUri()
      */
     public static function marshalRequestUri(array $server): string
     {
@@ -294,8 +294,8 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
 
         return $origPathInfo;
     }
-	
-	/**
+    
+    /**
      * Search for a header value.
      *
      * Does a case-insensitive search for a matching header.
@@ -307,10 +307,10 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      * @param string $header
      * @param array $headers
      * @param mixed $default (optional)
-	 *
+     *
      * @return string
-	 *
-	 * @see: \Zend\Diactoros\ServerRequestFactory::getHeader()
+     *
+     * @see: \Zend\Diactoros\ServerRequestFactory::getHeader()
      */
     public static function getHeader($header, array $headers, $default = null): string
     {
@@ -323,17 +323,17 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
 
         return $default;
     }
-	
-	/**
+    
+    /**
      * Marshal the host and port from HTTP headers and/or the PHP environment.
      *
      * @param stdClass $accumulator
      * @param array $server
      * @param array $headers
-	 * 
-	 * @return void
-	 *
-	 * @see: \Zend\Diactoros\ServerRequestFactory::marshalHostAndPortFromHeaders()
+     * 
+     * @return void
+     *
+     * @see: \Zend\Diactoros\ServerRequestFactory::marshalHostAndPortFromHeaders()
      */
     public static function marshalHostAndPortFromHeaders(stdClass $accumulator, array $server, array $headers): void
     {
@@ -359,14 +359,14 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         // Reported for Safari on Windows
         self::marshalIpv6HostAndPort($accumulator, $server);
     }
-	
-	/**
+    
+    /**
      * Marshal the host and port from the request header.
      *
      * @param stdClass $accumulator
      * @param string|array $host
-	 *
-	 * @see: \Zend\Diactoros\ServerRequestFactory::marshalHostAndPortFromHeader()
+     *
+     * @see: \Zend\Diactoros\ServerRequestFactory::marshalHostAndPortFromHeader()
      */
     private static function marshalHostAndPortFromHeader(stdClass $accumulator, $host)
     {
@@ -383,14 +383,14 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             $accumulator->port = (int) $matches[1];
         }
     }
-	
-	/**
+    
+    /**
      * Marshal host/port from misinterpreted IPv6 address.
      *
      * @param stdClass $accumulator
      * @param array $server
-	 *
-	 * @see: \Zend\Diactoros\ServerRequestFactory::marshalIpv6HostAndPort()
+     *
+     * @see: \Zend\Diactoros\ServerRequestFactory::marshalIpv6HostAndPort()
      */
     private static function marshalIpv6HostAndPort(stdClass $accumulator, array $server)
     {
@@ -402,12 +402,12 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             $accumulator->port = null;
         }
     }
-	
-	/**
+    
+    /**
      * Return HTTP protocol version (X.Y)
      *
      * @param array $server
-	 *
+     *
      * @return string
      */
     private static function marshalProtocolVersion(array $server): string

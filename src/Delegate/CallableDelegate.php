@@ -43,8 +43,8 @@ class CallableDelegate implements RequestHandlerInterface
      * Proxies to the underlying callable delegate to process a request.
      *
      * {@inheritDoc}
-	 *
-	 * @return ResponseInterface
+     *
+     * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

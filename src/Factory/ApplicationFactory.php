@@ -25,53 +25,53 @@ class ApplicationFactory
 {
     /** @var EventManagerFactoryInterface */
     private static $eventManagerFactory;
-	
+    
     /** @var DispatcherFactoryInterface */
     private static $dispatcherFactory;
-	
-	/** @var RouteCollectionFactoryInterface */
+    
+    /** @var RouteCollectionFactoryInterface */
     private static $routeCollectionFactory;
-	
-	/**
+    
+    /**
      * Set a custom EventManager factory.
-	 *
-	 * @param EventManagerFactoryInterface $eventManagerFactory
+     *
+     * @param EventManagerFactoryInterface $eventManagerFactory
      */
     public static function setEventManagerFactory(EventManagerFactoryInterface $eventManagerFactory): self
     {
         self::$eventManagerFactory = $eventManagerFactory;
-		
-		return new static;
+        
+        return new static;
     }
-	
+    
     /**
      * Set a custom Dispatcher factory.
-	 *
-	 * @param DispatcherInterface $dispatcherFactory
+     *
+     * @param DispatcherInterface $dispatcherFactory
      */
     public static function setDispatcherFactory(DispatcherFactoryInterface $dispatcherFactory): self
     {
         self::$dispatcherFactory = $dispatcherFactory;
-		
-		return new static;
+        
+        return new static;
     }
-	
-	/**
+    
+    /**
      * Set a custom RouterCollection factory.
-	 *
-	 * @param RouteCollectionFactoryInterface $routeCollectionFactory
+     *
+     * @param RouteCollectionFactoryInterface $routeCollectionFactory
      */
     public static function setRouteCollectionFactory(RouteCollectionFactoryInterface $routeCollectionFactory): self
     {
         self::$routeCollectionFactory = $routeCollectionFactory;
-		
-		return new static;
+        
+        return new static;
     }
-	
+    
     /**
      * Create an EventManagerInterface instance.
-	 *
-	 * @return EventManagerInterface
+     *
+     * @return EventManagerInterface
      */
     public static function createEventManager(): EventManagerInterface
     {
@@ -81,13 +81,13 @@ class ApplicationFactory
 
         return self::$eventManagerFactory->createEventManager();
     }
-	
+    
     /**
      * Create a DispatcherInterface instance.
-	 *
-	 * @param ResponseInterface $response
-	 *
-	 * @return DispatcherInterface
+     *
+     * @param ResponseInterface $response
+     *
+     * @return DispatcherInterface
      */
     public static function createDispatcher(ResponseInterface $response): DispatcherInterface
     {
@@ -97,11 +97,11 @@ class ApplicationFactory
 
         return self::$dispatcherFactory->createDispatcher($response);
     }
-	
-	/**
+    
+    /**
      * Create a RouteCollectionInterface instance.
-	 *
-	 * @return RouteCollectionInterface
+     *
+     * @return RouteCollectionInterface
      */
     public static function createRouteCollection(): RouteCollectionInterface
     {

@@ -31,7 +31,7 @@ interface RouteCollectionInterface
      * @return Route
      */
     public function map($method, string $path, $handler): Route;
-	
+    
     /**
      * Add a route that responds to GET HTTP method.
      *
@@ -41,7 +41,7 @@ interface RouteCollectionInterface
      * @return Route
      */
     public function get(string $path, $handler): Route;
-	
+    
     /**
      * Add a route that responds to POST HTTP method.
      *
@@ -51,7 +51,7 @@ interface RouteCollectionInterface
      * @return Route
      */
     public function post(string $path, $handler): Route;
-	
+    
     /**
      * Add a route that responds to PUT HTTP method.
      *
@@ -61,7 +61,7 @@ interface RouteCollectionInterface
      * @return Route
      */
     public function put(string $path, $handler): Route;
-	
+    
     /**
      * Add a route that responds to PATCH HTTP method.
      *
@@ -71,7 +71,7 @@ interface RouteCollectionInterface
      * @return Route
      */
     public function patch(string $path, $handler): Route;
-	
+    
     /**
      * Add a route that responds to DELETE HTTP method.
      *
@@ -81,7 +81,7 @@ interface RouteCollectionInterface
      * @return Route
      */
     public function delete(string $path, $handler): Route;
-	
+    
     /**
      * Add a route that responds to HEAD HTTP method.
      *
@@ -91,7 +91,7 @@ interface RouteCollectionInterface
      * @return Route
      */
     public function head(string $path, $handler): Route;
-	
+    
     /**
      * Add a route that responds to OPTIONS HTTP method.
      *

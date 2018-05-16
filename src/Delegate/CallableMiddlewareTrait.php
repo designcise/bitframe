@@ -21,31 +21,31 @@ use BitFrame\Delegate\CallableDelegate;
  */
 trait CallableMiddlewareTrait
 {
-	/**
+    /**
      * PSR-7 style callable.
-	 *
-	 * @param $request ServerRequestInterface
-	 * @param $response ResponseInterface
-	 * @param $next callable
-	 *
-	 * @return ResponseInterface
+     *
+     * @param $request ServerRequestInterface
+     * @param $response ResponseInterface
+     * @param $next callable
+     *
+     * @return ResponseInterface
      */
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
         callable $next
     ): ResponseInterface 
-	{
+    {
         return $this->process($request, new CallableDelegate($next, $response));
     }
-	
-	/**
+    
+    /**
      * PSR-15 based middleware implementation.
-	 *
-	 * @param $request ServerRequestInterface
-	 * @param $handler RequestHandlerInterface
-	 *
-	 * @return ResponseInterface
+     *
+     * @param $request ServerRequestInterface
+     * @param $handler RequestHandlerInterface
+     *
+     * @return ResponseInterface
      */
-	abstract public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface;
+    abstract public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface;
 }

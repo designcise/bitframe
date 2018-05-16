@@ -31,61 +31,61 @@ class RouteGroupTest extends TestCase
         $callback   = function() {};
         $collection = $this->createMock('\BitFrame\Router\RouteCollectionInterface');
         $route = $this->createMock('\BitFrame\Router\Route');
-		
+        
         $route
-			->expects($this->once())
-			->method('setHost')
-			->with($this->equalTo('example.com'))
-			->will($this->returnSelf());
-		
+            ->expects($this->once())
+            ->method('setHost')
+            ->with($this->equalTo('example.com'))
+            ->will($this->returnSelf());
+        
         $route
-			->expects($this->once())
-			->method('setScheme')
-			->with($this->equalTo('https'))
-			->will($this->returnSelf());
-		
+            ->expects($this->once())
+            ->method('setScheme')
+            ->with($this->equalTo('https'))
+            ->will($this->returnSelf());
+        
         $collection
-			->expects($this->at(0))
-			->method('map')
-			->with($this->equalTo('GET'), $this->equalTo('/acme/route'), $this->equalTo($callback))
-			->will($this->returnValue($route));
-		
+            ->expects($this->at(0))
+            ->method('map')
+            ->with($this->equalTo('GET'), $this->equalTo('/acme/route'), $this->equalTo($callback))
+            ->will($this->returnValue($route));
+        
         $collection
-			->expects($this->at(1))
-			->method('map')
-			->with($this->equalTo('POST'), $this->equalTo('/acme/route'), $this->equalTo($callback))
-			->will($this->returnValue($route));
-		
+            ->expects($this->at(1))
+            ->method('map')
+            ->with($this->equalTo('POST'), $this->equalTo('/acme/route'), $this->equalTo($callback))
+            ->will($this->returnValue($route));
+        
         $collection
-			->expects($this->at(2))
-			->method('map')
-			->with($this->equalTo('PUT'), $this->equalTo('/acme/route'), $this->equalTo($callback))
-			->will($this->returnValue($route));
-		
+            ->expects($this->at(2))
+            ->method('map')
+            ->with($this->equalTo('PUT'), $this->equalTo('/acme/route'), $this->equalTo($callback))
+            ->will($this->returnValue($route));
+        
         $collection
-			->expects($this->at(3))
-			->method('map')
-			->with($this->equalTo('PATCH'), $this->equalTo('/acme/route'), $this->equalTo($callback))
-			->will($this->returnValue($route));
-		
+            ->expects($this->at(3))
+            ->method('map')
+            ->with($this->equalTo('PATCH'), $this->equalTo('/acme/route'), $this->equalTo($callback))
+            ->will($this->returnValue($route));
+        
         $collection
-			->expects($this->at(4))
-			->method('map')
-			->with($this->equalTo('DELETE'), $this->equalTo('/acme/route'), $this->equalTo($callback))
-			->will($this->returnValue($route));
-		
+            ->expects($this->at(4))
+            ->method('map')
+            ->with($this->equalTo('DELETE'), $this->equalTo('/acme/route'), $this->equalTo($callback))
+            ->will($this->returnValue($route));
+        
         $collection
-			->expects($this->at(5))
-			->method('map')
-			->with($this->equalTo('OPTIONS'), $this->equalTo('/acme/route'), $this->equalTo($callback))
-			->will($this->returnValue($route));
-		
+            ->expects($this->at(5))
+            ->method('map')
+            ->with($this->equalTo('OPTIONS'), $this->equalTo('/acme/route'), $this->equalTo($callback))
+            ->will($this->returnValue($route));
+        
         $collection
-			->expects($this->at(6))
-			->method('map')
-			->with($this->equalTo('HEAD'), $this->equalTo('/acme/route'), $this->equalTo($callback))
-			->will($this->returnValue($route));
-		
+            ->expects($this->at(6))
+            ->method('map')
+            ->with($this->equalTo('HEAD'), $this->equalTo('/acme/route'), $this->equalTo($callback))
+            ->will($this->returnValue($route));
+        
         $group = new RouteGroup('/acme', function ($route) use ($callback) {
             $route->get('/route', $callback)->setHost('example.com')->setScheme('https');
             $route->post('/route', $callback);
@@ -95,7 +95,7 @@ class RouteGroupTest extends TestCase
             $route->options('/route', $callback);
             $route->head('/route', $callback);
         }, $collection);
-		
+        
         $group();
     }
 }

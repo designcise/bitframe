@@ -30,7 +30,7 @@ interface TemplateInterface
      *
      * @param string $templateName
      * @param array $data (optional)
-	 *
+     *
      * @return string
      */
     public function render(string $templateName, array $data = []): string;

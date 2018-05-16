@@ -22,24 +22,24 @@ class EventTest extends TestCase
 {
     /** @var \BitFrame\Event\Event */
     public $event;
-	
+    
     protected function setUp()
     {
         $this->event = new Event('test', null, ['key0' => 'val0'], false);
     }
-	
-	public function testEventCanSetAndGetAllProperties()
+    
+    public function testEventCanSetAndGetAllProperties()
     {
         $name = 'test2';
-		$this->assertSame($name, $this->event->setName($name)->getName());
-		
+        $this->assertSame($name, $this->event->setName($name)->getName());
+        
         $target = $this;
-		$this->assertSame($target, $this->event->setTarget($target)->getTarget());
-		
-		$params = ['key1' => 'val1', 'key2' => 'val2'];
-		$this->assertSame($params, $this->event->setParams($params)->getParams());
-		
+        $this->assertSame($target, $this->event->setTarget($target)->getTarget());
+        
+        $params = ['key1' => 'val1', 'key2' => 'val2'];
+        $this->assertSame($params, $this->event->setParams($params)->getParams());
+        
         $propagate = false;
-		$this->assertSame($propagate, $this->event->stopPropagation($propagate)->isPropagationStopped());
+        $this->assertSame($propagate, $this->event->stopPropagation($propagate)->isPropagationStopped());
     }
 }

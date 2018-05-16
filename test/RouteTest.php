@@ -32,7 +32,7 @@ class RouteTest extends TestCase
         $route = new Route('GET', '/', new Controller);
         $this->assertTrue(is_callable($route->getCallable()));
     }
-	
+    
     /**
      * Asserts that the route can set and resolve a class method callable.
      */
@@ -41,7 +41,7 @@ class RouteTest extends TestCase
         $route = new Route('GET', '/', [new Controller, 'action']);
         $this->assertTrue(is_callable($route->getCallable()));
     }
-	
+    
     /**
      * Asserts that the route can set and resolve a named function callable.
      */
@@ -50,7 +50,7 @@ class RouteTest extends TestCase
         $route = new Route('GET', '/', 'BitFrame\Test\Asset\namedFunctionCallable');
         $this->assertTrue(is_callable($route->getCallable()));
     }
-	
+    
     /**
      * Asserts that the route can set and resolve a class method callable without the container.
      */
@@ -80,19 +80,19 @@ class RouteTest extends TestCase
     public function testRouteCanSetAndGetAllProperties()
     {
         $route = new Route([], '', function() {});
-		
+        
         $group = $this->getMockBuilder('\BitFrame\Router\RouteGroup')->disableOriginalConstructor()->getMock();
         $this->assertSame($group, $route->setParentGroup($group)->getParentGroup());
-		
+        
         $path = '/something';
         $this->assertSame($path, $route->setPath($path)->getPath());
-		
+        
         $methods = ['get', 'post'];
         $this->assertSame($methods, $route->setMethods($methods)->getMethods());
-		
+        
         $scheme = 'http';
         $this->assertSame($scheme, $route->setScheme($scheme)->getScheme());
-		
+        
         $host = 'example.com';
         $this->assertSame($host, $route->setHost($host)->getHost());
     }

@@ -21,66 +21,66 @@ trait ApplicationDataTrait
     /**
      * {@inheritdoc}
      *
-	 * @see: \ArrayAccess::offsetSet()
-	 */
+     * @see: \ArrayAccess::offsetSet()
+     */
     public function offsetSet($key, $value)
     {
         if (is_array($key)) {
-			$this->data = array_merge($this->data, $key);
-		} else {
-			$this->data[$key] = $value;
-		}
-    }
-
-	/**
-     * {@inheritdoc}
-	 *
-	 * @throws OutOfBoundsException
-     *
-	 * @see: \ArrayAccess::offsetUnset()
-	 */
-    public function offsetUnset($key)
-    {
-		// special case: isset returns false for null values
-		if (! isset($this->data[$key]) && $this->data[$key] !== null) {
-			throw new OutOfBoundsException("$key does not exist!");
-		}
-		
-		unset($this->data[$key]);
+            $this->data = array_merge($this->data, $key);
+        } else {
+            $this->data[$key] = $value;
+        }
     }
 
     /**
      * {@inheritdoc}
      *
-	 * @see: \ArrayAccess::offsetExists()
-	 */
+     * @throws OutOfBoundsException
+     *
+     * @see: \ArrayAccess::offsetUnset()
+     */
+    public function offsetUnset($key)
+    {
+        // special case: isset returns false for null values
+        if (! isset($this->data[$key]) && $this->data[$key] !== null) {
+            throw new OutOfBoundsException("$key does not exist!");
+        }
+        
+        unset($this->data[$key]);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see: \ArrayAccess::offsetExists()
+     */
     public function offsetExists($key): bool
     {
         return (array_key_exists($key, $this->data));
     }
-	
-	/**
+    
+    /**
      * {@inheritdoc}
-	 *
-	 * @throws OutOfBoundsException
      *
-	 * @see: \ArrayAccess::offsetGet()
-	 */
+     * @throws OutOfBoundsException
+     *
+     * @see: \ArrayAccess::offsetGet()
+     */
     public function offsetGet($key)
     {
-		// special case: isset returns false for null values
-		if (! isset($this->data[$key]) && $this->data[$key] !== null) {
-			throw new OutOfBoundsException("$key does not exist!");
-		}
-		
-		return $this->data[$key];
+        // special case: isset returns false for null values
+        if (! isset($this->data[$key]) && $this->data[$key] !== null) {
+            throw new OutOfBoundsException("$key does not exist!");
+        }
+        
+        return $this->data[$key];
     }
-	
-	
-	/**
+    
+    
+    /**
      * Get stored application data.
      *
      * @return mixed
      */
-	abstract public function getData();
+    abstract public function getData();
 }

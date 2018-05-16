@@ -21,47 +21,47 @@ namespace BitFrame\EventManager;
 interface EventManagerInterface
 {
     /**
-	 * Attaches a listener to an event.
-	 *
+     * Attaches a listener to an event.
+     *
      * @param string $eventName
      * @param callable $callback
-	 * @param int $priority (optional)
+     * @param int $priority (optional)
      */
     public function attach(string $eventName, callable $callback, int $priority = 0);
-	
+    
     /**
-	 * Detaches a listener from an event.
-	 *
+     * Detaches a listener from an event.
+     *
      * @param string $eventName
      * @param callable $callback
-	 *
-	 * @return bool
+     *
+     * @return bool
      */
     public function detach(string $eventName, callable $callback): bool;
-	
+    
     /**
-	 * Clear all listeners (for a given event).
-	 *
+     * Clear all listeners (for a given event).
+     *
      * @param string|null $eventName (optional)
      */
     public function clearListeners(?string $eventName = null);
-	
+    
     /**
-	 * Trigger an event.
-	 *
-	 * Can accept an Event object or will create one if not passed.
-	 *
+     * Trigger an event.
+     *
+     * Can accept an Event object or will create one if not passed.
+     *
      * @param string|\BitFrame\Event\Event $event
-	 * @param null|string|object $target (optional)
-	 * @param array|object $argv (optional)
+     * @param null|string|object $target (optional)
+     * @param array|object $argv (optional)
      */
     public function trigger($event, $target = null, $argv = []);
-	
+    
     /**
-	 * Get all event's listeners.
-	 *
+     * Get all event's listeners.
+     *
      * @param string $eventName
-	 *
+     *
      * @return array
      */
     public function getListeners($eventName): array;

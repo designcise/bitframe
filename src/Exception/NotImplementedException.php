@@ -25,6 +25,6 @@ class NotImplementedException extends \BitFrame\Exception\HttpException
      */
     public function __construct($method)
     {
-		parent::__construct(sprintf('%s is not implemented.', $method), 501);
+        parent::__construct(sprintf('%s is not implemented.', $method), 501);
     }
 }

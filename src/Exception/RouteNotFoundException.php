@@ -16,7 +16,7 @@ namespace BitFrame\Exception;
  */
 class RouteNotFoundException extends \BitFrame\Exception\HttpException
 {
-	/**
+    /**
      * @param string $route
      */
     public function __construct($route)

@@ -24,34 +24,34 @@ use BitFrame\Router\RouteGroup;
  */
 class Route
 {
-	use RouteConditionTrait;
-	
+    use RouteConditionTrait;
+    
     /** @var string|callable */
     private $callable;
-	
+    
     /** @var RouteGroup */
     private $group;
-	
+    
     /** @var string[] */
     private $methods;
-	
+    
     /** @var string */
     private $path;
-	
-	/**
+    
+    /**
      * @param array|string $methods
-	 * @param string $path
-	 * @param callable|string|array $handler
+     * @param string $path
+     * @param callable|string|array $handler
      */
-	public function __construct($methods, string $path, $handler)
+    public function __construct($methods, string $path, $handler)
     {
         $this->setMethods((array) $methods);
-		$this->setPath($path);
-		$this->setCallable($handler);
-		
-		$this->group = null;
+        $this->setPath($path);
+        $this->setCallable($handler);
+        
+        $this->group = null;
     }
-	
+    
     /**
      * Get the callable.
      *
@@ -62,30 +62,30 @@ class Route
     public function getCallable()
     {
         $callable = $this->callable;
-		
-		// case 0: router is a middleware (because router itself can be treated as a middleware)
-		if (! $callable instanceof MiddlewareInterface) {
-			// case 1: class::method
-			if (is_string($callable) && strpos($callable, '::') !== false) {
-				$callable = explode('::', $callable);
-			}
-			// case 2: [object, method] 
-			if (is_array($callable) && isset($callable[0]) && is_object($callable[0])) {
-				$callable = [$callable[0], $callable[1]];
-			}
-			// case 3: [className, method]
-			if (is_array($callable) && isset($callable[0]) && is_string($callable[0])) {
-				$class = new $callable[0];
-				$callable = [$class, $callable[1]];
-			}
-			// case 4: not supported
-			if (! is_callable($callable)) {
-				throw new \InvalidArgumentException('Could not resolve a callable for this route');
-			}
-		}
+        
+        // case 0: router is a middleware (because router itself can be treated as a middleware)
+        if (! $callable instanceof MiddlewareInterface) {
+            // case 1: class::method
+            if (is_string($callable) && strpos($callable, '::') !== false) {
+                $callable = explode('::', $callable);
+            }
+            // case 2: [object, method] 
+            if (is_array($callable) && isset($callable[0]) && is_object($callable[0])) {
+                $callable = [$callable[0], $callable[1]];
+            }
+            // case 3: [className, method]
+            if (is_array($callable) && isset($callable[0]) && is_string($callable[0])) {
+                $class = new $callable[0];
+                $callable = [$class, $callable[1]];
+            }
+            // case 4: not supported
+            if (! is_callable($callable)) {
+                throw new \InvalidArgumentException('Could not resolve a callable for this route');
+            }
+        }
         return $callable;
     }
-	
+    
     /**
      * Set the callable.
      *
@@ -96,10 +96,10 @@ class Route
     public function setCallable($callable): Route
     {
         $this->callable = $callable;
-		
+        
         return $this;
     }
-	
+    
     /**
      * Get the parent group.
      *
@@ -109,7 +109,7 @@ class Route
     {
         return $this->group;
     }
-	
+    
     /**
      * Set the parent group.
      *
@@ -120,10 +120,10 @@ class Route
     public function setParentGroup(RouteGroup $group): Route
     {
         $this->group = $group;
-		
+        
         return $this;
     }
-	
+    
     /**
      * Get the path.
      *
@@ -133,7 +133,7 @@ class Route
     {
         return $this->path;
     }
-	
+    
     /**
      * Set the path.
      *
@@ -144,10 +144,10 @@ class Route
     public function setPath(string $path): Route
     {
         $this->path = $path;
-		
+        
         return $this;
     }
-	
+    
     /**
      * Get the methods.
      *
@@ -157,7 +157,7 @@ class Route
     {
         return $this->methods;
     }
-	
+    
     /**
      * Get the methods.
      *
@@ -168,7 +168,7 @@ class Route
     public function setMethods(array $methods): Route
     {
         $this->methods = $methods;
-		
+        
         return $this;
     }
 }

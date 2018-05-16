@@ -18,51 +18,51 @@ use BitFrame\Router\{Route, RouteGroup, RouteCollectionInterface, RouteCollectio
  */
 trait RouterTrait
 {
-	use RouteCollectionMapTrait;
-	
-	/** @var RouteCollectionInterface */
-	private $routeCollection = null;
-	
-	/**
+    use RouteCollectionMapTrait;
+    
+    /** @var RouteCollectionInterface */
+    private $routeCollection = null;
+    
+    /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouterInterface::map()
+     *
+     * @see \BitFrame\Router\RouterInterface::map()
      */
-	public function map($method, string $path, $handler): Route
-	{
-		return $this->getRouteCollection()->map($method, $path, $handler);
-	}
-	
-	/**
+    public function map($method, string $path, $handler): Route
+    {
+        return $this->getRouteCollection()->map($method, $path, $handler);
+    }
+    
+    /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouterInterface::group()
+     *
+     * @see \BitFrame\Router\RouterInterface::group()
      */
-	public function group(string $prefix, callable $group): RouteGroup
-	{
-		return $this->getRouteCollection()->group($prefix, $group);
-	}
-	
-	/**
+    public function group(string $prefix, callable $group): RouteGroup
+    {
+        return $this->getRouteCollection()->group($prefix, $group);
+    }
+    
+    /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouterInterface::getRoutes()
+     *
+     * @see \BitFrame\Router\RouterInterface::getRoutes()
      */
-	public function getRoutes(): array
-	{
-		return ($this->getRouteCollection())->getData();
-	}
-	
-	/**
+    public function getRoutes(): array
+    {
+        return ($this->getRouteCollection())->getData();
+    }
+    
+    /**
      * Get the RouteCollection object.
      *
      * @return RouteCollectionInterface
      */
-	public function getRouteCollection(): RouteCollectionInterface
-	{
-		// use default route collection if one isn't set already
-		$this->routeCollection = $this->routeCollection ?? \BitFrame\Factory\ApplicationFactory::createRouteCollection();
-		
-		return $this->routeCollection;
-	}
+    public function getRouteCollection(): RouteCollectionInterface
+    {
+        // use default route collection if one isn't set already
+        $this->routeCollection = $this->routeCollection ?? \BitFrame\Factory\ApplicationFactory::createRouteCollection();
+        
+        return $this->routeCollection;
+    }
 }

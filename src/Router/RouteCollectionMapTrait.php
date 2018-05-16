@@ -23,75 +23,75 @@ trait RouteCollectionMapTrait
 {
     /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouteCollectionInterface::map()
+     *
+     * @see \BitFrame\Router\RouteCollectionInterface::map()
      */
     abstract public function map($method, string $path, $handler): Route;
-	
+    
     /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouteCollectionInterface::get()
+     *
+     * @see \BitFrame\Router\RouteCollectionInterface::get()
      */
     public function get(string $path, $handler): Route
     {
         return $this->map('GET', $path, $handler);
     }
-	
+    
     /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouteCollectionInterface::post()
+     *
+     * @see \BitFrame\Router\RouteCollectionInterface::post()
      */
     public function post(string $path, $handler): Route
     {
         return $this->map('POST', $path, $handler);
     }
-	
+    
     /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouteCollectionInterface::put()
+     *
+     * @see \BitFrame\Router\RouteCollectionInterface::put()
      */
     public function put(string $path, $handler): Route
     {
         return $this->map('PUT', $path, $handler);
     }
-	
+    
     /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouteCollectionInterface::patch()
+     *
+     * @see \BitFrame\Router\RouteCollectionInterface::patch()
      */
     public function patch(string $path, $handler): Route
     {
         return $this->map('PATCH', $path, $handler);
     }
-	
+    
     /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouteCollectionInterface::delete()
+     *
+     * @see \BitFrame\Router\RouteCollectionInterface::delete()
      */
     public function delete(string $path, $handler): Route
     {
         return $this->map('DELETE', $path, $handler);
     }
-	
+    
     /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouteCollectionInterface::head()
+     *
+     * @see \BitFrame\Router\RouteCollectionInterface::head()
      */
     public function head(string $path, $handler): Route
     {
         return $this->map('HEAD', $path, $handler);
     }
-	
+    
     /**
      * {@inheritdoc}
-	 *
-	 * @see \BitFrame\Router\RouteCollectionInterface::options()
+     *
+     * @see \BitFrame\Router\RouteCollectionInterface::options()
      */
     public function options(string $path, $handler): Route
     {

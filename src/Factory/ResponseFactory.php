@@ -28,22 +28,22 @@ class ResponseFactory implements ResponseFactoryInterface
     {
         if (class_exists('Zend\\Diactoros\\Response')) {
             return new class($code) extends \Zend\Diactoros\Response {
-				use ResponseTrait;
-				
-				public function __construct($code) {
-					parent::__construct('php://memory', $code);
-				}
-			};
+                use ResponseTrait;
+                
+                public function __construct($code) {
+                    parent::__construct('php://memory', $code);
+                }
+            };
         }
 
         if (class_exists('GuzzleHttp\\Psr7\\Response')) {
-			return new class($code) extends \GuzzleHttp\Psr7\Response {
-				use ResponseTrait;
-				
-				public function __construct($code) {
-					parent::__construct($code);
-				}
-			};
+            return new class($code) extends \GuzzleHttp\Psr7\Response {
+                use ResponseTrait;
+                
+                public function __construct($code) {
+                    parent::__construct($code);
+                }
+            };
         }
 
         throw new \RuntimeException('Unable to create a response; default PSR-7 stream libraries not found.');

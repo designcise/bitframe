@@ -24,6 +24,6 @@ class MethodNotAllowedException extends \BitFrame\Exception\HttpException
      */
     public function __construct($method)
     {
-		parent::__construct(sprintf('Method "%s" Not Allowed', $method), 405);
+        parent::__construct(sprintf('Method "%s" Not Allowed', $method), 405);
     }
 }

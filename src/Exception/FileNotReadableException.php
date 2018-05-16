@@ -16,7 +16,7 @@ namespace BitFrame\Exception;
  */
 class FileNotReadableException extends \RuntimeException
 {
-	/**
+    /**
      * @param string $path
      */
     public function __construct(string $path)

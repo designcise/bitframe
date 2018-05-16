@@ -22,102 +22,102 @@ use BitFrame\Factory\HttpMessageFactory;
  */
 trait DispatcherAwareTrait
 {
-	use EventManagerAwareTrait;
-	
-	/** @var DispatcherInterface */
+    use EventManagerAwareTrait;
+    
+    /** @var DispatcherInterface */
     private $dispatcher;
 
     /** @var ResponseInterface */
     private $response;
-		
-	/** @var ServerRequestInterface */
+        
+    /** @var ServerRequestInterface */
     private $request;
-	
-	/**
+    
+    /**
      * {@inheritdoc}
-	 *
-	 * @see DispatcherInterface::addMiddleware()
+     *
+     * @see DispatcherInterface::addMiddleware()
      */
     public function addMiddleware($middleware): self
     {
-		$this->getDispatcher()->addMiddleware($middleware);
-		
-		return $this;
+        $this->getDispatcher()->addMiddleware($middleware);
+        
+        return $this;
     }
-	
-	/**
+    
+    /**
      * Set middleware dispatcher object.
-	 *
-	 * @param DispatcherInterface $dispatcher
-	 *
-	 * @return $this;
+     *
+     * @param DispatcherInterface $dispatcher
+     *
+     * @return $this;
      */
-	public function setDispatcher(DispatcherInterface $dispatcher): self
-	{
-		$this->dispatcher = $dispatcher;
-		
-		return $this;
-	}
-		
-	/**
-	 * Set Request object.
-	 *
-	 * @param ServerRequestInterface $request
-	 *
-	 * @return $this
-	 */
-	public function setRequest(ServerRequestInterface $request): self
-	{
-		$this->request = $request;
-		
-		return $this;
-	}
-	
-	/**
+    public function setDispatcher(DispatcherInterface $dispatcher): self
+    {
+        $this->dispatcher = $dispatcher;
+        
+        return $this;
+    }
+        
+    /**
+     * Set Request object.
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @return $this
+     */
+    public function setRequest(ServerRequestInterface $request): self
+    {
+        $this->request = $request;
+        
+        return $this;
+    }
+    
+    /**
      * Get Http Request object.
-	 *
-	 * @return ServerRequestInterface
+     *
+     * @return ServerRequestInterface
      */
     public function getRequest(): ServerRequestInterface
     {
-		$this->request = $this->request ?? HttpMessageFactory::createServerRequestFromArray($_SERVER);
-		
+        $this->request = $this->request ?? HttpMessageFactory::createServerRequestFromArray($_SERVER);
+        
         return $this->request;
     }
-	
-	/**
+    
+    /**
      * Get Http Response object.
-	 *
-	 * @return ResponseInterface
+     *
+     * @return ResponseInterface
      */
     public function getResponse(): ResponseInterface
     {
-		$this->response = $this->response ?? HttpMessageFactory::createResponse();
-		
+        $this->response = $this->response ?? HttpMessageFactory::createResponse();
+        
         return $this->response;
     }
-	
-	/**
+    
+    /**
      * Get middleware dispatcher object.
-	 *
-	 * @return DispatcherInterface
+     *
+     * @return DispatcherInterface
      */
-	public function getDispatcher(): DispatcherInterface
-	{
-		$this->dispatcher = $this->dispatcher ?? \BitFrame\Factory\ApplicationFactory::createDispatcher($this->getResponse());
-		
-		return $this->dispatcher;
-	}
-	
-	/**
+    public function getDispatcher(): DispatcherInterface
+    {
+        $this->dispatcher = $this->dispatcher ?? \BitFrame\Factory\ApplicationFactory::createDispatcher($this->getResponse());
+        
+        return $this->dispatcher;
+    }
+    
+    /**
      * Get the Event Manager object.
-	 *
-	 * @return EventManagerInterface
+     *
+     * @return EventManagerInterface
      */
-	public function getEventManager(): EventManagerInterface
-	{
-		$this->eventManager = $this->eventManager ?? $this->getDispatcher()->getEventManager();
-		
-		return $this->eventManager;
-	}
+    public function getEventManager(): EventManagerInterface
+    {
+        $this->eventManager = $this->eventManager ?? $this->getDispatcher()->getEventManager();
+        
+        return $this->eventManager;
+    }
 }

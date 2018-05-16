@@ -21,33 +21,33 @@ use BitFrame\Router\{Route, RouteCollectionInterface};
  */
 class RouteGroup implements RouteCollectionInterface
 {
-	use RouteCollectionMapTrait;
+    use RouteCollectionMapTrait;
     use RouteConditionTrait;
-	
+    
     /** @var callable */
     protected $callback;
-	
+    
     /** @var RouteCollectionInterface */
     protected $collection;
-	
+    
     /** @var string */
     protected $prefix;
-	
+    
     /**
      * @param string $prefix
      * @param callable $callback
      * @param RouteCollectionInterface $collection
      */
     public function __construct(
-		string $prefix, 
-		callable $callback, 
-		RouteCollectionInterface $collection
-	) {
+        string $prefix, 
+        callable $callback, 
+        RouteCollectionInterface $collection
+    ) {
         $this->callback   = $callback;
         $this->collection = $collection;
         $this->prefix     = sprintf('/%s', ltrim($prefix, '/'));
     }
-	
+    
     /**
      * Process the group and ensure routes are added to the collection.
      */
@@ -55,7 +55,7 @@ class RouteGroup implements RouteCollectionInterface
     {
         call_user_func_array($this->callback, [$this]);
     }
-	
+    
     /**
      * {@inheritdoc}
      */
@@ -70,7 +70,7 @@ class RouteGroup implements RouteCollectionInterface
         if ($scheme = $this->getScheme()) {
             $route->setScheme($scheme);
         }
-		
+        
         return $route;
     }
 }

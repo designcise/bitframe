@@ -45,7 +45,7 @@ interface EventInterface
      * Get a single parameter by name.
      *
      * @param  string $name
-	 *
+     *
      * @return mixed
      */
     public function getParam(string $name);

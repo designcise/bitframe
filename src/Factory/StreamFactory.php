@@ -31,15 +31,15 @@ class StreamFactory implements StreamFactoryInterface
 
     /**
      * {@inheritdoc}
-	 *
-	 * @throws \BitFrame\Exception\FileNotReadableException
+     *
+     * @throws \BitFrame\Exception\FileNotReadableException
      */
     public function createStreamFromFile($filename, $mode = 'r')
     {
-		if (! file_exists($filename)) {
-			throw new \BitFrame\Exception\FileNotReadableException($filename);
-		}
-		
+        if (! file_exists($filename)) {
+            throw new \BitFrame\Exception\FileNotReadableException($filename);
+        }
+        
         return $this->createStreamFromResource(fopen($filename, $mode));
     }
 

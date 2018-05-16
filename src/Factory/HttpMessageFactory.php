@@ -30,64 +30,64 @@ class HttpMessageFactory
 
     /** @var StreamFactoryInterface */
     private static $streamFactory;
-	
-	/** @var UriFactoryInterface */
+    
+    /** @var UriFactoryInterface */
     private static $uriFactory;
 
     /**
      * Set a custom Response factory.
-	 * 
-	 * @param ResponseFactoryInterface $responseFactory
+     * 
+     * @param ResponseFactoryInterface $responseFactory
      */
     public static function setResponseFactory(ResponseFactoryInterface $responseFactory): self
     {
         self::$responseFactory = $responseFactory;
-		
-		return new static;
+        
+        return new static;
     }
-	
+    
     /**
      * Set a custom ServerRequest factory.
-	 * 
-	 * @param ServerRequestFactoryInterface $serverRequestFactory
+     * 
+     * @param ServerRequestFactoryInterface $serverRequestFactory
      */
     public static function setServerRequestFactory(ServerRequestFactoryInterface $serverRequestFactory): self
     {
         self::$serverRequestFactory = $serverRequestFactory;
-		
-		return new static;
+        
+        return new static;
     }
-	
+    
     /**
      * Set a custom Stream factory.
-	 * 
-	 * @param StreamFactoryInterface $streamFactory
+     * 
+     * @param StreamFactoryInterface $streamFactory
      */
     public static function setStreamFactory(StreamFactoryInterface $streamFactory): self
     {
         self::$streamFactory = $streamFactory;
-		
-		return new static;
+        
+        return new static;
     }
-	
-	/**
+    
+    /**
      * Set a custom Uri factory.
-	 * 
-	 * @param UriFactoryInterface $uriFactory
+     * 
+     * @param UriFactoryInterface $uriFactory
      */
     public static function setUriFactory(UriFactoryInterface $uriFactory): self
     {
         self::$uriFactory = $uriFactory;
-		
-		return new static;
+        
+        return new static;
     }
-	
+    
     /**
      * Creates a Response instance.
      *
      * @param int $code (optional) Http status code
-	 *
-	 * @return ResponseInterface
+     *
+     * @return ResponseInterface
      */
     public static function createResponse(int $code = 200): ResponseInterface
     {
@@ -100,44 +100,44 @@ class HttpMessageFactory
 
     /**
      * Creates a new server request.
-	 *
-	 * @param string $method (optional)
-	 * @param string $uri (optional)
-	 *
-	 * @return ServerRequestInterface
+     *
+     * @param string $method (optional)
+     * @param string $uri (optional)
+     *
+     * @return ServerRequestInterface
      */
     public static function createServerRequest(
         string $method = 'GET',
         string $uri = ''
     ): ServerRequestInterface 
-	{
+    {
         if (self::$serverRequestFactory === null) {
             self::$serverRequestFactory = new \BitFrame\Factory\ServerRequestFactory();
         }
 
         return self::$serverRequestFactory->createServerRequest($method, $uri);
     }
-	
-	/**
+    
+    /**
      * Create a new server request from server variables.
-	 *
-	 * @param array $server (optional)
-	 *
-	 * @return ServerRequestInterface
+     *
+     * @param array $server (optional)
+     *
+     * @return ServerRequestInterface
      */
     public static function createServerRequestFromArray(
         array $server = []
     ): ServerRequestInterface 
-	{
+    {
         if (self::$serverRequestFactory === null) {
             self::$serverRequestFactory = new \BitFrame\Factory\ServerRequestFactory();
         }
 
-		// workaround for localhost
-		if (in_array(self::get('REMOTE_ADDR', $server, []), ['127.0.0.1', '::1']) && ($index = strpos($server['PHP_SELF'], '/index.php')) !== false && $index > 0) {
-			$script_url = strtolower(substr($server['PHP_SELF'], 0, $index));
-			$server['REQUEST_URI'] = '/' . trim(str_replace(['/index.php', $script_url], '', $server['REQUEST_URI']), '/');
-		}
+        // workaround for localhost
+        if (in_array(self::get('REMOTE_ADDR', $server, []), ['127.0.0.1', '::1']) && ($index = strpos($server['PHP_SELF'], '/index.php')) !== false && $index > 0) {
+            $script_url = strtolower(substr($server['PHP_SELF'], 0, $index));
+            $server['REQUEST_URI'] = '/' . trim(str_replace(['/index.php', $script_url], '', $server['REQUEST_URI']), '/');
+        }
 
         return self::$serverRequestFactory->createServerRequestFromArray($server);
     }
@@ -146,8 +146,8 @@ class HttpMessageFactory
      * Creates a Stream instance with content.
      *
      * @param string $content (optional)
-	 *
-	 * @return StreamInterface
+     *
+     * @return StreamInterface
      */
     public static function createStream($content = ''): StreamInterface
     {
@@ -162,9 +162,9 @@ class HttpMessageFactory
      * Creates a Stream instance from file.
      *
      * @param string $filename
-	 * @param string $mode (optional)
-	 *
-	 * @return StreamInterface
+     * @param string $mode (optional)
+     *
+     * @return StreamInterface
      */
     public static function createStreamFromFile($filename, $mode = 'r'): StreamInterface
     {
@@ -179,8 +179,8 @@ class HttpMessageFactory
      * Creates a Stream instance from resource returned by fopen.
      *
      * @param resource|null $resource
-	 *
-	 * @return StreamInterface
+     *
+     * @return StreamInterface
      */
     public static function createStreamFromResource($resource): StreamInterface
     {
@@ -191,12 +191,12 @@ class HttpMessageFactory
         return self::$streamFactory->createStreamFromResource($resource);
     }
 
-	/**
+    /**
      * Creates a Uri instance.
-	 *
-	 * @param string $uri (optional)
-	 *
-	 * @return UriInterface
+     *
+     * @param string $uri (optional)
+     *
+     * @return UriInterface
      */
     public static function createUri(string $uri = ''): UriInterface
     {
@@ -206,8 +206,8 @@ class HttpMessageFactory
 
         return self::$uriFactory->createUri($uri);
     }
-	
-	/**
+    
+    /**
      * Access a value in an array, returning a default value if not found.
      *
      * Will also do a case-insensitive search if a case-sensitive search fails.
@@ -215,10 +215,10 @@ class HttpMessageFactory
      * @param string $key
      * @param array $values
      * @param mixed $default (optional)
-	 *
+     *
      * @return mixed
-	 *
-	 * @see: \Zend\Diactoros\ServerRequestFactory::get()
+     *
+     * @see: \Zend\Diactoros\ServerRequestFactory::get()
      */
     public static function get($key, array $values, $default = null)
     {

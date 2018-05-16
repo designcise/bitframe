@@ -21,10 +21,10 @@ trait RouteConditionTrait
 {
     /** @var string */
     protected $host;
-	
+    
     /** @var string */
     protected $scheme;
-	
+    
     /**
      * Get the host.
      *
@@ -34,7 +34,7 @@ trait RouteConditionTrait
     {
         return $this->host;
     }
-	
+    
     /**
      * Set the host.
      *
@@ -45,10 +45,10 @@ trait RouteConditionTrait
     public function setHost($host): self
     {
         $this->host = $host;
-		
+        
         return $this;
     }
-	
+    
     /**
      * Get the scheme.
      *
@@ -58,7 +58,7 @@ trait RouteConditionTrait
     {
         return $this->scheme;
     }
-	
+    
     /**
      * Set the scheme.
      *
@@ -69,7 +69,7 @@ trait RouteConditionTrait
     public function setScheme($scheme): self
     {
         $this->scheme = $scheme;
-		
+        
         return $this;
     }
 }

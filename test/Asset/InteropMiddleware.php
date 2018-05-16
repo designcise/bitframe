@@ -16,20 +16,20 @@ use \Psr\Http\Server\{RequestHandlerInterface, MiddlewareInterface};
 
 class InteropMiddleware implements MiddlewareInterface
 {
-	public function run(
-		ServerRequestInterface $request, 
-		RequestHandlerInterface $handler
-	): ResponseInterface
+    public function run(
+        ServerRequestInterface $request, 
+        RequestHandlerInterface $handler
+    ): ResponseInterface
     {
-		echo 'via run';
-		return $this->process($request, $handler);
+        echo 'via run';
+        return $this->process($request, $handler);
     }
-	
+    
     public function process(
-		ServerRequestInterface $request, 
-		RequestHandlerInterface $handler
-	): ResponseInterface
+        ServerRequestInterface $request, 
+        RequestHandlerInterface $handler
+    ): ResponseInterface
     {
-		return $handler->handle($request);
+        return $handler->handle($request);
     }
 }
