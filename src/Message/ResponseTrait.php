@@ -67,7 +67,7 @@ trait ResponseTrait
     }
     
     /**
-     * Http Response as Json.
+     * Http Response as JSON/JSONP.
      *
      * Note: This method is not part of the PSR standard, and is merely meant
      * to serve as a shortcut for preparing json data with correct headers along 
@@ -79,6 +79,7 @@ trait ResponseTrait
      * @param mixed $data The data.
      * @param int $status (optional) The HTTP status code.
      * @param string $bodyKeyName (optional) Name of index containing response body.
+     * @param string $jsonpCallback (optional) Name of callback for JSONP calls.
      * @param int $encodingOptions (optional) Json encoding options.
      *
      * @return ResponseInterface
@@ -89,6 +90,7 @@ trait ResponseTrait
         $data, 
         ?int $status = null, 
         ?string $bodyKeyName = null,
+        ?string $jsonpCallback = null,
         int $encodingOptions = 0
     ): ResponseInterface
     {
@@ -119,14 +121,19 @@ trait ResponseTrait
             }
         }
         
-        // new data stream
-        $response = $this->withBody(HttpMessageFactory::createStreamFromResource(fopen('php://temp', 'r+')));
-        $response->getBody()->write($json = json_encode($data, $encodingOptions));
-        
         // ensure that the json encoding passed successfully
-        if ($json === false) {
+        if (($json = json_encode($data, $encodingOptions)) === false) {
             throw new \RuntimeException(json_last_error_msg(), json_last_error());
         }
+        
+        // add padding if jsonp call
+        if (! empty($jsonpCallback)) {
+            $json = "{$jsonpCallback}({$json})";
+        }
+        
+        // new data stream
+        $response = $this->withBody(HttpMessageFactory::createStreamFromResource(fopen('php://temp', 'r+')));
+        $response->getBody()->write($json);
         
         $responseWithJson = $response->withHeader('Content-Type', 'application/json;charset=utf-8');
         

@@ -1,6 +1,6 @@
 {
     "name": "designcise/bitframe",
-	"version": "1.0.1",
+	"version": "1.0.2",
     "description": "PHP PSR-15 / PSR-7 middleware dispatcher microframework",
     "type": "library",
     "keywords": ["Designcise", "BitFrame", "Microframework", "Framework", "Middleware Dispatcher", "PSR-7", "PSR-15"],

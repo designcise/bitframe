@@ -55,6 +55,38 @@ class ResponseTraitTest extends TestCase
         $this->assertSame(201, $response->getStatusCode());
     }
     
+    public function testResponseWithPaddedJson()
+    {
+        $response = $this->response;
+        
+        $body = 'Hello World!';
+        $response->getBody()->write($body);
+        
+        $data = ['test' => '123', 'data' => '456'];
+        $json = json_encode(array_merge($data, ['response_txt' => $body]));
+        
+        $callback_name = 'callback';
+        
+        $response = $response->withJson($data, 201, 'response_txt', $callback_name);
+        $encoded_json = $response_json = $this->readResponse($response);
+        
+        $callback_start = strpos($response_json, $callback_name);
+        
+        // callback padding exists?
+        $this->assertNotFalse($callback_start);
+
+        // remove padding
+        if ($callback_start !== false) {
+            // remove $callback_name
+            $substr_start = $callback_start + strlen($callback_name) + 1;
+            $substr_len = strrpos($response_json,')') - $substr_start;
+            $encoded_json = substr($response_json, $substr_start, $substr_len);
+        }
+        
+        $this->assertJsonStringEqualsJsonString($json, $encoded_json);
+        $this->assertSame(201, $response->getStatusCode());
+    }
+    
     private function readResponse($response)
     {
         $stream = $response->getBody();
