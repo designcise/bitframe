@@ -1,6 +1,6 @@
 {
     "name": "designcise/bitframe",
-	"version": "1.0.2",
+    "version": "1.0.2",
     "description": "PHP PSR-15 / PSR-7 middleware dispatcher microframework",
     "type": "library",
     "keywords": ["Designcise", "BitFrame", "Microframework", "Framework", "Middleware Dispatcher", "PSR-7", "PSR-15"],
@@ -14,9 +14,9 @@
     "require": {
         "php": "^7.1.0",
         "psr/http-message": "^1.0",
-		"psr/http-server-handler": "~1.0",
-		"psr/http-server-middleware": "~1.0",
-		"fig/http-message-util": "^1.0",
+        "psr/http-server-handler": "~1.0",
+        "psr/http-server-middleware": "~1.0",
+        "fig/http-message-util": "^1.0",
         "http-interop/http-factory": "^0.3"
     },
     "require-dev": {
@@ -24,9 +24,9 @@
     },
     "suggest": {
         "designcise/bitframe-whoops": "Whoops error handler middleware for BitFrame microframework",
-		"designcise/bitframe-diactoros": "Zend Diactoros HTTP message middleware for BitFrame microframework",
+        "designcise/bitframe-diactoros": "Zend Diactoros HTTP message middleware for BitFrame microframework",
         "designcise/bitframe-fastroute": "Fastroute router middleware for BitFrame microframework",
-		"designcise/bitframe-leagueplates": "League Plates template renderer for BitFrame microframework"
+        "designcise/bitframe-leagueplates": "League Plates template renderer for BitFrame microframework"
     },
     "autoload": {
         "psr-4": {
