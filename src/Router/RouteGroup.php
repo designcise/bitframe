@@ -53,7 +53,7 @@ class RouteGroup implements RouteCollectionInterface
      */
     public function __invoke()
     {
-        call_user_func_array($this->callback, [$this]);
+        call_user_func_array($this->callback->bindTo($this), [$this]);
     }
     
     /**

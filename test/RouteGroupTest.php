@@ -16,7 +16,7 @@ namespace BitFrame\Test;
 
 use \PHPUnit\Framework\TestCase;
 
-use \BitFrame\Router\RouteGroup;
+use \BitFrame\Router\{RouteGroup, RouteCollectionInterface};
 
 /**
  * @covers \BitFrame\Router\RouteGroup
@@ -28,7 +28,7 @@ class RouteGroupTest extends TestCase
      */
     public function testGroupIsInvokedAndAddsRoutesToCollection()
     {
-        $callback   = function() {};
+        $callback = function() {};
         $collection = $this->createMock('\BitFrame\Router\RouteCollectionInterface');
         $route = $this->createMock('\BitFrame\Router\Route');
         
@@ -86,7 +86,13 @@ class RouteGroupTest extends TestCase
             ->with($this->equalTo('HEAD'), $this->equalTo('/acme/route'), $this->equalTo($callback))
             ->will($this->returnValue($route));
         
-        $group = new RouteGroup('/acme', function ($route) use ($callback) {
+        $phpunit = $this;
+        
+        $group = new RouteGroup('/acme', function (RouteCollectionInterface $route) use ($callback, $phpunit) {
+            // RouteGroup implements RouteCollectionInterface, so...
+            $phpunit->assertInstanceOf(RouteGroup::class, $this);
+            $phpunit->assertInstanceOf(RouteCollectionInterface::class, $this);
+            
             $route->get('/route', $callback)->setHost('example.com')->setScheme('https');
             $route->post('/route', $callback);
             $route->put('/route', $callback);
@@ -94,6 +100,31 @@ class RouteGroupTest extends TestCase
             $route->delete('/route', $callback);
             $route->options('/route', $callback);
             $route->head('/route', $callback);
+        }, $collection);
+        
+        $group();
+    }
+    
+    public function testRouteGroupClassContextIsBoundToRouteGroupCollection()
+    {
+        $callback = function() {};
+        $collection = $this->createMock('\BitFrame\Router\RouteCollectionInterface');
+        $route = $this->createMock('\BitFrame\Router\Route');
+        
+        $phpunit = $this;
+        
+        $group = new RouteGroup('/acme', function () use ($callback, $phpunit) {
+            // RouteGroup implements RouteCollectionInterface, so...
+            $phpunit->assertInstanceOf(RouteGroup::class, $this);
+            $phpunit->assertInstanceOf(RouteCollectionInterface::class, $this);
+            
+            $this->get('/route', $callback)->setHost('example.com')->setScheme('https');
+            $this->post('/route', $callback);
+            $this->put('/route', $callback);
+            $this->patch('/route', $callback);
+            $this->delete('/route', $callback);
+            $this->options('/route', $callback);
+            $this->head('/route', $callback);
         }, $collection);
         
         $group();
