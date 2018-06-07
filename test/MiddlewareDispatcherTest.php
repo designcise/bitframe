@@ -144,6 +144,107 @@ class MiddlewareDispatcherTest extends TestCase
         echo $output;
     }
     
+    public function testSkipEmptyMiddleware()
+    {
+        $this->dispatcher->addMiddleware([
+            [],
+            null,
+            $this->noopMiddleware
+        ]);
+        
+        $response = $this->dispatcher->handle($this->request);
+        
+        // if all goes smoothly, response should return
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+    }
+    
+    public function testLastMiddlewaresAsEmpty()
+    {
+        $this->dispatcher->addMiddleware([
+            $this->noopMiddleware,
+            [],
+            null
+        ]);
+        
+        $response = $this->dispatcher->handle($this->request);
+        
+        // if all goes smoothly, response should return
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+    }
+    
+    public function testOneMiddlewareThatIsNull()
+    {
+        $this->dispatcher->addMiddleware([null]);
+        
+        $response = $this->dispatcher->handle($this->request);
+        
+        // if all goes smoothly, response should return
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+    }
+    
+    public function testLastMiddlewareThatIsNull()
+    {
+        $this->dispatcher->addMiddleware([
+            $this->noopMiddleware,
+            null
+        ]);
+        
+        $response = $this->dispatcher->handle($this->request);
+        
+        // if all goes smoothly, response should return
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+    }
+    
+    public function testOneMiddlewareThatIsAnEmptyArray()
+    {
+        $this->dispatcher->addMiddleware([[]]);
+        
+        $response = $this->dispatcher->handle($this->request);
+        
+        // if all goes smoothly, response should return
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+    }
+    
+    public function testLastMiddlewareThatIsAnEmptyArray()
+    {
+        $this->dispatcher->addMiddleware([
+            $this->noopMiddleware,
+            []
+        ]);
+        
+        $response = $this->dispatcher->handle($this->request);
+        
+        // if all goes smoothly, response should return
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+    }
+    
+    public function testOneMiddlewareThatIsNotSet()
+    {
+        $a;
+        
+        $this->dispatcher->addMiddleware([$a]);
+        
+        $response = $this->dispatcher->handle($this->request);
+        
+        // if all goes smoothly, response should return
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+    }
+    
+    public function testLastMiddlewareThatIsNotSet()
+    {
+        $a;
+        
+        $this->dispatcher->addMiddleware([
+            $this->noopMiddleware,
+            $a
+        ]);
+        
+        $response = $this->dispatcher->handle($this->request);
+        
+        // if all goes smoothly, response should return
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+    }
+    
     public function testHandleWithoutMiddleware() 
     {
         $this->dispatcher->addMiddleware([]);

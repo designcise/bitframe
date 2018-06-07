@@ -511,6 +511,29 @@ class ApplicationTest extends TestCase
         ]);
     }
     
+    public function testExecMiddlewareWithEmptyMiddlewaresThatShouldBeSkipped()
+    {
+        $app = $this->app;
+        
+        $app->get('/', function (ServerRequestInterface $request, ResponseInterface $response) {
+            $response->getBody()->write('Execute Middleware');
+            return $response;
+        });
+        
+        $this->expectOutputString('Execute Middleware');
+        
+        $varNotSet;
+        
+        $app->run([
+            $varNotSet,
+            $this->responder,
+            [],
+            null,
+            $this->getDummyRouter(),
+            $varNotSet
+        ]);
+    }
+    
     public function testNestedExecMiddleware()
     {
         $app = $this->app;

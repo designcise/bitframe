@@ -150,8 +150,8 @@ class Application implements
     /**
      * {@inheritdoc}
      *
-     * @see: ArrayAccess::offsetSet()
-     * @see: ApplicationDataTrait::offsetSet()
+     * @see ArrayAccess::offsetSet()
+     * @see ApplicationDataTrait::offsetSet()
      */
     public function offsetSet($key, $value)
     {
@@ -163,8 +163,8 @@ class Application implements
     /**
      * {@inheritdoc}
      *
-     * @see: ArrayAccess::offsetUnset()
-     * @see: ApplicationDataTrait::offsetUnset()
+     * @see ArrayAccess::offsetUnset()
+     * @see ApplicationDataTrait::offsetUnset()
      */
     public function offsetUnset($key)
     {

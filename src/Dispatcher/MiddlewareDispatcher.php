@@ -157,45 +157,60 @@ class MiddlewareDispatcher implements DispatcherInterface, EventManagerInterface
         }
         
         $middleware = array_shift($this->pendingMiddleware);
+        $middlewarePending = (count($this->pendingMiddleware) > 0);
+        
+        // a noop middleware is either null or an empty array (i.e. []);
+        // this can be used to conditionally add middlewares to the queue
+        $isNoopMiddleware = (null === $middleware || (is_array($middleware) && empty($middleware)));
 
-        // middleware ready to be processed?
-        if (isset($middleware)) {
-            // get middleware instance; must be callable or implement MiddlewareInterface
-            // only proceed to check for class if a function by specified name does not exist!
-            if (is_string($middleware) && ! function_exists($middleware)) {
-                // middleware class does not exist!
-                if (! class_exists($middleware)) {
-                    throw new InvalidMiddlewareException(sprintf(
-                        'Unable to create middleware "%s"; not a valid class or service name',
-                        $middleware
-                    ));
+        // middleware ready to be processed, which means:
+        // there are pending middlewares, or 
+        // the current/last middleware is not $isNoopMiddleware
+        if ($middlewarePending || ! $isNoopMiddleware) {
+            // $isNoopMiddleware with pending middleware?
+            if ($isNoopMiddlewareCond = ($isNoopMiddleware && $middlewarePending)) {
+                // create an anonymous noop function to skip current middleware
+                $middleware = function(ServerRequestInterface $req, ResponseInterface $res, callable $next) {
+                    return $next($req, $res);
+                };
+            } else {
+                // get middleware instance; must be callable or implement MiddlewareInterface
+                // only proceed to check for class if a function by specified name does not exist!
+                if (is_string($middleware) && ! function_exists($middleware)) {
+                    // middleware class does not exist!
+                    if (! class_exists($middleware)) {
+                        throw new InvalidMiddlewareException(sprintf(
+                            'Unable to create middleware "%s"; not a valid class or service name',
+                            $middleware
+                        ));
+                    }
+
+                    // middleware class name provided? create new instance of the middleware
+                    // instance will be validated further in the code that follows
+                    $middleware = new $middleware();
                 }
 
-                // middleware class name provided? create new instance of the middleware
-                // instance will be validated further in the code that follows
-                $middleware = new $middleware();
-            }
-
-            // middleware does not implement PSR-15 middleware interface and is not callable?
-            if (! ($isMiddleware = ($middleware instanceof MiddlewareInterface)) && ! is_callable($middleware)) {
-                // class instance is not PSR-15 & PSR-7 compatible
-                if (is_object($middleware)) {
-                    throw new InvalidMiddlewareException(sprintf(
-                        'Middleware of class "%s" is invalid; neither invokable nor %s',
-                        get_class($middleware),
-                        MiddlewareInterface::class
-                    ));
-                } else {
-                    // middleware is not a function
-                    throw new \BadFunctionCallException('Middleware is not callable');
+                // middleware does not implement PSR-15 middleware interface and is not callable?
+                if (! ($isMiddleware = ($middleware instanceof MiddlewareInterface)) && ! is_callable($middleware)) {
+                    // class instance is not PSR-15 & PSR-7 compatible
+                    if (is_object($middleware)) {
+                        throw new InvalidMiddlewareException(sprintf(
+                            'Middleware of class "%s" is invalid; neither invokable nor %s',
+                            get_class($middleware),
+                            MiddlewareInterface::class
+                        ));
+                    } else {
+                        // middleware is not a function
+                        throw new \BadFunctionCallException('Middleware is not callable');
+                    }
                 }
-            }
-            
-            // trigger 'before' event
-            $this->triggerEvent(self::EVENT_BEFORE_DISPATCH, $middleware);
 
-            // push at end of array
-            $this->processedMiddleware[] = $middleware;
+                // trigger 'before' event
+                $this->triggerEvent(self::EVENT_BEFORE_DISPATCH, $middleware);
+
+                // push at end of array
+                $this->processedMiddleware[] = $middleware;
+            }
             
             // case 1: implements MiddlewareInterface
             $response = ($isMiddleware) ? $middleware->process($request, $this) : 
