@@ -36,7 +36,7 @@ trait RequestTrait
      */
     public function getEndpoints()
     {
-        $endpoints = explode('/', trim($this->getUri()->getPath(), '/'));
+        $endpoints = explode('/', trim($this->getNormalizedUriPath(), '/'));
         return ((array)$endpoints);
     }
     
@@ -57,7 +57,7 @@ trait RequestTrait
      */
     public function getEndpoint(int $index, $default = null)
     {
-        $endpoints = explode('/', trim($this->getUri()->getPath(), '/'));
+        $endpoints = explode('/', trim($this->getNormalizedUriPath(), '/'));
         return ((isset($endpoints[$index-1])) ? $endpoints[$index-1] : $default);
     }
     
@@ -114,7 +114,7 @@ trait RequestTrait
         
         $basePath = ($basePath === '') ? '' : trim($basePath, '/');
         $urlPaths = (array)$urlPaths;
-        $reqUri = trim($this->getUri()->getPath(), '/');
+        $reqUri = trim($this->getNormalizedUriPath(), '/');
         
         foreach ($urlPaths as $urlPath) {
             $urlPath = trim($urlPath, '/');
@@ -127,7 +127,7 @@ trait RequestTrait
         
         return false;
     }
-    //strpos($reqUri, $urlPath) !== false
+    
     /**
      * Check if the specified endpoint matches exactly to the one in the url.
      *
@@ -153,5 +153,29 @@ trait RequestTrait
     public function isXhr()
     {
         return $this->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
+    }
+    
+    /**
+     * Get normalized uri path.
+     *
+     * In case document root (such as DOCUMENT_ROOT in apache) is not
+     * defined for the folder root, this would attempt to normalize
+     * the uri such that root folders are stripped from the path.
+     *
+     * @return string
+     */
+    private function getNormalizedUriPath(): string
+    {
+        $reqUriPath = $this->getUri()->getPath();
+        
+        // workaround for when using subfolders as the root folder; this would make 
+        // folder containing the main 'index.php' file the root, which is the expected
+        // behavior
+        if (($i = strpos($_SERVER['PHP_SELF'], '/index.php')) !== false && $i > 0) {
+            $script_url = strtolower(substr($_SERVER['PHP_SELF'], 0, $i));
+            $reqUriPath = '/' . trim(str_replace(['/index.php', $script_url], '', $reqUriPath), '/');
+        }
+        
+        return $reqUriPath;
     }
 }

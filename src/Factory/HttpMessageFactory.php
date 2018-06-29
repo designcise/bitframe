@@ -133,14 +133,6 @@ class HttpMessageFactory
             self::$serverRequestFactory = new \BitFrame\Factory\ServerRequestFactory();
         }
 
-        // workaround for when using subfolders as the root folder; this would make 
-        // folder containing the main 'index.php' file the root, which is the expected
-        // behavior
-        if (($index = strpos($server['PHP_SELF'], '/index.php')) !== false && $index > 0) {
-            $script_url = strtolower(substr($server['PHP_SELF'], 0, $index));
-            $server['REQUEST_URI'] = '/' . trim(str_replace(['/index.php', $script_url], '', $server['REQUEST_URI']), '/');
-        }
-
         return self::$serverRequestFactory->createServerRequestFromArray($server);
     }
 
