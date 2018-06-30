@@ -38,6 +38,14 @@ class RequestTraitTest extends TestCase
         $this->assertSame(array_diff($expected, $endpoints), array_diff($endpoints, $expected));
     }
     
+    public function testRequestNormalizedUriPath() 
+    {
+        $path = $this->request->getNormalizedUriPath();
+        $expected = '/foo/bar/hello-world';
+        
+        $this->assertSame($expected, $path);
+    }
+    
     public function testRequestGetEndpoint() 
     {
         $this->assertSame('foo', $this->request->getEndpoint(1));

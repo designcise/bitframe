@@ -174,8 +174,10 @@ trait RequestTrait
         // folder containing the main 'index.php' file the root, which is the expected
         // behavior
         if (($i = strpos($_SERVER['PHP_SELF'], '/index.php')) !== false && $i > 0) {
-            $script_url = strtolower(substr($_SERVER['PHP_SELF'], 0, $i));
-            $reqUriPath = '/' . trim(str_replace(['/index.php', $script_url], '', $reqUriPath), '/');
+            $scriptUrl = strtolower(substr($_SERVER['PHP_SELF'], 0, $i));
+            $reqUriPath = '/' . trim(
+                preg_replace(['/\/index\.php/', '/' . preg_quote($scriptUrl, '/') . '/'], '', $reqUriPath, 1), '/'
+            );
         }
         
         return $reqUriPath;
