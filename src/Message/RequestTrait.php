@@ -162,9 +162,11 @@ trait RequestTrait
      * defined for the folder root, this would attempt to normalize
      * the uri such that root folders are stripped from the path.
      *
+     * Note: This method is not part of the PSR standard.
+     *
      * @return string
      */
-    private function getNormalizedUriPath(): string
+    public function getNormalizedUriPath(): string
     {
         $reqUriPath = $this->getUri()->getPath();
         
