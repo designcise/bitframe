@@ -19,6 +19,7 @@ use \Psr\Http\Server\RequestHandlerInterface;
 
 use \BitFrame\Application;
 use \BitFrame\Data\ApplicationData;
+use \BitFrame\Delegate\RoutesDelegate;
 use \BitFrame\EventManager\Event;
 use \BitFrame\Dispatcher\DispatcherInterface;
 use \BitFrame\Router\{RouteCollectionInterface, RouterInterface};
@@ -492,6 +493,50 @@ class ApplicationTest extends TestCase
                 $this->getDummyRouter()
             ])
             ->run();
+    }
+    
+    public function testRoutesDelegateFromConfigArray()
+    {
+        $app = $this->app;
+        
+        RoutesDelegate::fromConfig($app, [
+            [
+                'methods' => ['GET', 'POST'],
+                'path' => '/hello',
+                'controller' => function($req, $response, $next) {
+                    $response->getBody()->write('hello world');
+                    
+                    return $next($req, $response);
+                }
+            ]
+        ]);
+        
+        $this->expectOutputString('hello world');
+        
+        $app->run([
+            $this->responder,
+            $this->getDummyRouter()
+        ]);
+    }
+    
+    public function testRoutesDelegateFromConfigArrayWithControllerClass()
+    {
+        $app = $this->app;
+        
+        RoutesDelegate::fromConfig($app, [
+            [
+                'methods' => 'GET',
+                'path' => '/hello',
+                'controller' => '\BitFrame\Test\Asset\Controller::index'
+            ]
+        ]);
+        
+        $this->expectOutputString('hello world');
+        
+        $app->run([
+            $this->responder,
+            $this->getDummyRouter()
+        ]);
     }
     
     public function testExecMiddleware()
