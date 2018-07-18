@@ -32,10 +32,10 @@ class RoutesDelegate {
      *     // etc.
      * ];
      *
-     * @param array $routes
+     * @param array $routes An array of routes that can have 'method', 'path' and 'controller' keys.
      *
      * Note:
-     *     - Routes without a 'controller' defined are skipped.
+     *     - Routes without a 'controller' defined are skipped/ignored.
      *     - When 'method' aren't defined, a default 'GET' method is used.
      *     - When 'path' isn't defined, a default path '/' is used.
      */
@@ -51,6 +51,7 @@ class RoutesDelegate {
             // set value, or defaults
             $method = $route['method'] ?? 'GET';
             settype($method, 'array');
+            $method = array_map('strtoupper', $method);
             
             $path = '/' . ltrim($route['path'] ?? '', '/');
             
