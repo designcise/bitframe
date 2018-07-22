@@ -40,7 +40,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         );
         
         if (class_exists('Zend\\Diactoros\\ServerRequest')) {
-            $serverParams  = \Zend\Diactoros\ServerRequestFactory::normalizeServer($serverParams ?: $_SERVER);
+            $serverParams  = \Zend\Diactoros\normalizeServer($serverParams);
             parse_str($uri->getQuery(), $queryStrArray);
 
             return new class($serverParams, $_FILES, $uri, $method, $headers, $_COOKIE, $queryStrArray, $_POST, $version) extends \Zend\Diactoros\ServerRequest {
