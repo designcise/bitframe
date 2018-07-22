@@ -14,7 +14,7 @@ namespace BitFrame;
 use \Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
 use \Fig\Http\Message\StatusCodeInterface;
 
-use BitFrame\Router\{RouterTrait, RouteCollectionInterface, RouteCollection};
+use BitFrame\Router\{RouterTrait, RouteCollectionInterface};
 use BitFrame\Data\{ApplicationData, ApplicationDataTrait};
 use BitFrame\Dispatcher\{DispatcherAwareTrait, DispatcherInterface};
 use BitFrame\EventManager\EventManagerInterface;

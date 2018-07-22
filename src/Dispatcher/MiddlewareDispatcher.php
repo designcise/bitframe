@@ -73,9 +73,12 @@ class MiddlewareDispatcher implements DispatcherInterface, EventManagerInterface
     public function addMiddleware($middleware, $addToFront = false): self
     {
         if (! empty($middleware)) {
-            // case 1: single middleware?
-            // case 2: in the format [Object, 'method']?
-            if (! is_array($middleware) || (is_callable($middleware, true) && method_exists($middleware[0], $middleware[1]))) {
+            if (
+                // case 1: single middleware (i.e. not an array)?
+                $middleware !== (array)$middleware || 
+                // case 2: in the format [Object, 'method']?
+                (is_callable($middleware, true) && method_exists($middleware[0], $middleware[1]))
+            ) {
                 $middleware = [$middleware];
             }
 
@@ -84,7 +87,7 @@ class MiddlewareDispatcher implements DispatcherInterface, EventManagerInterface
             // note: using array_merge means:
                 // 1: conflicting numeric keys don't overwrite but are appended;
                 // 2: numeric keys in array are renumbered starting from 0
-            $chain = ($addToFront) ? array_merge($middleware, $chain) : array_merge($chain, $middleware);
+            $this->pendingMiddleware = ($addToFront) ? array_merge($middleware, $this->pendingMiddleware) : array_merge($this->pendingMiddleware, $middleware);
         }
         
         return $this;
@@ -157,11 +160,11 @@ class MiddlewareDispatcher implements DispatcherInterface, EventManagerInterface
         }
         
         $middleware = array_shift($this->pendingMiddleware);
-        $middlewarePending = (count($this->pendingMiddleware) > 0);
+        $middlewarePending = ($this->pendingMiddleware !== []);
         
         // a noop middleware is either null or an empty array (i.e. []);
         // this can be used to conditionally add middlewares to the queue
-        $isNoopMiddleware = (null === $middleware || (is_array($middleware) && empty($middleware)));
+        $isNoopMiddleware = (null === $middleware || $middleware === []);
 
         // middleware ready to be processed, which means:
         // there are pending middlewares, or 
@@ -215,7 +218,8 @@ class MiddlewareDispatcher implements DispatcherInterface, EventManagerInterface
             // case 1: implements MiddlewareInterface
             $response = ($isMiddleware) ? $middleware->process($request, $this) : 
             (
-                (is_array($middleware)) ? 
+                // is array?
+                ($middleware === (array)$middleware) ? 
                 // case 2.1: in the format [Object, 'method']: ResponseInterface
                 $middleware[0]->{$middleware[1]}($request, $this) : 
                 // case 2.2: callable function($request, $response, $next): ResponseInterface
@@ -259,7 +263,7 @@ class MiddlewareDispatcher implements DispatcherInterface, EventManagerInterface
      */
     public function hasMiddleware(): bool
     {
-        return (! empty($this->pendingMiddleware));
+        return ($this->pendingMiddleware !== []);
     }
     
     /**
@@ -350,9 +354,14 @@ class MiddlewareDispatcher implements DispatcherInterface, EventManagerInterface
      */
     private function triggerEvent(string $evtName, $middleware)
     {
-        $this->trigger(new Event($evtName, ((is_string($middleware)) ? $middleware : get_class((is_array($middleware)) ? $middleware[0] : $middleware)), [
-            'response' => $this->getResponse()
-        ]));
+        $this->trigger(
+            new Event(
+                $evtName, (
+                    (is_string($middleware)) ? $middleware : get_class(($middleware === (array)$middleware) ? $middleware[0] : $middleware)
+                ), 
+                ['response' => $this->getResponse()]
+            )
+        );
     }
     
     /**
