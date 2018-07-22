@@ -12,6 +12,7 @@
 namespace BitFrame\Factory;
 
 use \Interop\Http\Factory\UriFactoryInterface;
+use \Psr\Http\Message\UriInterface;
 
 /**
  * Class to create instances of PSR-7 uri.
@@ -21,7 +22,7 @@ class UriFactory implements UriFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createUri($uri = '')
+    public function createUri(string $uri = ''): UriInterface
     {
         if (class_exists('Zend\\Diactoros\\Uri')) {
             return new \Zend\Diactoros\Uri($uri);

@@ -12,6 +12,7 @@
 namespace BitFrame\Factory;
 
 use \Interop\Http\Factory\StreamFactoryInterface;
+use \Psr\Http\Message\StreamInterface;
 
 /**
  * Class to create instances of PSR-7 streams.
@@ -21,7 +22,7 @@ class StreamFactory implements StreamFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createStream($content = '')
+    public function createStream(string $content = ''): StreamInterface
     {
         $stream = $this->createStreamFromFile('php://temp', 'r+');
         $stream->write($content);
@@ -34,7 +35,7 @@ class StreamFactory implements StreamFactoryInterface
      *
      * @throws \BitFrame\Exception\FileNotReadableException
      */
-    public function createStreamFromFile($filename, $mode = 'r')
+    public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
         if (! file_exists($filename)) {
             throw new \BitFrame\Exception\FileNotReadableException($filename);
@@ -46,7 +47,7 @@ class StreamFactory implements StreamFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createStreamFromResource($resource)
+    public function createStreamFromResource($resource): StreamInterface
     {
         if (class_exists('Zend\\Diactoros\\Stream')) {
             return new \Zend\Diactoros\Stream($resource);

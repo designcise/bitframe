@@ -24,24 +24,45 @@ class ResponseFactory implements ResponseFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createResponse($code = 200): ResponseInterface
+    public function createResponse(int $code = 200, string $reasonPhrase = ''): ResponseInterface
     {
         if (class_exists('Zend\\Diactoros\\Response')) {
-            return new class($code) extends \Zend\Diactoros\Response {
+            return new class($code, $reasonPhrase) extends \Zend\Diactoros\Response {
                 use ResponseTrait;
                 
-                public function __construct($code) {
+                /**
+                 * @var string
+                 */
+                private $reasonPhrase;
+                
+                public function __construct($code, $reasonPhrase) {
                     parent::__construct('php://memory', $code);
+                    
+                    $this->reasonPhrase = $reasonPhrase;
+                }
+
+                /**
+                 * {@inheritdoc}
+                 */
+                public function getReasonPhrase()
+                {
+                    if (! $this->reasonPhrase
+                        && isset($this->phrases[$this->statusCode])
+                    ) {
+                        $this->reasonPhrase = $this->phrases[$this->statusCode];
+                    }
+
+                    return $this->reasonPhrase;
                 }
             };
         }
 
         if (class_exists('GuzzleHttp\\Psr7\\Response')) {
-            return new class($code) extends \GuzzleHttp\Psr7\Response {
+            return new class($code, $reasonPhrase) extends \GuzzleHttp\Psr7\Response {
                 use ResponseTrait;
                 
-                public function __construct($code) {
-                    parent::__construct($code);
+                public function __construct($code, $reasonPhrase) {
+                    parent::__construct($code, [], null, '1.1', $reasonPhrase);
                 }
             };
         }

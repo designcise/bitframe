@@ -14,6 +14,7 @@
 
 namespace BitFrame\Factory;
 
+use \stdClass;
 use \Interop\Http\Factory\{ServerRequestFactoryInterface, ResponseFactoryInterface, StreamFactoryInterface, UriFactoryInterface};
 use \Psr\Http\Message\{ServerRequestInterface, ResponseInterface, StreamInterface, UriInterface};
 
@@ -86,16 +87,17 @@ class HttpMessageFactory
      * Creates a Response instance.
      *
      * @param int $code (optional) Http status code
+     * @param string $reasonPhrase (optional)
      *
      * @return ResponseInterface
      */
-    public static function createResponse(int $code = 200): ResponseInterface
+    public static function createResponse(int $code = 200, string $reasonPhrase = ''): ResponseInterface
     {
         if (self::$responseFactory === null) {
             self::$responseFactory = new \BitFrame\Factory\ResponseFactory();
         }
 
-        return self::$responseFactory->createResponse($code);
+        return self::$responseFactory->createResponse($code, $reasonPhrase);
     }
 
     /**
@@ -103,37 +105,43 @@ class HttpMessageFactory
      *
      * @param string $method (optional)
      * @param string $uri (optional)
+     * @param array $serverParams (optional)
      *
      * @return ServerRequestInterface
      */
     public static function createServerRequest(
         string $method = 'GET',
-        string $uri = ''
-    ): ServerRequestInterface 
-    {
+        string $uri = '',
+        array $serverParams = []
+    ): ServerRequestInterface {
         if (self::$serverRequestFactory === null) {
             self::$serverRequestFactory = new \BitFrame\Factory\ServerRequestFactory();
         }
 
-        return self::$serverRequestFactory->createServerRequest($method, $uri);
+        return self::$serverRequestFactory->createServerRequest($method, $uri, $serverParams);
     }
     
     /**
      * Create a new server request from server variables.
      *
-     * @param array $server (optional)
+     * The request method and uri are marshalled from $server.
+     *
+     * @param array $server
      *
      * @return ServerRequestInterface
      */
     public static function createServerRequestFromArray(
-        array $server = []
-    ): ServerRequestInterface 
-    {
+        array $server
+    ): ServerRequestInterface {
         if (self::$serverRequestFactory === null) {
             self::$serverRequestFactory = new \BitFrame\Factory\ServerRequestFactory();
         }
+        
+        $headers = marshalHeadersFromSapi($server);
+        $uri = marshalUriFromSapi($server, $headers);
+        $method = marshalMethodFromSapi($server);
 
-        return self::$serverRequestFactory->createServerRequestFromArray($server);
+        return self::$serverRequestFactory->createServerRequest($method, $uri, $server);
     }
 
     /**
@@ -143,7 +151,7 @@ class HttpMessageFactory
      *
      * @return StreamInterface
      */
-    public static function createStream($content = ''): StreamInterface
+    public static function createStream(string $content = ''): StreamInterface
     {
         if (self::$streamFactory === null) {
             self::$streamFactory = new \BitFrame\Factory\StreamFactory();
@@ -160,7 +168,7 @@ class HttpMessageFactory
      *
      * @return StreamInterface
      */
-    public static function createStreamFromFile($filename, $mode = 'r'): StreamInterface
+    public static function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
     {
         if (self::$streamFactory === null) {
             self::$streamFactory = new \BitFrame\Factory\StreamFactory();
@@ -199,27 +207,5 @@ class HttpMessageFactory
         }
 
         return self::$uriFactory->createUri($uri);
-    }
-    
-    /**
-     * Access a value in an array, returning a default value if not found.
-     *
-     * Will also do a case-insensitive search if a case-sensitive search fails.
-     *
-     * @param string $key
-     * @param array $values
-     * @param mixed $default (optional)
-     *
-     * @return mixed
-     *
-     * @see: \Zend\Diactoros\ServerRequestFactory::get()
-     */
-    public static function get($key, array $values, $default = null)
-    {
-        if (array_key_exists($key, $values)) {
-            return $values[$key];
-        }
-
-        return $default;
     }
 }
