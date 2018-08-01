@@ -15,7 +15,7 @@
 namespace BitFrame\Factory;
 
 use \stdClass;
-use \Interop\Http\Factory\{ServerRequestFactoryInterface, ResponseFactoryInterface, StreamFactoryInterface, UriFactoryInterface};
+use \Psr\Http\Message\{ServerRequestFactoryInterface, ResponseFactoryInterface, StreamFactoryInterface, UriFactoryInterface};
 use \Psr\Http\Message\{ServerRequestInterface, ResponseInterface, StreamInterface, UriInterface};
 
 /**

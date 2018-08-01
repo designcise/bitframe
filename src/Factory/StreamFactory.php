@@ -11,7 +11,7 @@
 
 namespace BitFrame\Factory;
 
-use \Interop\Http\Factory\StreamFactoryInterface;
+use \Psr\Http\Message\StreamFactoryInterface;
 use \Psr\Http\Message\StreamInterface;
 
 /**

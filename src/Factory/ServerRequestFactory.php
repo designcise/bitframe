@@ -14,7 +14,7 @@
 
 namespace BitFrame\Factory;
 
-use \Interop\Http\Factory\ServerRequestFactoryInterface;
+use \Psr\Http\Message\ServerRequestFactoryInterface;
 use \Psr\Http\Message\{ServerRequestInterface, UriInterface};
 
 use BitFrame\Message\RequestTrait;

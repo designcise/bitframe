@@ -13,7 +13,7 @@ namespace BitFrame\Test;
 
 use \PHPUnit\Framework\TestCase;
 
-use \Interop\Http\Factory\{ServerRequestFactoryInterface, ResponseFactoryInterface, StreamFactoryInterface, UriFactoryInterface};
+use \Psr\Http\Message\{ServerRequestFactoryInterface, ResponseFactoryInterface, StreamFactoryInterface, UriFactoryInterface};
 use \Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
 use \Psr\Http\Server\RequestHandlerInterface;
 
@@ -75,10 +75,10 @@ class HttpMessageFactoryTest extends TestCase
                 $this->guzzleExists = $guzzleExists;
             }
             
-            public function createResponse($code = 200): ResponseInterface
+            public function createResponse(int $code = 200, string $reasonPhrase = ''): ResponseInterface
             {
                 if ($this->guzzleExists) {
-                    return new \GuzzleHttp\Psr7\Response($code);
+                    return new \GuzzleHttp\Psr7\Response($code, [], null, '1.1', $responsePhrase);
                 }
 
                 throw new \RuntimeException('Unable to create a response. Default PSR-7 stream libraries not found.');

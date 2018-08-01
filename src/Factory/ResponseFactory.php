@@ -11,7 +11,7 @@
 
 namespace BitFrame\Factory;
 
-use \Interop\Http\Factory\ResponseFactoryInterface;
+use \Psr\Http\Message\ResponseFactoryInterface;
 use \Psr\Http\Message\ResponseInterface;
 
 use BitFrame\Message\ResponseTrait;
