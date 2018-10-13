@@ -3,7 +3,7 @@
 /**
  * BitFrame Framework (https://www.bitframephp.com)
  *
- * @author    Zend Framework
+ * @author    Zend Diactoros
  * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
  * @license   https://github.com/zendframework/zend-diactoros/blob/master/LICENSE.md New BSD License
  */

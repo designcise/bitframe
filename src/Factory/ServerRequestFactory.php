@@ -39,11 +39,17 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             (is_string($uri)) ? HttpMessageFactory::createUri($uri) : marshalUriFromSapi($serverParams, $headers)
         );
         
+        // normalized uploaded files as per PSR-7 standard
+        // @see https://www.php-fig.org/psr/psr-7/#16-uploaded-files
+        $files = normalizeUploadedFiles($_FILES);
+        
+        $cookies = (null === $_COOKIE && array_key_exists('cookie', $headers)) ? parseCookieHeader($headers['cookie']) : $_COOKIE;
+        
         if (class_exists('Zend\\Diactoros\\ServerRequest')) {
             $serverParams  = \Zend\Diactoros\normalizeServer($serverParams);
             parse_str($uri->getQuery(), $queryStrArray);
-
-            return new class($serverParams, $_FILES, $uri, $method, $headers, $_COOKIE, $queryStrArray, $_POST, $version) extends \Zend\Diactoros\ServerRequest {
+            
+            return new class($serverParams, $files, $uri, $method, $headers, $_COOKIE, $queryStrArray, $_POST, $version) extends \Zend\Diactoros\ServerRequest {
                 use RequestTrait;
                 
                 public function __construct(

@@ -1,6 +1,6 @@
 {
     "name": "designcise/bitframe",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "description": "PHP PSR-15 / PSR-7 middleware dispatcher microframework",
     "type": "library",
     "keywords": ["Designcise", "BitFrame", "Microframework", "Framework", "Middleware Dispatcher", "PSR-7", "PSR-15"],
@@ -21,10 +21,13 @@
     },
     "autoload": {
         "files": [
+            "src/Factory/functions/create_uploaded_file.php",
             "src/Factory/functions/marshal_headers_from_sapi.php",
             "src/Factory/functions/marshal_method_from_sapi.php",
             "src/Factory/functions/marshal_protocol_version_from_sapi.php",
-            "src/Factory/functions/marshal_uri_from_sapi.php"
+            "src/Factory/functions/marshal_uri_from_sapi.php",
+            "src/Factory/functions/normalized_uploaded_files.php",
+            "src/Factory/functions/parse_cookie_header.php"
         ],
         "psr-4": {
             "BitFrame\\": "src/"

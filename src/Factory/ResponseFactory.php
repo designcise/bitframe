@@ -46,7 +46,8 @@ class ResponseFactory implements ResponseFactoryInterface
                  */
                 public function getReasonPhrase()
                 {
-                    if (! $this->reasonPhrase
+                    if (
+                        ! $this->reasonPhrase
                         && isset($this->phrases[$this->statusCode])
                     ) {
                         $this->reasonPhrase = $this->phrases[$this->statusCode];
