@@ -11,13 +11,14 @@
 
 namespace BitFrame\Factory;
 
+use \Psr\Http\Message\StreamInterface;
 use \Psr\Http\Message\UploadedFileFactoryInterface;
 use \Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Class to create instances of PSR-7 uploaded file.
  */
-class UploadedFileFactory implements UploadedFileInterface
+class UploadedFileFactory implements UploadedFileFactoryInterface
 {
     /**
      * {@inheritdoc}
