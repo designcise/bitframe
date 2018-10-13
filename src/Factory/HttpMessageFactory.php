@@ -15,8 +15,8 @@
 namespace BitFrame\Factory;
 
 use \stdClass;
-use \Psr\Http\Message\{ServerRequestFactoryInterface, ResponseFactoryInterface, StreamFactoryInterface, UriFactoryInterface};
-use \Psr\Http\Message\{ServerRequestInterface, ResponseInterface, StreamInterface, UriInterface};
+use \Psr\Http\Message\{ServerRequestFactoryInterface, ResponseFactoryInterface, StreamFactoryInterface, UriFactoryInterface, UploadedFileFactoryInterface};
+use \Psr\Http\Message\{ServerRequestInterface, ResponseInterface, StreamInterface, UriInterface, UploadedFileInterface};
 
 /**
  * Creates a new HTTP object, as defined by PSR-7.
@@ -34,6 +34,9 @@ class HttpMessageFactory
     
     /** @var UriFactoryInterface */
     private static $uriFactory;
+    
+    /** @var UploadedFileInterface */
+    private static $uploadedFileFactory;
 
     /**
      * Set a custom Response factory.
@@ -79,6 +82,18 @@ class HttpMessageFactory
     public static function setUriFactory(UriFactoryInterface $uriFactory): self
     {
         self::$uriFactory = $uriFactory;
+        
+        return new static;
+    }
+    
+    /**
+     * Set a custom UploadedFile factory.
+     * 
+     * @param UploadedFileFactoryInterface $uploadedFileFactory
+     */
+    public static function setUploadedFileFactory(UriFactoryInterface $uploadedFileFactory): self
+    {
+        self::$uploadedFileFactory = $uploadedFileFactory;
         
         return new static;
     }
@@ -207,5 +222,34 @@ class HttpMessageFactory
         }
 
         return self::$uriFactory->createUri($uri);
+    }
+    
+    /**
+     * Creates an UploadedFile instance.
+     *
+     * @param string|StreamInterface $file
+     * @param null|int $size
+     * @param int $error
+     * @param null|string $clientFilename
+     * @param null|string $clientMediaType
+     *
+     * @return UploadedFileInterface
+     */
+    public static function createUploadedFile(
+        $file,
+        ?int $size = null,
+        int $error = \UPLOAD_ERR_OK,
+        ?string $clientFilename = null,
+        ?string $clientMediaType = null
+    ): UploadedFileInterface {
+        if (self::$uploadedFileFactory === null) {
+            self::$uploadedFileFactory = new \BitFrame\Factory\UploadedFileFactory();
+        }
+
+        $stream = (is_string($file)) ? self::createStreamFromFile($file) : $file;
+        
+        return self::$uploadedFileFactory->createUploadedFile(
+            $stream, $size, $error, $clientFilename, $clientMediaType
+        );
     }
 }

@@ -33,7 +33,7 @@ function createUploadedFile(array $spec)
         ));
     }
 
-    return new UploadedFile(
+    return HttpMessageFactory::createUploadedFile(
         $spec['tmp_name'],
         $spec['size'],
         $spec['error'],
