@@ -17,7 +17,7 @@ use \Psr\Http\Message\UploadedFileInterface;
 /**
  * Class to create instances of PSR-7 uploaded file.
  */
-class UploadedFileFactory implements UriFactoryInterface
+class UploadedFileFactory implements UploadedFileInterface
 {
     /**
      * {@inheritdoc}
