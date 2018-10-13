@@ -91,7 +91,7 @@ class HttpMessageFactory
      * 
      * @param UploadedFileFactoryInterface $uploadedFileFactory
      */
-    public static function setUploadedFileFactory(UriFactoryInterface $uploadedFileFactory): self
+    public static function setUploadedFileFactory(UploadedFileFactoryInterface $uploadedFileFactory): self
     {
         self::$uploadedFileFactory = $uploadedFileFactory;
         
