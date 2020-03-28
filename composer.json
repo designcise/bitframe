@@ -24,7 +24,7 @@
   },
   "suggest": {
     "nyholm/psr7": "Add PSR-7 / PSR-17 based HTTP Messaging support for your App",
-    "bitframe/fastroute": "Add routing support to your App"
+    "designcise/bitframe-fastroute": "Add routing support to your App"
   },
   "scripts": {
     "style": "vendor/bin/phpcs --standard=PSR12 src",
