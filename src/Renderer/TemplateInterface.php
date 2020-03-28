@@ -4,13 +4,11 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2018 Daniyal Hamid (https://designcise.com)
- * @license   https://github.com/designcise/bitframe/blob/master/LICENSE.md MIT License
- *
- * @author    Zend Framework
- * @copyright Copyright (c) 2016-2017 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-template/blob/master/LICENSE.md New BSD License
+ * @copyright Copyright (c) 2017-2019 Daniyal Hamid (https://designcise.com)
+ * @license   https://bitframephp.com/about/license MIT License
  */
+
+declare(strict_types=1);
 
 namespace BitFrame\Renderer;
 
@@ -29,7 +27,7 @@ interface TemplateInterface
      * and allow omitting the filename extension.
      *
      * @param string $templateName
-     * @param array $data (optional)
+     * @param array $data
      *
      * @return string
      */
@@ -56,20 +54,18 @@ interface TemplateInterface
     public function addDefaultParam(string $templateName, $params);
 
     /**
-     * Add a template path to the engine.
-     *
-     * Adds a template path, with optional namespace the templates in that path
-     * provide.
+     * Add a template path to the engine, with optional namespace the templates in
+     * that path provide.
      *
      * @param string $path
-     * @param string|null $namespace (optional)
+     * @param null|string $namespace
      */
     public function addPath(string $path, ?string $namespace = null);
 
     /**
      * Retrieve configured paths from the engine.
      *
-     * @return \BitFrame\Renderer\TemplatePath[]
+     * @return TemplatePath[]
      */
     public function getPaths(): array;
 }

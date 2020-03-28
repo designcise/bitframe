@@ -1,53 +1,50 @@
 {
-    "name": "designcise/bitframe",
-    "version": "1.1.5",
-    "description": "PHP PSR-15 / PSR-7 middleware dispatcher microframework",
-    "type": "library",
-    "keywords": ["Designcise", "BitFrame", "Microframework", "Framework", "Middleware Dispatcher", "PSR-7", "PSR-15"],
-    "license": "(MIT and BSD-3-Clause)",
-    "authors": [
-        {
-            "name": "Daniyal Hamid",
-            "homepage": "https://www.designcise.com/"
-        }
-    ],
-    "require": {
-        "php": "^7.1.0",
-        "psr/http-factory": "^1.0",
-        "psr/http-message": "^1.0",
-        "psr/http-server-handler": "~1.0",
-        "psr/http-server-middleware": "~1.0",
-        "fig/http-message-util": "^1.0"
-    },
-    "autoload": {
-        "files": [
-            "src/Factory/functions/create_uploaded_file.php",
-            "src/Factory/functions/marshal_headers_from_sapi.php",
-            "src/Factory/functions/marshal_method_from_sapi.php",
-            "src/Factory/functions/marshal_protocol_version_from_sapi.php",
-            "src/Factory/functions/marshal_uri_from_sapi.php",
-            "src/Factory/functions/normalize_uploaded_files.php",
-            "src/Factory/functions/parse_cookie_header.php"
-        ],
-        "psr-4": {
-            "BitFrame\\": "src/"
-        }
-    },
-    
-    "require-dev": {
-        "phpunit/phpunit": "^6.4"
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "BitFrame\\Test\\": "test/"
-        },
-        "files": ["test/Asset/function.php"]
-    },
-    
-    "suggest": {
-        "designcise/bitframe-whoops": "Whoops error handler middleware for BitFrame microframework",
-        "designcise/bitframe-diactoros": "Zend Diactoros HTTP message middleware for BitFrame microframework",
-        "designcise/bitframe-fastroute": "Fastroute router middleware for BitFrame microframework",
-        "designcise/bitframe-leagueplates": "League Plates template renderer for BitFrame microframework"
+  "name": "designcise/bitframe",
+  "version": "2.0.0",
+  "type": "library",
+  "description": "BitFrame PHP microframework",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Daniyal Hamid",
+      "homepage": "https://www.designcise.com/"
     }
+  ],
+  "require": {
+    "php": ">=7.4.0",
+    "ext-libxml": "*",
+    "ext-simplexml": "*",
+    "ext-json": "*",
+    "psr/http-server-middleware": "~1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8.5",
+    "squizlabs/php_codesniffer": "3.*",
+    "phpmd/phpmd": "@stable"
+  },
+  "suggest": {
+    "nyholm/psr7": "Add PSR-7 / PSR-17 based HTTP Messaging support for your App",
+    "bitframe/fastroute": "Add routing support to your App"
+  },
+  "scripts": {
+    "style": "vendor/bin/phpcs --standard=PSR12 src",
+    "integration": "vendor/bin/phpunit --configuration phpunit.xml --testsuite integration",
+    "unit": "vendor/bin/phpunit --configuration phpunit.xml --testsuite unit"
+  },
+  "autoload": {
+    "psr-4": {
+      "BitFrame\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "BitFrame\\Test\\": "test/"
+    },
+    "files": [
+      "test/Asset/function.php"
+    ]
+  },
+  "config": {
+    "sort-packages": true
+  }
 }

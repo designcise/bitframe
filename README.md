@@ -1,10 +1,10 @@
 # BitFrame PHP Microframework
 
-* Highly customizable and event driven PSR-15 and PSR-7 compatible middleware microframework for PHP;
+* Highly customizable PSR-15 and PSR-7 compatible middleware-based microframework for PHP;
 * Simple to learn, use and implement;
 * Follows the [PSR standards](http://www.php-fig.org/) and integrates the best of existing opensource frameworks wherever possible.
 
-### Why use BitFrame?
+## Why use BitFrame?
 
 BitFrame's approach of making the middleware dispatcher the core component of the framework encourages the developer to use middleware-based services that plug right-in with ease. This allows for greater flexibility especially in terms of debugging, replacements and updating. While this design pattern may not suit the needs of all projects, it certainly has its advantages for long-term and strategic ones because as they grow in complexity the underlying framework helps keep things well-organized, easy-to-manage and very simple.
 
@@ -17,7 +17,7 @@ At the core of our development, we've tried very hard to abide by some simple ru
 1. Provide the flexibility of using existing PSR-15 / PSR-7 middlewares that plug right in easily;
 1. Provide the ability to share variables and application data seamlessly across all the middlewares.
 
-### Installation
+## Installation
 
 Install BitFrame and its required dependencies using composer:
 
@@ -25,9 +25,11 @@ Install BitFrame and its required dependencies using composer:
 $ composer require designcise/bitframe
 ```
 
-Please note that BitFrame requires PHP 7.1.0 or newer.
+Please note that BitFrame v2+ requires PHP 7.4.0 or newer.
 
-### Quickstart
+## Quickstart
+
+### Apache
 
 After you have installed the required dependencies specific to your project, create an `.htaccess` file with at least the following code:
 
@@ -45,14 +47,21 @@ This sets the directive in apache to redirect all Http Requests to `index.php` i
 
 require 'vendor/autoload.php';
 
-$app = new \BitFrame\Application();
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use BitFrame\App;
+use BitFrame\Emitter\SapiEmitter;
 
-$app->addMiddleware([
-    \BitFrame\Message\DiactorosResponseEmitter::class,
-    function ($request, $response, $next) {
-        $response->getBody()->write('Hello World!');
+$app = new App();
 
-        return $next($request, $response);
+$app->use([
+    SapiEmitter::class,
+    function (
+        ServerRequestInterface $request,
+        RequestHandlerInterface $handler
+    ) {
+        $handler->write('Hello World!');
+        return $handler->handle($request);
     }
 ]);
 
@@ -61,18 +70,19 @@ $app->run();
 
 From the code above you can see that we're using two middlewares: 
 
-1. A PSR-15 based wrapper of [Zend Diactoros](https://github.com/zendframework/zend-diactoros) that allows us to emit the HTTP Response to the requesting user-agent (such as a web browser);
-1. A closure used to write `Hello World!` to the HTTP Response.
+1. A PSR-15 middleware `\BitFrame\Emitter\SapiEmitter` that allows us to emit the HTTP Response to the requesting user-agent (such as a web browser);
+1. A closure middleware used to write `Hello World!` to the HTTP Response.
 
-Similar to the `\BitFrame\Message\DiactorosResponseEmitter` middleware package [we've developed some essential PSR-15 packages](https://www.bitframephp.com/doc/getting-started/install#how-to-install-project-dependencies-middlewares) that are typically used in API and web app development. These can be added to BitFrame easily as per your project's need and are in no way a hard dependency.
-
-Also note that, apart from these official packages, you can easily use any PSR-15 or PSR-7 based packages, or develop your own.
-
-Refer to the [official BitFrame documentation](https://www.bitframephp.com/doc/) to learn more.
+This is of course a very basic example. You could extend the functionality by using additional middleware such as a [router](https://github.com/designcise/bitframe-fastroute/tree/2.x), error handler, etc.
 
 ### Tests
 
-To execute the test suite, you will need [PHPUnit](https://phpunit.de/).
+To execute the test suite, you will need [PHPUnit](https://phpunit.de/). To run the tests simply use one of the following composer commands:
+
+```
+composer unit
+composer integration
+```
 
 ### Contributing
 
@@ -83,9 +93,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ### Documentation
 
-Documentation is available at:
-
-* https://www.bitframephp.com/doc/
+Complete documentation for v2.0 will be released soon.
 
 ### License
 

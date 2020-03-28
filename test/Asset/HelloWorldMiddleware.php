@@ -13,25 +13,8 @@ namespace BitFrame\Test\Asset;
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
 use Psr\Http\Server\{RequestHandlerInterface, MiddlewareInterface};
 
-class InteropMiddleware implements MiddlewareInterface
+class HelloWorldMiddleware implements MiddlewareInterface
 {
-    public function __invoke(
-        ServerRequestInterface $request, 
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
-        return $this->run($request, $handler);
-    }
-
-    public function run(
-        ServerRequestInterface $request, 
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
-        $response = $handler->handle($request);
-        $response->getBody()->write('Hello World!');
-
-        return $response;
-    }
-    
     /**
      * {@inheritdoc}
      */
@@ -39,6 +22,9 @@ class InteropMiddleware implements MiddlewareInterface
         ServerRequestInterface $request, 
         RequestHandlerInterface $handler
     ): ResponseInterface {
-        return $handler->handle($request);
+        $response = $handler->handle($request);
+        $response->getBody()->write('Hello World!');
+        
+        return $response;
     }
 }

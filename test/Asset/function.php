@@ -4,26 +4,29 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2018 Daniyal Hamid (https://designcise.com)
- *
- * @author    Phil Bennett <philipobenito@gmail.com>
- * @copyright Copyright (c) 2017 Phil Bennett <philipobenito@gmail.com>
- *
- * @license   https://github.com/designcise/bitframe/blob/master/LICENSE.md MIT License
+ * @copyright Copyright (c) 2017-2019 Daniyal Hamid (https://designcise.com)
+ * @license   https://bitframephp.com/about/license MIT License
  */
 
 namespace BitFrame\Test\Asset;
 
-use \Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
+use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Named function callable.
+ * Named function.
  *
- * @param \Psr\Http\Message\ServerRequestInterface $request
- * @param \Psr\Http\Message\ResponseInterface      $response
- *
- * @return \Psr\Http\Message\ResponseInterface
+ * @param ServerRequestInterface $request
+ * @param ResponseInterface $handler
+ * 
+ * @return ResponseInterface
  */
-function namedFunctionCallable(ServerRequestInterface $request, ResponseInterface $response) {
+function helloWorldCallable(
+    ServerRequestInterface $request, 
+    ResponseInterface $handler
+): ResponseInterface {
+    $response = $handler->handle($request);
+    $response->getBody()->write('Hello World!');
+
     return $response;
 }
