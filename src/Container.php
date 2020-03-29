@@ -14,6 +14,7 @@ namespace BitFrame;
 
 use ArrayAccess;
 use IteratorAggregate;
+use SplObjectStorage;
 use Psr\Container\ContainerInterface;
 use BitFrame\Exception\{
     ContainerItemNotFoundException,
@@ -27,7 +28,6 @@ use function get_class;
 use function gettype;
 use function sprintf;
 use function is_callable;
-use function spl_object_hash;
 use function array_key_exists;
 
 class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
@@ -38,12 +38,12 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
 
     private array $instantiated = [];
 
-    private array $factories = [];
+    private SplObjectStorage $factories;
 
-    /*public function __construct()
+    public function __construct()
     {
         $this->factories = new SplObjectStorage();
-    }*/
+    }
 
     /**
      * @param string $id
@@ -101,8 +101,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
         unset($this->bag[$id], $this->frozen[$id]);
 
         if (is_object($this->instantiated[$id])) {
-            $hash = spl_object_hash($this->bag[$id]);
-            unset($this->factories[$hash]);
+            unset($this->factories[$this->bag[$id]]);
         }
     }
 
@@ -124,8 +123,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
 
     public function factory(object $factory): object
     {
-        $hash = spl_object_hash($factory);
-        $this->factories[$hash] = $factory;
+        $this->factories->attach($factory);
 
         return $factory;
     }
@@ -160,9 +158,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
         }
 
         if (isset($this->instantiated[$id])) {
-            $hash = spl_object_hash($this->bag[$id]);
-
-            if (isset($this->factories[$hash])) {
+            if (isset($this->factories[$this->bag[$id]])) {
                 return $this->bag[$id]($this);
             }
 
