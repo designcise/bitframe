@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace BitFrame;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
 use Psr\Http\Server\RequestHandlerInterface;
 use BitFrame\Factory\HttpFactory;
@@ -22,34 +23,32 @@ use function array_shift;
 
 /**
  * The central point of a BitFrame application which:
- *   1. Stores shared data as "locals";
+ *   1. Stores shared data in a container;
  *   2. Stores & Runs middlewares.
  */
 class App implements RequestHandlerInterface
 {
     use MiddlewareDecoratorTrait;
 
-    /** @var \stdClass */
-    public $locals;
+    private ContainerInterface $container;
 
-    /** @var array */
     private array $middlewares = [];
 
-    /** @var ServerRequestInterface */
     private ServerRequestInterface $request;
 
-    /** @var ResponseInterface */
     private ResponseInterface $response;
 
     /**
      * @param ServerRequestInterface|null $request
      * @param ResponseInterface|null $response
+     * @param ContainerInterface|null $container
      */
     public function __construct(
+        ?ContainerInterface $container = null,
         ?ServerRequestInterface $request = null,
         ?ResponseInterface $response = null
     ) {
-        $this->locals = (object) [];
+        $this->container = $container ?? new Container();
         $this->request = $request ?? HttpFactory::createServerRequestFromGlobals();
         $this->response = $response ?? HttpFactory::createResponse();
     }
@@ -73,7 +72,10 @@ class App implements RequestHandlerInterface
      */
     public function use($middleware): self
     {
-        $this->middlewares = [...$this->middlewares, ...$this->getUnpackedMiddleware($middleware)];
+        $this->middlewares = [
+            ...$this->middlewares,
+            ...$this->getUnpackedMiddleware($middleware)
+        ];
 
         return $this;
     }
@@ -112,8 +114,7 @@ class App implements RequestHandlerInterface
         $request = $this->request;
 
         if (! empty($middlewares)) {
-            $app = new static($request, $this->response);
-            $app->locals = $this->locals;
+            $app = new static($this->container, $request, $this->response);
             $app->use($middlewares);
         }
 
@@ -165,10 +166,10 @@ class App implements RequestHandlerInterface
     }
 
     /**
-     * @return array
+     * @return ContainerInterface
      */
-    public function getLocals(): array
+    public function getContainer(): ContainerInterface
     {
-        return (array) $this->locals;
+        return $this->container;
     }
 }

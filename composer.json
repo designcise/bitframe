@@ -11,10 +11,11 @@
     }
   ],
   "require": {
-    "php": ">=7.4.0",
+    "php": ">=7.4",
     "ext-libxml": "*",
     "ext-simplexml": "*",
     "ext-json": "*",
+    "psr/container": "^1.0",
     "psr/http-server-middleware": "~1.0"
   },
   "require-dev": {

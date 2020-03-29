@@ -10,12 +10,12 @@
 
 namespace BitFrame\Test\Unit;
 
-use stdClass;
+use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use BitFrame\App;
 
 /**
- * @covers \BitFrame\App
+ * @covers App
  */
 class AppTest extends TestCase
 {
@@ -26,78 +26,24 @@ class AppTest extends TestCase
         $this->app = new App();
     }
 
-    public function testLocalsCanBeSet(): void
+    public function testCanGetContainerViaHandlerInCallback(): void
     {
         $app = $this->app;
-        $app->locals->foo = 'bar';
-        $app->locals->baz = 'qux';
-        $app->locals->test = ['deep'];
-
-        $this->assertInstanceOf(stdClass::class, $app->locals);
-        $this->assertSame(['foo' => 'bar', 'baz' => 'qux', 'test' => ['deep']], $app->getLocals());
-    }
-
-    public function testCanCastLocalsToArray(): void
-    {
-        $app = $this->app;
-        $app->locals->foo = 'bar';
-        $app->locals->baz = 'qux';
-        $app->locals->test = ['deep'];
-
-        $this->assertInstanceOf(stdClass::class, $app->locals);
-        $this->assertSame(['foo' => 'bar', 'baz' => 'qux', 'test' => ['deep']], (array)$app->locals);
-    }
-
-    public function testStoredLocalsCanBeTraversed(): void
-    {
-        $app = $this->app;
-        $app->locals->foo = 'bar';
-        $app->locals->baz = 'qux';
-        $app->locals->test = ['deep'];
-
-        $result = [];
-
-        foreach ($app->locals as $key => $val) {
-            $result[$key] = $val;
-        }
-
-        $this->assertInstanceOf(stdClass::class, $app->locals);
-        $this->assertSame(['foo' => 'bar', 'baz' => 'qux', 'test' => ['deep']], $result);
-    }
-
-    public function testLocalsCanBeUnset(): void
-    {
-        $app = $this->app;
-        $app->locals->foo = 'bar';
-        $app->locals->baz = 'qux';
-        $app->locals->test = ['deep'];
-
-        unset($app->locals->test);
-
-        $this->assertSame(['foo' => 'bar', 'baz' => 'qux'], $app->getLocals());
-    }
-
-    public function testGetLocalsViaHandlerInCallback(): void
-    {
-        $app = $this->app;
-        $app->locals->foo = 'bar';
-        $app->locals->baz = 'qux';
-        $app->locals->test = ['deep'];
+        $container = $app->getContainer();
+        $container['foo'] = 'bar';
+        $container['baz'] = 'qux';
+        $container['test'] = ['deep'];
 
         $app->run(function ($req, $handler) {
-            $this->assertInstanceOf(stdClass::class, $handler->locals);
-            $this->assertSame(['foo' => 'bar', 'baz' => 'qux', 'test' => ['deep']], $handler->getLocals());
+            /** @var ContainerInterface $container */
+            $container = $handler->getContainer();
+
+            $this->assertInstanceOf(ContainerInterface::class, $container);
+            $this->assertSame('bar', $container['foo']);
+            $this->assertSame('qux', $container['baz']);
+            $this->assertSame(['deep'], $container['test']);
+
             return $handler($req);
         });
-    }
-
-    public function testCanGetLocalsAsArray(): void
-    {
-        $app = $this->app;
-        $app->locals->foo = 'bar';
-        $app->locals->baz = 'qux';
-        $app->locals->test = ['deep'];
-
-        $this->assertSame(['foo' => 'bar', 'baz' => 'qux', 'test' => ['deep']], $app->getLocals());
     }
 }
