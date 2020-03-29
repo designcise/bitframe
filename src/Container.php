@@ -27,6 +27,7 @@ use function get_class;
 use function gettype;
 use function sprintf;
 use function is_callable;
+use function spl_object_hash;
 use function array_key_exists;
 
 class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
@@ -34,6 +35,15 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
     private array $bag = [];
 
     private array $frozen = [];
+
+    private array $instantiated = [];
+
+    private array $factories = [];
+
+    /*public function __construct()
+    {
+        $this->factories = new SplObjectStorage();
+    }*/
 
     /**
      * @param string $id
@@ -84,7 +94,16 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
             throw new OutOfBoundsException(sprintf('Offset "%s" does not exist', $id));
         }
 
-        unset($this->bag[$id]);
+        if (isset($this->frozen[$id])) {
+            throw new ContainerItemFrozenException($id);
+        }
+
+        unset($this->bag[$id], $this->frozen[$id]);
+
+        if (is_object($this->instantiated[$id])) {
+            $hash = spl_object_hash($this->bag[$id]);
+            unset($this->factories[$hash]);
+        }
     }
 
     /**
@@ -101,6 +120,14 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
         }
 
         return $this;
+    }
+
+    public function factory(object $factory): object
+    {
+        $hash = spl_object_hash($factory);
+        $this->factories[$hash] = $factory;
+
+        return $factory;
     }
 
     /**
@@ -132,8 +159,21 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
             throw new ContainerItemNotFoundException($id);
         }
 
-        $value = $this->bag[$id];
-        return (is_callable($value) ? $value($this) : $value);
+        if (isset($this->instantiated[$id])) {
+            $hash = spl_object_hash($this->bag[$id]);
+
+            if (isset($this->factories[$hash])) {
+                return $this->bag[$id]($this);
+            }
+
+            return $this->instantiated[$id];
+        }
+
+        if (is_callable($this->bag[$id])) {
+            return $this->instantiated[$id] = $this->bag[$id]($this);
+        }
+
+        return $this->bag[$id];
     }
 
     /**
@@ -141,7 +181,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
      *
      * @return iterable
      *
-     * @see \IteratorAggregate::getIterator()
+     * @see IteratorAggregate::getIterator()
      */
     public function getIterator(): iterable
     {

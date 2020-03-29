@@ -12,6 +12,7 @@ namespace BitFrame\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
 use BitFrame\Container;
+use BitFrame\Test\Asset\NoopService;
 use TypeError;
 use BitFrame\Exception\{
     ContainerItemNotFoundException,
@@ -30,16 +31,105 @@ class ContainerTest extends TestCase
         $this->container = new Container();
     }
 
-    public function testSetterAndGetter(): void
+    public function valuesProvider(): array
+    {
+        return [
+            'parameter' => ['foo', 'bar'],
+            'array_parameter' => ['test', ['deep']],
+            'null' => ['null', null],
+        ];
+    }
+
+    /**
+     * @dataProvider valuesProvider
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function testSetterAndGetter(string $key, $value): void
     {
         $container = $this->container;
-        $container['foo'] = 'bar';
-        $container['baz'] = 'qux';
-        $container['test'] = ['deep'];
+        $container[$key] = $value;
 
-        $this->assertSame('bar', $container->get('foo'));
-        $this->assertSame('qux', $container->get('baz'));
-        $this->assertSame(['deep'], $container->get('test'));
+        $this->assertSame($value, $container->get($key));
+    }
+
+    public function closuresProvider(): array
+    {
+        return [
+            'closure' => ['service', static fn () => new NoopService()],
+        ];
+    }
+
+    /**
+     * @dataProvider valuesProvider
+     * @dataProvider closuresProvider
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function testIsset(string $key, $value): void
+    {
+        $container = $this->container;
+        $container[$key] = $value;
+
+        $this->assertTrue(isset($container[$key]));
+    }
+
+    /**
+     * @dataProvider valuesProvider
+     * @dataProvider closuresProvider
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function testStoredValueCanBeUnset(string $key, $value): void
+    {
+        $container = $this->container;
+        $container[$key] = $value;
+
+        unset($container[$key]);
+
+        $this->expectException(ContainerItemNotFoundException::class);
+        $container[$key];
+    }
+
+    public function testWithClosure(): void
+    {
+        $container = $this->container;
+        $container['service'] = static fn () => new NoopService();
+
+        $this->assertInstanceOf(NoopService::class, $container['service']);
+    }
+
+    public function testNonFactoryServicesShouldBeSame(): void
+    {
+        $container = $this->container;
+        $container['service'] = static fn () => new NoopService();
+
+        $serviceOne = $container['service'];
+        $this->assertInstanceOf(NoopService::class, $serviceOne);
+
+        $serviceTwo = $container['service'];
+        $this->assertInstanceOf(NoopService::class, $serviceTwo);
+
+        $this->assertSame($serviceOne, $serviceTwo);
+    }
+
+    public function testFactoryServicesShouldNotBeSame(): void
+    {
+        $container = $this->container;
+        $container['service'] = $this->container->factory(static function () {
+            return new NoopService();
+        });
+
+        $serviceOne = $container['service'];
+        $this->assertInstanceOf(NoopService::class, $serviceOne);
+
+        $serviceTwo = $container['service'];
+        $this->assertInstanceOf(NoopService::class, $serviceTwo);
+
+        $this->assertNotSame($serviceOne, $serviceTwo);
     }
 
     public function testStoredValuesCanBeTraversed(): void
@@ -58,15 +148,24 @@ class ContainerTest extends TestCase
         $this->assertSame(['foo' => 'bar', 'baz' => 'qux', 'test' => ['deep']], $result);
     }
 
-    public function testStoredValuesCanBeUnset(): void
+    public function testCannotModifyFrozenKey(): void
     {
         $container = $this->container;
-        $container['test'] = ['deep'];
+        $container['foo'] = 'bar';
+        $container->freeze('foo');
 
-        unset($container['test']);
+        $this->expectException(ContainerItemFrozenException::class);
+        $container['foo'] = 'test';
+    }
 
-        $this->expectException(ContainerItemNotFoundException::class);
-        $container['test'];
+    public function testCannotDeleteFrozenKey(): void
+    {
+        $container = $this->container;
+        $container['foo'] = 'bar';
+        $container->freeze('foo');
+
+        $this->expectException(ContainerItemFrozenException::class);
+        unset($container['foo']);
     }
 
     public function testNonStringIdShouldThrowTypeError(): void
@@ -84,15 +183,5 @@ class ContainerTest extends TestCase
 
         $this->expectException(ContainerItemNotFoundException::class);
         $container['test'];
-    }
-
-    public function testExceptionIsThrownWhenOverwritingFrozenKey(): void
-    {
-        $container = $this->container;
-        $container['foo'] = 'bar';
-        $container->freeze('foo');
-
-        $this->expectException(ContainerItemFrozenException::class);
-        $container['foo'] = 'test';
     }
 }
