@@ -10,7 +10,7 @@ It is very important to separate new features or improvements into separate feat
 
 ## Style Guide
 
-All pull requests must adhere to the PSR-2 standard.
+All pull requests must adhere to the PSR-12 standard.
 
 ## Unit Testing
 
