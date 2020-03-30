@@ -27,6 +27,10 @@ $ composer require designcise/bitframe
 
 Please note that BitFrame v2+ requires PHP 7.4.0 or newer.
 
+## Boilerplate
+
+Available at: https://github.com/designcise/bitframe-boilerplate.
+
 ## Quickstart
 
 ### Apache
