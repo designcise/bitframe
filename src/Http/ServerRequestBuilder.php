@@ -168,7 +168,7 @@ class ServerRequestBuilder
         $server = $this->server;
 
         $uriParts = isset($server['REQUEST_URI']) ? parse_url($server['REQUEST_URI']) : [];
-        $path = $path = $server['PATH_INFO'] ?: $server['ORIG_PATH_INFO'] ?: $uriParts['path'] ?: '';
+        $path = $server['PATH_INFO'] ?: $server['ORIG_PATH_INFO'] ?: $uriParts['path'] ?: '';
         $query = $server['QUERY_STRING'] ?: $uriParts['query'] ?: '';
         $fragment = $uriParts['fragment'] ?: '';
 
