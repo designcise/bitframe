@@ -26,19 +26,6 @@ interface RendererInterface
     public function addPath(string $namespace, string $path);
 
     /**
-     * Render a template, optionally with parameters.
-     *
-     * Implementations MUST support the `namespace::template` naming convention,
-     * and allow omitting the filename extension.
-     *
-     * @param string $nsWithPath e.g. `namespace::template`
-     * @param array $data
-     *
-     * @return string
-     */
-    public function render(string $nsWithPath, array $data = []): string;
-
-    /**
      * Add default parameters to use with template(s).
      *
      * Use this method to provide default parameters to use when a template is
@@ -53,8 +40,21 @@ interface RendererInterface
      * the same template name and parameter name will overwrite.
      *
      * @param string $templateName Name of template to which the param applies;
-     *                             use `TEMPLATE_ALL` to apply to all templates.
-     * @param array $params Key/value data pair.
+     *                             if `null` apply to all templates.
+     * @param array $data Key/value data pair.
      */
-    public function addDefaults(array $params, ?string $templateName = null);
+    public function addDefaults(array $data, ?string $templateName = null);
+
+    /**
+     * Render a template, optionally with parameters.
+     *
+     * Implementations MUST support the `namespace::template` naming convention,
+     * and allow omitting the filename extension.
+     *
+     * @param string $nsPath Namespaced Path (e.g. `namespace::template`)
+     * @param array $data
+     *
+     * @return string
+     */
+    public function render(string $nsPath, array $data = []): string;
 }
