@@ -30,7 +30,8 @@
   "scripts": {
     "style": "vendor/bin/phpcs --standard=PSR12 src",
     "integration": "vendor/bin/phpunit --configuration phpunit.xml --testsuite integration",
-    "unit": "vendor/bin/phpunit --configuration phpunit.xml --testsuite unit"
+    "unit": "vendor/bin/phpunit --configuration phpunit.xml --testsuite unit",
+    "test": "vendor/bin/phpunit --configuration phpunit.xml"
   },
   "autoload": {
     "psr-4": {
