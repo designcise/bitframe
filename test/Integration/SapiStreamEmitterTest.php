@@ -16,7 +16,7 @@ use BitFrame\Emitter\SapiStreamEmitter;
 use BitFrame\Http\Message\TextResponse;
 
 /**
- * @covers \BitFrame\Message\SapiStreamEmitter
+ * @covers \BitFrame\Emitter\SapiStreamEmitter
  */
 class SapiStreamEmitterTest extends AbstractSapiEmitterTest
 {

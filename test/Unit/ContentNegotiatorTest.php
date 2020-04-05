@@ -11,7 +11,6 @@
 namespace BitFrame\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ServerRequestInterface;
 use BitFrame\Http\ContentNegotiator;
 use BitFrame\Parser\MediaParserInterface;
 use BitFrame\Parser\{DefaultMediaParser, JsonMediaParser, XmlMediaParser};
@@ -23,7 +22,6 @@ class ContentNegotiatorTest extends TestCase
 {
     /**
      * @runInSeparateProcess
-     * @covers ContentNegotiator::addMediaParser()
      */
     public function testAddMediaParser()
     {
@@ -46,7 +44,6 @@ class ContentNegotiatorTest extends TestCase
 
     /**
      * @dataProvider mediaParserForContentTypeProvider
-     * @covers ContentNegotiator::getMediaParserForContentType()
      */
     public function testGetMediaParserForContentType(
         string $contentType, 

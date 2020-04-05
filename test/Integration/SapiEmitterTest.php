@@ -15,7 +15,7 @@ namespace BitFrame\Test\Integration;
 use BitFrame\Emitter\SapiEmitter;
 
 /**
- * @covers \BitFrame\Message\SapiEmitter
+ * @covers \BitFrame\Emitter\SapiEmitter
  */
 class SapiEmitterTest extends AbstractSapiEmitterTest
 {

@@ -20,7 +20,7 @@ use BitFrame\Exception\{
 };
 
 /**
- * @covers Container
+ * @covers \BitFrame\Container
  */
 class ContainerTest extends TestCase
 {

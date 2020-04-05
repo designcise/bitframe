@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 use BitFrame\App;
 
 /**
- * @covers App
+ * @covers \BitFrame\App
  */
 class AppTest extends TestCase
 {

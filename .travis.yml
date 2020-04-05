@@ -6,6 +6,7 @@ php:
 before_script:
   - travis_retry composer self-update
   - travis_retry composer install --no-interaction --no-suggest --prefer-source --dev
+  - travis_retry composer require "nyholm/psr7:^1.2"
 
 script:
   - composer test --coverage-clover=coverage.xml
