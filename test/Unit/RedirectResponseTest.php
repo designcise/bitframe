@@ -22,7 +22,7 @@ use InvalidArgumentException;
  */
 class RedirectResponseTest extends TestCase
 {
-    public function testConstructorAcceptsStringUriAndProduces302ResponseWithLocationHeader()
+    public function testConstructorAcceptsStringUriAndProduces302ResponseWithLocationHeader(): void
     {
         $response = new RedirectResponse('/foo/bar');
         $this->assertSame(302, $response->getStatusCode());
@@ -30,7 +30,7 @@ class RedirectResponseTest extends TestCase
         $this->assertSame('/foo/bar', $response->getHeaderLine('Location'));
     }
 
-    public function testConstructorAcceptsUriInstanceAndProduces302ResponseWithLocationHeader()
+    public function testConstructorAcceptsUriInstanceAndProduces302ResponseWithLocationHeader(): void
     {
         $uri = HttpFactory::createUri('https://example.com:10082/foo/bar');
         $response = new RedirectResponse($uri);
@@ -39,7 +39,7 @@ class RedirectResponseTest extends TestCase
         $this->assertSame((string) $uri, $response->getHeaderLine('Location'));
     }
 
-    public function testConstructorAllowsSpecifyingAlternateStatusCode()
+    public function testConstructorAllowsSpecifyingAlternateStatusCode(): void
     {
         $response = new RedirectResponse('/foo/bar', 301);
         $this->assertSame(301, $response->getStatusCode());
@@ -47,7 +47,7 @@ class RedirectResponseTest extends TestCase
         $this->assertSame('/foo/bar', $response->getHeaderLine('Location'));
     }
 
-    public function testCanAddStatusAndHeaders()
+    public function testCanAddStatusAndHeaders(): void
     {
         $response = (new RedirectResponse('/foo/bar', 302))
             ->withHeader('X-Foo', ['Bar']);
@@ -59,7 +59,7 @@ class RedirectResponseTest extends TestCase
         $this->assertSame('Bar', $response->getHeaderLine('X-Foo'));
     }
 
-    public function testStaticCreate()
+    public function testStaticCreate(): void
     {
         $response = RedirectResponse::create('/foo/bar', 307)
             ->withHeader('X-Foo', ['Bar']);
@@ -71,7 +71,7 @@ class RedirectResponseTest extends TestCase
         $this->assertSame('Bar', $response->getHeaderLine('X-Foo'));
     }
 
-    public function testWithStatusOverwritesOnePassedInThroughConstructor()
+    public function testWithStatusOverwritesOnePassedInThroughConstructor(): void
     {
         $response = (new RedirectResponse('/foo/bar', 302))
             ->withStatus(307);
@@ -81,7 +81,7 @@ class RedirectResponseTest extends TestCase
         $this->assertSame('/foo/bar', $response->getHeaderLine('Location'));
     }
 
-    public function invalidUriProvider()
+    public function invalidUriProvider(): array
     {
         return [
             'null' => [null],

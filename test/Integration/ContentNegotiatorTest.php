@@ -22,23 +22,9 @@ use BitFrame\Parser\{DefaultMediaParser, JsonMediaParser, XmlMediaParser};
  */
 class ContentNegotiatorTest extends TestCase
 {
-    /**
-     * @dataProvider preferredMediaParserProvider
-     */
-    public function testGetPreferredMediaParserFromRequest(
-        string $mimeType, 
-        string $parserClassName
-    ) {
-        $request = HttpFactory::createServerRequest('GET', '/')
-            ->withHeader('accept', $mimeType);
-        
-        $this->assertInstanceOf(
-            $parserClassName, 
-            ContentNegotiator::getPreferredMediaParserFromRequest($request)
-        );
-    }
 
-    public function preferredMediaParserProvider()
+
+    public function preferredMediaParserProvider(): array
     {
         return [
             'text_html' => ['text/html', DefaultMediaParser::class],
@@ -57,22 +43,25 @@ class ContentNegotiatorTest extends TestCase
     }
 
     /**
-     * @dataProvider preferredContentTypeProvider
+     * @dataProvider preferredMediaParserProvider
+     *
+     * @param string $mimeType
+     * @param string $parserClassName
      */
-    public function testGetPreferredContentTypeFromRequest(
+    public function testGetPreferredMediaParserFromRequest(
         string $mimeType, 
-        string $contentType
-    ) {
+        string $parserClassName
+    ): void {
         $request = HttpFactory::createServerRequest('GET', '/')
             ->withHeader('accept', $mimeType);
         
-        $this->assertSame(
-            $contentType, 
-            ContentNegotiator::getPreferredContentTypeFromRequest($request)
+        $this->assertInstanceOf(
+            $parserClassName, 
+            ContentNegotiator::getPreferredMediaParserFromRequest($request)
         );
     }
 
-    public function preferredContentTypeProvider()
+    public function preferredContentTypeProvider(): array
     {
         $html = ContentNegotiator::CONTENT_TYPE_HTML;
         $json = ContentNegotiator::CONTENT_TYPE_JSON;
@@ -96,9 +85,28 @@ class ContentNegotiatorTest extends TestCase
     }
 
     /**
+     * @dataProvider preferredContentTypeProvider
+     *
+     * @param string $mimeType
+     * @param string $contentType
+     */
+    public function testGetPreferredContentTypeFromRequest(
+        string $mimeType, 
+        string $contentType
+    ): void {
+        $request = HttpFactory::createServerRequest('GET', '/')
+            ->withHeader('accept', $mimeType);
+        
+        $this->assertSame(
+            $contentType, 
+            ContentNegotiator::getPreferredContentTypeFromRequest($request)
+        );
+    }
+
+    /**
      * @runInSeparateProcess
      */
-    public function testAddContentType()
+    public function testAddContentType(): void
     {
         $mime = 'foo/bar';
 

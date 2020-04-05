@@ -23,7 +23,7 @@ class ContentNegotiatorTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testAddMediaParser()
+    public function testAddMediaParser(): void
     {
         $parser = $this->getMockBuilder(MediaParserInterface::class)
             ->getMock();
@@ -42,20 +42,7 @@ class ContentNegotiatorTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider mediaParserForContentTypeProvider
-     */
-    public function testGetMediaParserForContentType(
-        string $contentType, 
-        string $parserClassName
-    ) {
-        $this->assertInstanceOf(
-            $parserClassName, 
-            ContentNegotiator::getMediaParserForContentType($contentType)
-        );
-    }
-
-    public function mediaParserForContentTypeProvider()
+    public function mediaParserForContentTypeProvider(): array
     {
         return [
             'html' => [ContentNegotiator::CONTENT_TYPE_HTML, DefaultMediaParser::class],
@@ -63,5 +50,21 @@ class ContentNegotiatorTest extends TestCase
             'xml' => [ContentNegotiator::CONTENT_TYPE_XML, XmlMediaParser::class],
             'text' => [ContentNegotiator::CONTENT_TYPE_TEXT, DefaultMediaParser::class],
         ];
+    }
+
+    /**
+     * @dataProvider mediaParserForContentTypeProvider
+     *
+     * @param string $contentType
+     * @param string $parserClassName
+     */
+    public function testGetMediaParserForContentType(
+        string $contentType, 
+        string $parserClassName
+    ): void {
+        $this->assertInstanceOf(
+            $parserClassName, 
+            ContentNegotiator::getMediaParserForContentType($contentType)
+        );
     }
 }

@@ -21,7 +21,10 @@ use JsonException;
  */
 class JsonResponseTest extends TestCase
 {
-    public function testConstructorAcceptsDataAndCreatesJsonEncodedMessageBody()
+    /**
+     * @throws JsonException
+     */
+    public function testConstructorAcceptsDataAndCreatesJsonEncodedMessageBody(): void
     {
         $data = ['nested' => ['json' => ['tree']]];
         $json = '{"nested":{"json":["tree"]}}';
@@ -29,11 +32,14 @@ class JsonResponseTest extends TestCase
         $response = new JsonResponse($data);
 
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('application/json; charset=utf-8', $response->getHeaderLine('content-type'));
+        $this->assertSame(
+            'application/json; charset=utf-8',
+            $response->getHeaderLine('content-type')
+        );
         $this->assertSame($json, (string) $response->getBody());
     }
 
-    public function scalarValuesForJsonProvider()
+    public function scalarValuesForJsonProvider(): array
     {
         return [
             'null' => [null],
@@ -50,8 +56,12 @@ class JsonResponseTest extends TestCase
 
     /**
      * @dataProvider scalarValuesForJsonProvider
+     *
+     * @param mixed $value
+     *
+     * @throws JsonException
      */
-    public function testScalarValuePassedToConstructorJsonEncodesDirectly($value)
+    public function testScalarValuePassedToConstructorJsonEncodesDirectly($value): void
     {
         $response = new JsonResponse($value);
         $this->assertSame(200, $response->getStatusCode());
@@ -60,7 +70,10 @@ class JsonResponseTest extends TestCase
         $this->assertSame(json_encode($value, 15), (string) $response->getBody());
     }
 
-    public function testCanAddStatusAndHeader()
+    /**
+     * @throws JsonException
+     */
+    public function testCanAddStatusAndHeader(): void
     {
         $response = (new JsonResponse())
             ->withStatus(404)
@@ -70,22 +83,34 @@ class JsonResponseTest extends TestCase
         $this->assertSame('foo/json', $response->getHeaderLine('content-type'));
     }
 
-    public function testStaticCreateWithCustomContentType()
+    /**
+     * @throws JsonException
+     */
+    public function testStaticCreateWithCustomContentType(): void
     {
         $response = JsonResponse::create()
             ->withHeader('content-type', 'application/vnd.acme.blog-v1+json');
         
-        $this->assertSame('application/vnd.acme.blog-v1+json', $response->getHeaderLine('Content-Type'));
+        $this->assertSame(
+            'application/vnd.acme.blog-v1+json',
+            $response->getHeaderLine('Content-Type')
+        );
     }
 
-    public function testThrowsJsonExceptionForResources()
+    /**
+     * @throws JsonException
+     */
+    public function testThrowsJsonExceptionForResources(): void
     {
         $resource = fopen('php://memory', 'r');
         $this->expectException(JsonException::class);
         new JsonResponse($resource);
     }
 
-    public function testThrowsExceptionForNonSerializableData()
+    /**
+     * @throws JsonException
+     */
+    public function testThrowsExceptionForNonSerializableData(): void
     {
         $data = [
             'stream' => fopen('php://memory', 'r'),
@@ -94,7 +119,7 @@ class JsonResponseTest extends TestCase
         new JsonResponse($data);
     }
 
-    public function valuesToJsonEncodeProvider()
+    public function valuesToJsonEncodeProvider(): array
     {
         return [
             'uri' => ['https://example.com/foo?bar=baz&baz=bat', 'uri'],
@@ -105,8 +130,13 @@ class JsonResponseTest extends TestCase
 
     /**
      * @dataProvider valuesToJsonEncodeProvider
+     *
+     * @param string $value
+     * @param string $key
+     *
+     * @throws JsonException
      */
-    public function testUsesSaneDefaultJsonEncodingFlags($value, $key)
+    public function testUsesSaneDefaultJsonEncodingFlags($value, $key): void
     {
         $defaultFlags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES;
         $response = new JsonResponse([$key => $value]);
@@ -116,9 +146,12 @@ class JsonResponseTest extends TestCase
         $this->assertStringContainsString($expected, $contents);
     }
 
-    public function testJsonEncodeFlags()
+    public function testJsonEncodeFlags(): void
     {
         $response = new JsonResponse('<>\'&"');
-        $this->assertEquals('"\u003C\u003E\u0027\u0026\u0022"', (string) $response->getBody());
+        $this->assertEquals(
+            '"\u003C\u003E\u0027\u0026\u0022"',
+            (string) $response->getBody()
+        );
     }
 }

@@ -21,7 +21,7 @@ use TypeError;
  */
 class XmlResponseTest extends TestCase
 {
-    public function testConstructorAcceptsBodyAsString()
+    public function testConstructorAcceptsBodyAsString(): void
     {
         $body = 'Lorem ipsum';
         $response = new XmlResponse($body);
@@ -29,7 +29,7 @@ class XmlResponseTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testCanAddStatusAndHeader()
+    public function testCanAddStatusAndHeader(): void
     {
         $body = '<test>XML</test>';
         $status = 404;
@@ -44,7 +44,7 @@ class XmlResponseTest extends TestCase
         $this->assertSame($body, (string) $response->getBody());
     }
 
-    public function testStaticCreateWithCustomContentType()
+    public function testStaticCreateWithCustomContentType(): void
     {
         $response = XmlResponse::create('<test>XML</test>')
             ->withHeader('content-type', 'application/xml-dtd');
@@ -52,7 +52,7 @@ class XmlResponseTest extends TestCase
         $this->assertSame('application/xml-dtd', $response->getHeaderLine('Content-Type'));
     }
 
-    public function invalidContentProvider()
+    public function invalidContentProvider(): array
     {
         return [
             'null' => [null],
@@ -69,8 +69,10 @@ class XmlResponseTest extends TestCase
 
     /**
      * @dataProvider invalidContentProvider
+     *
+     * @param mixed $body
      */
-    public function testRaisesExceptionforNonStringContent($body)
+    public function testRaisesExceptionforNonStringContent($body): void
     {
         $this->expectException(TypeError::class);
         new XmlResponse($body);

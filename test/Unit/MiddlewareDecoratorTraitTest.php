@@ -56,13 +56,13 @@ class MiddlewareDecoratorTraitTest extends TestCase
      *
      * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
      */
-    public function testGetDecoratedMiddlewareWithUnsupportedMiddlewareType($middleware)
+    public function testGetDecoratedMiddlewareWithUnsupportedMiddlewareType($middleware): void
     {
         $this->expectException(TypeError::class);
         $this->middlewareDecorator->getDecoratedMiddleware($middleware);
     }
 
-    public function nonExistentMiddlewareProvider()
+    public function nonExistentMiddlewareProvider(): array
     {
         return [
             ['string_nonexistent_static_callable' => 'NonExistent::run'],
@@ -124,7 +124,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
      *
      * @param callable $callable
      */
-    public function testGetDecoratedCallableMiddleware(callable $callable)
+    public function testGetDecoratedCallableMiddleware(callable $callable): void
     {
         $middleware = $this->middlewareDecorator->getDecoratedCallableMiddleware($callable);
         $response = $middleware->process($this->request, $this->getRequestHandlerMock());

@@ -25,7 +25,7 @@ class HttpFactoryTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testCanAddValidFactory()
+    public function testCanAddValidFactory(): void
     {
         $factory = $this->getMockBuilder(HttpFactoryInterface::class)
             ->getMock();
@@ -35,7 +35,7 @@ class HttpFactoryTest extends TestCase
         $this->assertSame($factory, HttpFactory::getFactory());
     }
 
-    public function invalidFactoryProvider()
+    public function invalidFactoryProvider(): array
     {
         return [
             'random_string' => ['randomString'],
@@ -49,7 +49,7 @@ class HttpFactoryTest extends TestCase
      * 
      * @param object|string $factory
      */
-    public function testShouldNotAddInvalidFactory($factory)
+    public function testShouldNotAddInvalidFactory($factory): void
     {
         $this->expectException(InvalidArgumentException::class);
 

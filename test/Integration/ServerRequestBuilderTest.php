@@ -13,10 +13,8 @@ declare(strict_types=1);
 namespace BitFrame\Test\Integration;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\{ServerRequestInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\ServerRequestBuilder;
-use BitFrame\Parser\JsonMediaParser;
 
 /**
  * @covers \BitFrame\Http\ServerRequestBuilder
@@ -26,7 +24,7 @@ class ServerRequestBuilderTest extends TestCase
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
 
-    /** @var object|HttpFactoryInterface */
+    /** @var object|\BitFrame\Factory\HttpFactoryInterface */
     private $factory;
 
     public function setUp(): void
@@ -34,7 +32,7 @@ class ServerRequestBuilderTest extends TestCase
         $this->factory = HttpFactory::getFactory();
     }
 
-    public function uriFromServerParamsProvider()
+    public function uriFromServerParamsProvider(): array
     {
         return [
             'Empty URI' => [
@@ -150,11 +148,14 @@ class ServerRequestBuilderTest extends TestCase
 
     /**
      * @dataProvider uriFromServerParamsProvider
+     *
      * @param array $serverParams
      * @param string $expectedUri
      */
-    public function testCanSetAllUriProperties(array $serverParams, string $expectedUri)
-    {
+    public function testCanSetAllUriProperties(
+        array $serverParams,
+        string $expectedUri
+    ): void {
         $serverRequest = (new ServerRequestBuilder($serverParams, $this->factory))
             ->addUri()
             ->build();

@@ -13,11 +13,13 @@ declare(strict_types=1);
 namespace BitFrame\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\StreamInterface;
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\Message\FileResponse;
 use TypeError;
 use InvalidArgumentException;
+
+use function mime_content_type;
+use function rawurlencode;
 
 /**
  * @covers \BitFrame\Http\Message\FileResponse
@@ -26,12 +28,11 @@ class FileResponseTest extends TestCase
 {
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
-
     
-    public function testConstructorAcceptsStringFileName()
+    public function testConstructorAcceptsStringFileName(): void
     {
         $file = self::ASSETS_DIR . 'test.txt';
-        $mimeType = \mime_content_type($file);
+        $mimeType = mime_content_type($file);
         $body = 'test';
 
         $response = new FileResponse($file);
@@ -41,9 +42,9 @@ class FileResponseTest extends TestCase
         $this->assertSame($mimeType, $response->getHeaderLine('Content-Type'));
     }
 
-    public function testConstructorAcceptsResource()
+    public function testConstructorAcceptsResource(): void
     {
-        $stream = fopen("php://temp/maxmemory:1024", 'r+');
+        $stream = fopen('php://temp/maxmemory:1024', 'r+');
         fputs($stream, 'test');
         $body = 'test';
 
@@ -51,10 +52,13 @@ class FileResponseTest extends TestCase
 
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('application/octet-stream', $response->getHeaderLine('Content-Type'));
+        $this->assertSame(
+            'application/octet-stream',
+            $response->getHeaderLine('Content-Type')
+        );
     }
 
-    public function testConstructorAcceptsStreamInterfaceObject()
+    public function testConstructorAcceptsStreamInterfaceObject(): void
     {
         $stream = HttpFactory::createStream('test');
         $body = 'test';
@@ -63,10 +67,13 @@ class FileResponseTest extends TestCase
 
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('application/octet-stream', $response->getHeaderLine('Content-Type'));
+        $this->assertSame(
+            'application/octet-stream',
+            $response->getHeaderLine('Content-Type')
+        );
     }
 
-    public function testCanAddStatusAndHeader()
+    public function testCanAddStatusAndHeader(): void
     {
         $stream = HttpFactory::createStream('test');
 
@@ -82,7 +89,7 @@ class FileResponseTest extends TestCase
         $this->assertSame($body, (string) $response->getBody());
     }
 
-    public function testStaticCreateFromStringWithCustomContentType()
+    public function testStaticCreateFromStringWithCustomContentType(): void
     {
         $response = FileResponse::fromPath(self::ASSETS_DIR . 'test.txt')
             ->withHeader('content-type', 'foo/file');
@@ -90,9 +97,9 @@ class FileResponseTest extends TestCase
         $this->assertSame('foo/file', $response->getHeaderLine('Content-Type'));
     }
 
-    public function testStaticCreateFromResourceWithCustomContentType()
+    public function testStaticCreateFromResourceWithCustomContentType(): void
     {
-        $stream = fopen("php://temp/maxmemory:1024", 'r+');
+        $stream = fopen('php://temp/maxmemory:1024', 'r+');
 
         $response = FileResponse::fromResource($stream)
             ->withHeader('content-type', 'foo/file');
@@ -100,13 +107,13 @@ class FileResponseTest extends TestCase
         $this->assertSame('foo/file', $response->getHeaderLine('Content-Type'));
     }
 
-    public function testStaticCreateFromResourceWithInvalidType()
+    public function testStaticCreateFromResourceWithInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
         FileResponse::fromResource('test');
     }
 
-    public function testStaticCreateFromStreamWithCustomContentType()
+    public function testStaticCreateFromStreamWithCustomContentType(): void
     {
         $stream = HttpFactory::createStream('test');
 
@@ -116,19 +123,22 @@ class FileResponseTest extends TestCase
         $this->assertSame('foo/file', $response->getHeaderLine('Content-Type'));
     }
 
-    public function testCanAddDownloadHeaders()
+    /**
+     * @throws \Exception
+     */
+    public function testCanAddDownloadHeaders(): void
     {
         $stream = HttpFactory::createStream('test');
 
         $body = 'test';
         $status = 202;
-        
+
         $response = (new FileResponse($stream))
             ->withStatus($status)
             ->withDownload('foo.txt')
             ->withHeader('x-foo', 'bar');
-        
-        $dispositionHeader = 'attachment; filename=foo.txt; filename*=UTF-8\'\'' . \rawurlencode('foo.txt');
+
+        $dispositionHeader = 'attachment; filename=foo.txt; filename*=UTF-8\'\'' . rawurlencode('foo.txt');
         
         $this->assertSame('bar', $response->getHeaderLine('x-foo'));
         $this->assertSame('application/octet-stream', $response->getHeaderLine('content-type'));
@@ -137,7 +147,7 @@ class FileResponseTest extends TestCase
         $this->assertSame($body, (string) $response->getBody());
     }
 
-    public function invalidFileProvider()
+    public function invalidFileProvider(): array
     {
         return [
             'null' => [null],
@@ -154,14 +164,16 @@ class FileResponseTest extends TestCase
 
     /**
      * @dataProvider invalidFileProvider
+     *
+     * @param mixed $body
      */
-    public function testRaisesExceptionforInvalidArguments($body)
+    public function testRaisesExceptionforInvalidArguments($body): void
     {
         $this->expectException(TypeError::class);
         new FileResponse($body);
     }
 
-    public function testRaisesExceptionWhenStringIsNotAFilePath()
+    public function testRaisesExceptionWhenStringIsNotAFilePath(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new FileResponse('foo');

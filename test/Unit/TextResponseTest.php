@@ -21,7 +21,7 @@ use TypeError;
  */
 class TextResponseTest extends TestCase
 {
-    public function testConstructorAcceptsBodyAsString()
+    public function testConstructorAcceptsBodyAsString(): void
     {
         $body = 'Lorem ipsum';
         $response = new TextResponse($body);
@@ -29,7 +29,7 @@ class TextResponseTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testCanAddStatusAndHeader()
+    public function testCanAddStatusAndHeader(): void
     {
         $body = 'Not found';
         $status = 404;
@@ -44,7 +44,7 @@ class TextResponseTest extends TestCase
         $this->assertSame($body, (string) $response->getBody());
     }
 
-    public function testStaticCreateWithCustomContentType()
+    public function testStaticCreateWithCustomContentType(): void
     {
         $response = TextResponse::create('test')
             ->withHeader('content-type', 'text/richtext');
@@ -52,7 +52,7 @@ class TextResponseTest extends TestCase
         $this->assertSame('text/richtext', $response->getHeaderLine('Content-Type'));
     }
 
-    public function invalidContentProvider()
+    public function invalidContentProvider(): array
     {
         return [
             'null' => [null],
@@ -69,8 +69,10 @@ class TextResponseTest extends TestCase
 
     /**
      * @dataProvider invalidContentProvider
+     *
+     * @param mixed $body
      */
-    public function testRaisesExceptionforNonStringContent($body)
+    public function testRaisesExceptionforNonStringContent($body): void
     {
         $this->expectException(TypeError::class);
         new TextResponse($body);

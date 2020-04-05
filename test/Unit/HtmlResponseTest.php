@@ -21,7 +21,7 @@ use TypeError;
  */
 class HtmlResponseTest extends TestCase
 {
-    public function testConstructorAcceptsHtmlString()
+    public function testConstructorAcceptsHtmlString(): void
     {
         $body = '<html>Lorem ipsum</html>';
         $response = new HtmlResponse($body);
@@ -29,7 +29,7 @@ class HtmlResponseTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testCanAddStatusAndHeader()
+    public function testCanAddStatusAndHeader(): void
     {
         $body = '<html>Not found</html>';
         $status = 404;
@@ -44,7 +44,7 @@ class HtmlResponseTest extends TestCase
         $this->assertSame($body, (string) $response->getBody());
     }
 
-    public function testStaticCreateWithCustomContentType()
+    public function testStaticCreateWithCustomContentType(): void
     {
         $response = HtmlResponse::create('<html>Test</html>')
             ->withHeader('content-type', 'multipart/form-data');
@@ -52,7 +52,7 @@ class HtmlResponseTest extends TestCase
         $this->assertSame('multipart/form-data', $response->getHeaderLine('Content-Type'));
     }
 
-    public function invalidHtmlContentProvider()
+    public function invalidHtmlContentProvider(): array
     {
         return [
             'null' => [null],
@@ -66,11 +66,13 @@ class HtmlResponseTest extends TestCase
             'object' => [(object) ['php://temp']],
         ];
     }
-    
+
     /**
      * @dataProvider invalidHtmlContentProvider
+     *
+     * @param mixed $body
      */
-    public function testRaisesExceptionforNonStringContent($body)
+    public function testRaisesExceptionforNonStringContent($body): void
     {
         $this->expectException(TypeError::class);
         new HtmlResponse($body);

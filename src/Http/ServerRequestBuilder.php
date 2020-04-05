@@ -30,8 +30,11 @@ use function preg_match_all;
 use function rtrim;
 use function strtolower;
 use function substr;
+use function str_replace;
+use function urldecode;
 
 use const PHP_URL_PORT;
+use const PREG_SET_ORDER;
 
 /**
  * Builds a server request.
@@ -239,11 +242,11 @@ class ServerRequestBuilder
     {
         $pattern = '/(REDIRECT_)?(HTTP_|CONTENT_)([^ ]*)/i';
         $str = implode(' ', array_keys($this->server));
-        preg_match_all($pattern, $str, $originalHeaders, \PREG_SET_ORDER);
+        preg_match_all($pattern, $str, $originalHeaders, PREG_SET_ORDER);
 
         $pattern = '/(redirect-)?(?:(?:http-)|(content-))([^ ]*)/';
-        $str = strtolower(\str_replace('_', '-', $str));
-        preg_match_all($pattern, $str, $normalizedHeaders, \PREG_SET_ORDER);
+        $str = strtolower(str_replace('_', '-', $str));
+        preg_match_all($pattern, $str, $normalizedHeaders, PREG_SET_ORDER);
 
         $this->headers = [
             'original' => $originalHeaders,
@@ -425,12 +428,12 @@ class ServerRequestBuilder
             '/^(?:Set-Cookie:)\s*(?P<name>[^=]*)=(?P<value>[^;]*)/i',
             $cookieHeader,
             $matches,
-            \PREG_SET_ORDER
+            PREG_SET_ORDER
         );
         $cookies = [];
 
         foreach ($matches as $match) {
-            $cookies[$match['name']] = \urldecode($match['value']);
+            $cookies[$match['name']] = urldecode($match['value']);
         }
 
         return $cookies;

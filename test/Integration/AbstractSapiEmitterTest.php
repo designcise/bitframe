@@ -13,16 +13,16 @@ declare(strict_types=1);
 namespace BitFrame\Test\Integration;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
+use Psr\Http\Server\RequestHandlerInterface;
 use BitFrame\Factory\HttpFactory;
+use BitFrame\Emitter\AbstractSapiEmitter;
 
 abstract class AbstractSapiEmitterTest extends TestCase
 {
-    /** @var \Psr\Http\Message\ServerRequestInterface */
-    protected $request;
-    
-    /** @var \BitFrame\Message\SapiEmitter */
-    protected $emitter;
+    protected ServerRequestInterface $request;
+
+    protected AbstractSapiEmitter $emitter;
 
     protected function setUp(): void
     {
@@ -56,7 +56,7 @@ abstract class AbstractSapiEmitterTest extends TestCase
         $response = HttpFactory::createResponse($status);
         $response->getBody()->write('Hello World!');
 
-        $handler = $this->createMock('\Psr\Http\Server\RequestHandlerInterface');
+        $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->method('handle')->willReturn($response);
 
         $this->expectOutputString('Hello World!');
@@ -79,7 +79,7 @@ abstract class AbstractSapiEmitterTest extends TestCase
             ->withAddedHeader('Content-Type', 'text/html')
             ->withAddedHeader('Content-Language', 'en');
         
-        $handler = $this->createMock('\Psr\Http\Server\RequestHandlerInterface');
+        $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->method('handle')->willReturn($response);
         
         $response = $this->emitter->process($this->request, $handler);
@@ -101,7 +101,7 @@ abstract class AbstractSapiEmitterTest extends TestCase
             ->withAddedHeader('Set-Cookie', 'foo=bar')
             ->withAddedHeader('Set-Cookie', 'bar=baz');
         
-        $handler = $this->createMock('\Psr\Http\Server\RequestHandlerInterface');
+        $handler = $this->createMock(RequestHandlerInterface::class);
         $handler->method('handle')->willReturn($response);
 
         $response = $this->emitter->process($this->request, $handler);
