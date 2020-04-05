@@ -100,7 +100,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
 
         unset($this->bag[$id], $this->frozen[$id]);
 
-        if (is_object($this->instantiated[$id])) {
+        if (isset($this->instantiated[$id]) && is_object($this->instantiated[$id])) {
             unset($this->factories[$this->bag[$id]]);
         }
     }

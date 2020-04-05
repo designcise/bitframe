@@ -82,9 +82,8 @@ class MiddlewareDecoratorTraitTest extends TestCase
         return [
             ['psr15_middleware' => $this->getHelloWorldMiddlewareAsPsr15()],
             ['closure_middleware' => $this->getHelloWorldMiddlewareAsClosure()],
-            ['invokable_class' => $this->getHelloWorldMiddlewareAsInvokableClass()],
+            ['invokable_class' => new InteropMiddleware()],
             ['string_class_middleware' => HelloWorldMiddleware::class],
-            ['string_callable_middleware' => InteropMiddleware::class . '::run'],
             ['string_function_middleware' => 'BitFrame\Test\Asset\helloWorldCallable'],
             ['callable_array_middleware' => [new InteropMiddleware, 'run']],
             ['callable_array_uninstantiated_middleware' => [InteropMiddleware::class, 'run']]
@@ -97,7 +96,8 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function testGetDecoratedMiddleware($middleware)
     {
         $this->assertInstanceOf(
-            MiddlewareInterface::class, $this->middlewareDecorator->getDecoratedMiddleware($middleware)
+            MiddlewareInterface::class,
+            $this->middlewareDecorator->getDecoratedMiddleware($middleware)
         );
     }
 
@@ -106,7 +106,6 @@ class MiddlewareDecoratorTraitTest extends TestCase
         return [
             ['closure' => $this->getHelloWorldMiddlewareAsClosure()],
             ['invokable_class' => new InteropMiddleware()],
-            ['string_callable' => InteropMiddleware::class . '::run'],
             ['array_object_callable' => [new InteropMiddleware, 'run']],
             ['array_string_callable' => [InteropMiddleware::class, 'run']]
         ];
@@ -134,20 +133,6 @@ class MiddlewareDecoratorTraitTest extends TestCase
                 $response->getBody()->write('Hello World!');
 
                 return $response;
-            }
-        };
-    }
-
-    private function getHelloWorldMiddlewareAsInvokableClass(): callable
-    {
-        return new class {
-            public function __invoke(
-                ServerRequestInterface $request,
-                ResponseInterface $response, 
-                RequestHandlerInterface $handler
-            ): ResponseInterface {
-                $response->getBody()->write('Hello World!');
-                return $handler($request, $response);
             }
         };
     }

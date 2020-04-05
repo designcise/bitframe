@@ -156,7 +156,10 @@ class ServerRequestBuilder
      */
     public function addMethod(): self
     {
-        $this->method = $this->server['REQUEST_METHOD'] ?: 'GET';
+        $this->method = (empty($this->server['REQUEST_METHOD']))
+            ? 'GET'
+            : $this->server['REQUEST_METHOD'];
+
         return $this;
     }
 
