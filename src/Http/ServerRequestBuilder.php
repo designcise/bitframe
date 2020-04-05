@@ -181,9 +181,9 @@ class ServerRequestBuilder
         $query = '';
 
         if (! empty($server['QUERY_STRING'])) {
-            $path = $server['QUERY_STRING'];
+            $query = $server['QUERY_STRING'];
         } elseif (! empty($uriParts['query'])) {
-            $path = $uriParts['query'];
+            $query = $uriParts['query'];
         }
 
         $fragment = (! empty($uriParts['fragment'])) ? $uriParts['fragment'] : '';
