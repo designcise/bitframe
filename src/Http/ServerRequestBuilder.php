@@ -186,7 +186,7 @@ class ServerRequestBuilder
             $path = $uriParts['query'];
         }
 
-        $fragment = (empty($uriParts['fragment'])) ? $uriParts['fragment'] : '';
+        $fragment = (! empty($uriParts['fragment'])) ? $uriParts['fragment'] : '';
 
         $baseUri = $this->getUriAuthorityWithScheme();
 
