@@ -17,7 +17,7 @@ use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
 use BitFrame\Http\MiddlewareDecoratorTrait;
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Test\Asset\{HelloWorldMiddleware, InteropMiddleware};
-use function BitFrame\Test\Asset\helloWorldCallable;
+use TypeError;
 
 /**
  * @covers \BitFrame\Http\MiddlewareDecoratorTrait
@@ -40,58 +40,65 @@ class MiddlewareDecoratorTraitTest extends TestCase
         $this->middlewareDecorator = $this->getMockForTrait(MiddlewareDecoratorTrait::class);
     }
 
-    public function invalidMiddlewareProvider()
+    public function invalidMiddlewareProvider(): array
     {
         return [
             ['null' => null],
             ['empty_array' => []],
             ['class_unsupported' => new class {}],
             ['callable_array_non_existent_class' => ['NonExistent', 'run']],
-            ['callable_array_non_existent_method' => [new InteropMiddleware, 'nonExistentMethod']],
+            ['callable_array_non_existent_method' => [new InteropMiddleware(), 'nonExistentMethod']],
         ];
     }
 
     /**
      * @dataProvider invalidMiddlewareProvider
+     *
+     * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
      */
     public function testGetDecoratedMiddlewareWithUnsupportedMiddlewareType($middleware)
     {
-        $this->expectException(\TypeError::class);
+        $this->expectException(TypeError::class);
         $this->middlewareDecorator->getDecoratedMiddleware($middleware);
     }
 
     public function nonExistentMiddlewareProvider()
     {
         return [
-            ['string_nonexistent_callable' => 'NonExistent::run'],
+            ['string_nonexistent_static_callable' => 'NonExistent::run'],
             ['string_non_existent_class_or_function_name' => 'NonExistentFunction'],
         ];
     }
 
     /**
      * @dataProvider nonExistentMiddlewareProvider
+     *
+     * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
      */
-    public function testGetDecoratedMiddlewareWithNonExistentMiddlewareType($middleware)
+    public function testGetDecoratedMiddlewareWithNonExistentMiddlewareType($middleware): void
     {
         $this->expectException(\Error::class);
         $this->middlewareDecorator->getDecoratedMiddleware($middleware);
     }
 
-    public function middlewareProvider()
+    public function middlewareProvider(): array
     {
         return [
-            ['psr15_middleware' => $this->getHelloWorldMiddlewareAsPsr15()],
-            ['closure_middleware' => $this->getHelloWorldMiddlewareAsClosure()],
+            ['psr15' => $this->getHelloWorldMiddlewareAsPsr15()],
+            ['closure' => $this->getHelloWorldMiddlewareAsClosure()],
             ['invokable_class' => new InteropMiddleware()],
-            ['string_class_middleware' => HelloWorldMiddleware::class],
-            ['string_function_middleware' => 'BitFrame\Test\Asset\helloWorldCallable'],
-            ['callable_array_middleware' => [new InteropMiddleware, 'run']],
-            ['callable_array_uninstantiated_middleware' => [InteropMiddleware::class, 'run']]
+            ['string_class' => HelloWorldMiddleware::class],
+            ['string_static_callable' => InteropMiddleware::class . '::staticRun'],
+            ['string_function' => 'BitFrame\Test\Asset\helloWorldCallable'],
+            ['callable_array' => [new InteropMiddleware(), 'run']],
+            ['callable_array_uninstantiated' => [InteropMiddleware::class, 'staticRun']]
         ];
     }
 
     /**
      * @dataProvider middlewareProvider
+     *
+     * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
      */
     public function testGetDecoratedMiddleware($middleware)
     {
@@ -101,18 +108,21 @@ class MiddlewareDecoratorTraitTest extends TestCase
         );
     }
 
-    public function callablesProvider()
+    public function callablesProvider(): array
     {
         return [
             ['closure' => $this->getHelloWorldMiddlewareAsClosure()],
             ['invokable_class' => new InteropMiddleware()],
+            ['string_static_callable' => InteropMiddleware::class . '::staticRun'],
             ['array_object_callable' => [new InteropMiddleware, 'run']],
-            ['array_string_callable' => [InteropMiddleware::class, 'run']]
+            ['array_string_callable' => [InteropMiddleware::class, 'staticRun']]
         ];
     }
 
     /**
      * @dataProvider callablesProvider
+     *
+     * @param callable $callable
      */
     public function testGetDecoratedCallableMiddleware(callable $callable)
     {
@@ -150,7 +160,10 @@ class MiddlewareDecoratorTraitTest extends TestCase
         };
     }
 
-    private function getRequestHandlerMock(): RequestHandlerInterface
+    /**
+     * @return \PHPUnit\Framework\MockObject\MockObject|RequestHandlerInterface
+     */
+    private function getRequestHandlerMock()
     {
         $handler = $this->getMockBuilder(RequestHandlerInterface::class)
             ->setMethods(['handle', 'getResponse'])

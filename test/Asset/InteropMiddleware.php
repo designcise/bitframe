@@ -22,6 +22,16 @@ class InteropMiddleware implements MiddlewareInterface
         return $this->run($request, $handler);
     }
 
+    public static function staticRun(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $handler
+    ): ResponseInterface {
+        $response = $handler->handle($request);
+        $response->getBody()->write('Hello World!');
+
+        return $response;
+    }
+
     public function run(
         ServerRequestInterface $request, 
         RequestHandlerInterface $handler
