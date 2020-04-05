@@ -1,5 +1,9 @@
 # BitFrame PHP Microframework
 
+[![codecov](https://codecov.io/gh/designcise/bitframe/branch/2.x/graph/badge.svg)](https://codecov.io/gh/designcise/bitframe)
+
+## About
+
 * Highly customizable PSR-15 and PSR-7 compatible middleware-based microframework for PHP;
 * Simple to learn, use and implement;
 * Follows the [PSR standards](http://www.php-fig.org/) and integrates the best of existing opensource frameworks wherever possible.
