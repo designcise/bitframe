@@ -102,7 +102,7 @@ class ServerRequestBuilder
             ->addBody($body)
             ->build();
     }
-    
+
     /**
      * @param array $server
      * @param object $factory
@@ -168,9 +168,25 @@ class ServerRequestBuilder
         $server = $this->server;
 
         $uriParts = isset($server['REQUEST_URI']) ? parse_url($server['REQUEST_URI']) : [];
-        $path = $server['PATH_INFO'] ?: $server['ORIG_PATH_INFO'] ?: $uriParts['path'] ?: '';
-        $query = $server['QUERY_STRING'] ?: $uriParts['query'] ?: '';
-        $fragment = $uriParts['fragment'] ?: '';
+        $path = '';
+
+        if (! empty($server['PATH_INFO'])) {
+            $path = $server['PATH_INFO'];
+        } elseif (! empty($server['ORIG_PATH_INFO'])) {
+            $path = $server['ORIG_PATH_INFO'];
+        } elseif (! empty($uriParts['path'])) {
+            $path = $uriParts['path'];
+        }
+
+        $query = '';
+
+        if (! empty($server['QUERY_STRING'])) {
+            $path = $server['QUERY_STRING'];
+        } elseif (! empty($uriParts['query'])) {
+            $path = $uriParts['query'];
+        }
+
+        $fragment = (empty($uriParts['fragment'])) ? $uriParts['fragment'] : '';
 
         $baseUri = $this->getUriAuthorityWithScheme();
 
@@ -209,7 +225,7 @@ class ServerRequestBuilder
                 ));
             }
         }
-        
+
         return $this;
     }
 
@@ -323,9 +339,9 @@ class ServerRequestBuilder
 
         if ($authority) {
             $scheme = (
-                $server['REQUEST_SCHEME']
-                ?? ('http' . ((isset($server['HTTPS']) && $server['HTTPS'] === 'on') ? 's' : ''))
-            ) . ':';
+                    $server['REQUEST_SCHEME']
+                    ?? ('http' . ((isset($server['HTTPS']) && $server['HTTPS'] === 'on') ? 's' : ''))
+                ) . ':';
 
             $authority = "{$scheme}//{$authority}";
         }
@@ -339,9 +355,9 @@ class ServerRequestBuilder
         }
 
         return (
-            (substr($authority, -1) === '/')
-                ? rtrim($authority, '/') . ":{$server['SERVER_PORT']}/"
-                : "{$authority}:{$server['SERVER_PORT']}"
+        (substr($authority, -1) === '/')
+            ? rtrim($authority, '/') . ":{$server['SERVER_PORT']}/"
+            : "{$authority}:{$server['SERVER_PORT']}"
         );
     }
 
@@ -389,17 +405,17 @@ class ServerRequestBuilder
     }
 
     /**
-    * Parse a cookie header according to RFC-6265.
-    *
-    * PHP will replace special characters in cookie names, which
-    * results in other cookies not being available due to
-    * overwriting. Thus, the server request should take the cookies
-    * from the request header instead.
-    *
-    * @param string $cookieHeader
-    *
-    * @return array key/value cookie pairs.
-    */
+     * Parse a cookie header according to RFC-6265.
+     *
+     * PHP will replace special characters in cookie names, which
+     * results in other cookies not being available due to
+     * overwriting. Thus, the server request should take the cookies
+     * from the request header instead.
+     *
+     * @param string $cookieHeader
+     *
+     * @return array key/value cookie pairs.
+     */
     private function parseCookieHeader(string $cookieHeader): array
     {
         preg_match_all(
@@ -409,15 +425,15 @@ class ServerRequestBuilder
             \PREG_SET_ORDER
         );
         $cookies = [];
-   
+
         foreach ($matches as $match) {
             $cookies[$match['name']] = \urldecode($match['value']);
         }
-   
+
         return $cookies;
     }
 
-   /**
+    /**
      * @param ServerRequestInterface $request
      *
      * @return ServerRequestInterface
@@ -444,14 +460,14 @@ class ServerRequestBuilder
             }
 
             $newKey = $normalizedHeaders[$i][2] . $normalizedHeaders[$i][3];
-            
+
             $request = $request->withHeader($newKey, $this->server[$originalKey]);
         }
 
         return $request;
     }
 
-   /**
+    /**
      * @param string|resource|StreamInterface $body
      *
      * @return StreamInterface
