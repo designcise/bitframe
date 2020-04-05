@@ -1,6 +1,7 @@
 # BitFrame PHP Microframework
 
 [![codecov](https://codecov.io/gh/designcise/bitframe/branch/2.x/graph/badge.svg)](https://codecov.io/gh/designcise/bitframe)
+[![Build Status](https://travis-ci.org/designcise/bitframe.svg?branch=2.x)](https://travis-ci.org/designcise/bitframe)
 
 ## About
 
@@ -26,7 +27,7 @@ At the core of our development, we've tried very hard to abide by some simple ru
 Install BitFrame and its required dependencies using composer:
 
 ```
-$ composer require designcise/bitframe
+$ composer require "designcise/bitframe:2.x-dev"
 ```
 
 Please note that BitFrame v2+ requires PHP 7.4.0 or newer.
