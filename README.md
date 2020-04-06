@@ -1,6 +1,6 @@
 # BitFrame PHP Microframework
 
-[![Coverage Status](https://coveralls.io/repos/github/designcise/bitframe/badge.svg?branch=2.x)](https://coveralls.io/github/designcise/bitframe?branch=2.x)
+[![codecov](https://codecov.io/gh/designcise/bitframe/branch/2.x/graph/badge.svg)](https://codecov.io/gh/designcise/bitframe)
 [![Build Status](https://travis-ci.org/designcise/bitframe.svg?branch=2.x)](https://travis-ci.org/designcise/bitframe)
 
 ## About

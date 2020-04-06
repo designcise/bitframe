@@ -9,14 +9,14 @@ php:
   - 7.4.0
 
 before_script:
-  - composer install --no-interaction --no-suggest --prefer-source --dev
-  - composer require "nyholm/psr7:^1.2" "php-coveralls/php-coveralls:^2.2"
+  - travis_retry composer install --no-interaction --no-suggest --prefer-source --dev
+  - travis_retry composer require nyholm/psr7:^1.2 php-coveralls/php-coveralls:^2.2.0
 
 script:
   - vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage.xml
 
 after_success:
-  - vendor/bin/php-coveralls --coverage_clover=clover.xml -v
+  - travis_retry vendor/bin/php-coveralls --coverage_clover=clover.xml -v
 
 branches:
   only:
