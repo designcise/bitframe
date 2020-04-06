@@ -6,10 +6,6 @@
  * @author    Daniyal Hamid
  * @copyright Copyright (c) 2017-2018 Daniyal Hamid (https://designcise.com)
  * @license   https://github.com/designcise/bitframe-zend-emitter/blob/master/LICENSE.md MIT License
- *
- * @author    Zend Framework
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-httphandlerrunner/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);

@@ -104,6 +104,20 @@ class ContentNegotiatorTest extends TestCase
     }
 
     /**
+     * @param string $mimeType
+     * @param string $contentType
+     */
+    public function testGetPreferredContentTypeFromRequestWhenNoAcceptHeaderExists(): void
+    {
+        $request = HttpFactory::createServerRequest('GET', '/');
+
+        $this->assertSame(
+            ContentNegotiator::CONTENT_TYPE_HTML,
+            ContentNegotiator::getPreferredContentTypeFromRequest($request)
+        );
+    }
+
+    /**
      * @runInSeparateProcess
      */
     public function testAddContentType(): void
