@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 use BitFrame\Parser\DefaultMediaParser;
 
 /**
- * @covers \BitFrame\Http\Message\FileResponse
+ * @covers \BitFrame\Parser\DefaultMediaParser
  */
 class DefaultMediaParserTest extends TestCase
 {
@@ -42,12 +42,12 @@ class DefaultMediaParserTest extends TestCase
     /**
      * @dataProvider validInputProvider
      *
-     * @param string $actual
+     * @param string $input
      * @param array $expected
      */
-    public function testCanParse(string $actual, array $expected): void
+    public function testCanParse(string $input, array $expected): void
     {
         $parser = new DefaultMediaParser();
-        $this->assertSame($expected, $parser->parse($actual));
+        $this->assertSame($expected, $parser->parse($input));
     }
 }
