@@ -10,13 +10,13 @@ php:
 
 before_script:
   - travis_retry composer install --no-interaction --no-suggest --prefer-source --dev
-  - travis_retry composer require nyholm/psr7:^1.2 php-coveralls/php-coveralls:^2.2.0
+  - travis_retry composer require nyholm/psr7:^1.2
 
 script:
   - vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage.xml
 
 after_success:
-  - travis_retry vendor/bin/php-coveralls --coverage_clover=clover.xml -v
+  - bash <(curl -s https://codecov.io/bash)
 
 branches:
   only:
