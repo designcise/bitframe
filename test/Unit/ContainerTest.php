@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use BitFrame\Container;
 use BitFrame\Test\Asset\NoopService;
 use TypeError;
+use OutOfBoundsException;
 use BitFrame\Exception\{
     ContainerItemNotFoundException,
     ContainerItemFrozenException
@@ -92,6 +93,24 @@ class ContainerTest extends TestCase
 
         $this->expectException(ContainerItemNotFoundException::class);
         $container[$key];
+    }
+
+    public function testFactoryServiceCanBeUnset(): void
+    {
+        $container = $this->container;
+        $container['service'] = static fn () => new NoopService();
+
+        unset($container['service']);
+
+        $this->expectException(ContainerItemNotFoundException::class);
+        $container['service'];
+    }
+
+    public function testUnsettingNonExistentKeyShouldThrowException(): void
+    {
+        $container = $this->container;
+        $this->expectException(OutOfBoundsException::class);
+        unset($container['non_existent_key']);
     }
 
     public function testWithClosure(): void
