@@ -91,6 +91,7 @@ To execute the test suite, you will need [PHPUnit](https://phpunit.de/). To run 
 ```
 composer unit
 composer integration
+composer test
 ```
 
 ### Contributing
