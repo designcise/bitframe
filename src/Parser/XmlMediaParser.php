@@ -17,11 +17,16 @@ use function libxml_disable_entity_loader;
 use function libxml_use_internal_errors;
 use function simplexml_load_string;
 
+use const LIBXML_NOCDATA;
+
 /**
  * Parses string data into XML.
  */
 class XmlMediaParser implements MediaParserInterface
 {
+    /** @var int */
+    private const OPTIONS = LIBXML_NOCDATA;
+
     /**
      * {@inheritdoc}
      */
@@ -29,7 +34,11 @@ class XmlMediaParser implements MediaParserInterface
     {
         $backup = libxml_disable_entity_loader(true);
         $backupErrors = libxml_use_internal_errors(true);
-        $result = simplexml_load_string($input);
+        $result = simplexml_load_string(
+            $input,
+            'SimpleXMLElement',
+            self::OPTIONS
+        );
         
         libxml_disable_entity_loader($backup);
         libxml_clear_errors();

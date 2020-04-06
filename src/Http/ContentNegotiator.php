@@ -60,7 +60,7 @@ class ContentNegotiator
      * @param string $type
      * @param string $mime
      */
-    public static function addContentType(string $type, string $mime)
+    public static function addContentType(string $type, string $mime): void
     {
         self::$contentTypes[$type][] = $mime;
     }
@@ -71,7 +71,7 @@ class ContentNegotiator
      * @param string $type
      * @param string|MediaParserInterface $parser
      */
-    public static function addMediaParser(string $type, $parser)
+    public static function addMediaParser(string $type, $parser): void
     {
         if ($parser instanceof MediaParserInterface) {
             self::$contentParsers[$type] = $parser;
@@ -104,8 +104,9 @@ class ContentNegotiator
      *
      * @return MediaParserInterface
      */
-    public static function getMediaParserForContentType(string $contentType): MediaParserInterface
-    {
+    public static function getMediaParserForContentType(
+        string $contentType
+    ): MediaParserInterface {
         if (! isset(self::$contentParsers[$contentType])) {
             $contentType = self::CONTENT_TYPE_DEFAULT;
         }
