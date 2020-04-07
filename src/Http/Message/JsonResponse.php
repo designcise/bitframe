@@ -48,8 +48,8 @@ class JsonResponse extends Response
 
     /**
      * @param mixed $data Anything but a resource.
-     * @param int $encodingOptions
-     * @param int $maxDepth
+     * @param integer $encodingOptions
+     * @param integer $maxDepth
      *
      * @throws \JsonException
      */

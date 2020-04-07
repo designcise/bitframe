@@ -20,6 +20,8 @@ use InvalidArgumentException;
 
 use function mime_content_type;
 use function rawurlencode;
+use function ctype_xdigit;
+use function preg_match;
 
 /**
  * @covers \BitFrame\Http\Message\FileResponse
@@ -147,6 +149,35 @@ class FileResponseTest extends TestCase
         $this->assertSame($body, (string) $response->getBody());
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function testCanServeDownloadFileNameFromFileBaseName(): void
+    {
+        $response = (new FileResponse(self::ASSETS_DIR . 'test.txt'))
+            ->withDownload();
+
+        $dispositionHeader = 'attachment; filename=test.txt; filename*=UTF-8\'\'' . rawurlencode('test.txt');
+
+        $this->assertSame($dispositionHeader, $response->getHeaderLine('content-disposition'));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCanAutoGenerateFileName(): void
+    {
+        $stream = HttpFactory::createStream('test');
+
+        $response = (new FileResponse($stream))
+            ->withDownload();
+
+        $responseHeader = $response->getHeaderLine('content-disposition');
+        preg_match('/filename=([^;]*)/', $responseHeader, $matches);
+
+        $this->assertTrue($this->isRandomlyGeneratedFileName($matches[1]));
+    }
+
     public function invalidFileProvider(): array
     {
         return [
@@ -177,5 +208,16 @@ class FileResponseTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         new FileResponse('foo');
+    }
+
+    /**
+     * @param string $str
+     *
+     * @return bool
+     */
+    private function isRandomlyGeneratedFileName(string $str): bool
+    {
+        // is sha1 hash?
+        return (ctype_xdigit($str) && (bool) preg_match('/^[0-9a-f]{40}$/i', $str));
     }
 }
