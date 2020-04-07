@@ -15,6 +15,8 @@ use BitFrame\Http\ContentNegotiator;
 use BitFrame\Parser\MediaParserInterface;
 use BitFrame\Parser\{DefaultMediaParser, JsonMediaParser, XmlMediaParser};
 
+use function get_class;
+
 /**
  * @covers \BitFrame\Http\ContentNegotiator
  */
@@ -38,6 +40,29 @@ class ContentNegotiatorTest extends TestCase
 
         $this->assertInstanceOf(
             get_class($parser), 
+            ContentNegotiator::getMediaParserForContentType($contentType)
+        );
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testAddMediaParserByClassName(): void
+    {
+        $parser = $this->getMockBuilder(MediaParserInterface::class)
+            ->getMock();
+
+        $parser
+            ->method('parse')
+            ->willReturn(['foo' => 'bar']);
+
+        $contentType = ContentNegotiator::CONTENT_TYPE_HTML;
+        $parserClass = get_class($parser);
+
+        ContentNegotiator::addMediaParser($contentType, $parserClass);
+
+        $this->assertInstanceOf(
+            $parserClass,
             ContentNegotiator::getMediaParserForContentType($contentType)
         );
     }
