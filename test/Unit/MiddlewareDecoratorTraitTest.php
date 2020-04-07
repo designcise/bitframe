@@ -40,6 +40,49 @@ class MiddlewareDecoratorTraitTest extends TestCase
         $this->middlewareDecorator = $this->getMockForTrait(MiddlewareDecoratorTrait::class);
     }
 
+    public function emptyValuesProvider()
+    {
+        return [
+            'null' => [null],
+            'empty string' => [''],
+            'empty array' => [[]],
+            'boolean' => [false],
+            'number 0' => [0],
+            'float 0.0' => [0.0],
+            'string 0' => ['0'],
+        ];
+    }
+
+    /**
+     * @dataProvider emptyValuesProvider
+     *
+     * @param mixed $value
+     */
+    public function testUnpackingEmptyValues($value): void
+    {
+        $this->assertEmpty($this->middlewareDecorator->getUnpackedMiddleware($value));
+    }
+
+    public function testUnpackingArrayOfMiddlewares(): void
+    {
+        $middlewares = [
+            $this->getHelloWorldMiddlewareAsPsr15(),
+            $this->getHelloWorldMiddlewareAsClosure(),
+            new InteropMiddleware(),
+            HelloWorldMiddleware::class,
+            InteropMiddleware::class . '::staticRun',
+            'BitFrame\Test\Asset\helloWorldCallable',
+            [new InteropMiddleware(), 'run'],
+            [InteropMiddleware::class, 'staticRun'],
+        ];
+
+        $unpackedMiddlewares = $this->middlewareDecorator->getUnpackedMiddleware($middlewares);
+
+        foreach ($unpackedMiddlewares as $middleware) {
+            $this->assertInstanceOf(MiddlewareInterface::class, $middleware);
+        }
+    }
+
     public function invalidMiddlewareProvider(): array
     {
         return [
@@ -54,7 +97,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     /**
      * @dataProvider invalidMiddlewareProvider
      *
-     * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
+     * @param array|string|callable|MiddlewareInterface $middleware
      */
     public function testGetDecoratedMiddlewareWithUnsupportedMiddlewareType($middleware): void
     {
@@ -73,7 +116,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     /**
      * @dataProvider nonExistentMiddlewareProvider
      *
-     * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
+     * @param array|string|callable|MiddlewareInterface $middleware
      */
     public function testGetDecoratedMiddlewareWithNonExistentMiddlewareType($middleware): void
     {
@@ -98,7 +141,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     /**
      * @dataProvider middlewareProvider
      *
-     * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
+     * @param array|string|callable|MiddlewareInterface $middleware
      */
     public function testGetDecoratedMiddleware($middleware)
     {
