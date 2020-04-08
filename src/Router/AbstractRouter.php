@@ -22,6 +22,7 @@ use BitFrame\Http\Message\{
     JsonpResponse,
     XmlResponse,
     FileResponse,
+    DownloadResponse,
     RedirectResponse
 };
 
@@ -56,7 +57,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function use($methods, $middleware, string $path, $handler)
+    public function use($methods, $middleware, string $path, $handler): void
     {
         $middlewares = $this->getUnpackedMiddleware($middleware);
         $middlewares[] = $this->getDecoratedMiddleware($handler);
@@ -90,7 +91,7 @@ abstract class AbstractRouter
      * @param string $prefix
      * @param callable $group
      */
-    public function group(string $prefix, callable $group)
+    public function group(string $prefix, callable $group): void
     {
         new RouteGroup($prefix, $group, $this);
     }
@@ -101,7 +102,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function get(string $path, $handler)
+    public function get(string $path, $handler): void
     {
         $this->map(['GET'], $path, $handler);
     }
@@ -112,7 +113,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function post(string $path, $handler)
+    public function post(string $path, $handler): void
     {
         $this->map(['POST'], $path, $handler);
     }
@@ -123,7 +124,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function put(string $path, $handler)
+    public function put(string $path, $handler): void
     {
         $this->map(['PUT'], $path, $handler);
     }
@@ -134,7 +135,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function patch(string $path, $handler)
+    public function patch(string $path, $handler): void
     {
         $this->map(['PATCH'], $path, $handler);
     }
@@ -145,7 +146,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function delete(string $path, $handler)
+    public function delete(string $path, $handler): void
     {
         $this->map(['DELETE'], $path, $handler);
     }
@@ -156,7 +157,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function head(string $path, $handler)
+    public function head(string $path, $handler): void
     {
         $this->map(['HEAD'], $path, $handler);
     }
@@ -167,7 +168,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function options(string $path, $handler)
+    public function options(string $path, $handler): void
     {
         $this->map(['OPTIONS'], $path, $handler);
     }
@@ -178,7 +179,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function any(string $path, $handler)
+    public function any(string $path, $handler): void
     {
         $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $path, $handler);
     }
@@ -191,7 +192,7 @@ abstract class AbstractRouter
      * @param string $text
      * @param int $statusCode
      */
-    public function text($methods, string $route, string $text, int $statusCode = 200)
+    public function text($methods, string $route, string $text, int $statusCode = 200): void
     {
         $this->map(
             (array) $methods,
@@ -208,7 +209,7 @@ abstract class AbstractRouter
      * @param string $html
      * @param int $statusCode
      */
-    public function html($methods, string $route, string $html, int $statusCode = 200)
+    public function html($methods, string $route, string $html, int $statusCode = 200): void
     {
         $this->map(
             (array) $methods,
@@ -225,7 +226,7 @@ abstract class AbstractRouter
      * @param array $data
      * @param int $statusCode
      */
-    public function json($methods, string $route, array $data, int $statusCode = 200)
+    public function json($methods, string $route, array $data, int $statusCode = 200): void
     {
         $this->map(
             (array) $methods,
@@ -249,7 +250,7 @@ abstract class AbstractRouter
         array $data,
         string $callback,
         int $statusCode = 200
-    ) {
+    ): void {
         $this->map(
             (array) $methods,
             $route,
@@ -265,7 +266,7 @@ abstract class AbstractRouter
      * @param string $xml
      * @param int $statusCode
      */
-    public function xml($methods, string $route, string $xml, int $statusCode = 200)
+    public function xml($methods, string $route, string $xml, int $statusCode = 200): void
     {
         $this->map(
             (array) $methods,
@@ -280,7 +281,7 @@ abstract class AbstractRouter
      * @param string $route
      * @param string $fileUrl
      */
-    public function file(string $route, string $fileUrl)
+    public function file(string $route, string $fileUrl): void
     {
         $this->map(
             ['GET'],
@@ -296,12 +297,15 @@ abstract class AbstractRouter
      * @param string $downloadUrl
      * @param string $serveFilenameAs
      */
-    public function download(string $route, string $downloadUrl, string $serveFilenameAs = '')
-    {
+    public function download(
+        string $route,
+        string $downloadUrl,
+        string $serveFilenameAs = ''
+    ): void {
         $this->map(
             ['GET'],
             $route,
-            static fn () => (new FileResponse($downloadUrl))->withDownload($serveFilenameAs)
+            static fn () => new DownloadResponse($downloadUrl, $serveFilenameAs)
         );
     }
     
@@ -312,7 +316,7 @@ abstract class AbstractRouter
      * @param string $toUrl
      * @param int $statusCode
      */
-    public function redirect(string $fromUrl, string $toUrl, int $statusCode = 302)
+    public function redirect(string $fromUrl, string $toUrl, int $statusCode = 302): void
     {
         $this->map(
             ['GET'],

@@ -12,27 +12,16 @@ declare(strict_types=1);
 
 namespace BitFrame\Http\Message;
 
-use Psr\Http\Message\{ResponseInterface, StreamInterface};
+use Psr\Http\Message\StreamInterface;
 use InvalidArgumentException;
 
-use function basename;
-use function file_exists;
 use function is_resource;
-use function is_string;
-use function microtime;
-use function mime_content_type;
-use function random_bytes;
-use function rawurlencode;
-use function sha1;
 
 /**
- * Http response for embedded/downloadable file.
+ * Http response for embedded file.
  */
-class FileResponse extends Response
+class FileResponse extends AbstractFileResponse
 {
-    /** @var string|resource|StreamInterface */
-    private $file;
-
     /**
      * @param string $filePath
      *
@@ -76,59 +65,6 @@ class FileResponse extends Response
      */
     public function __construct($file)
     {
-        parent::__construct();
-
-        $this->file = $file;
-        $isFilePath = is_string($file);
-
-        if ($isFilePath && ! file_exists($file)) {
-            throw new InvalidArgumentException("File \"{$file}\" does not exist.");
-        }
-
-        $mimeType = ($isFilePath) ? mime_content_type($file) : 'application/octet-stream';
-        $stream = $this->getFileAsStream($file);
-
-        $this->response = $this->response
-            ->withHeader('Content-Type', $mimeType)
-            ->withBody($stream);
-    }
-
-    /**
-     * @param string $serveFilenameAs
-     *
-     * @return ResponseInterface
-     * @throws \Exception
-     */
-    public function withDownload(string $serveFilenameAs = ''): ResponseInterface
-    {
-        if ($serveFilenameAs === '') {
-            $serveFilenameAs = (is_string($this->file))
-                ? basename($this->file)
-                : sha1(random_bytes(5) . microtime());
-        }
-
-        $disposition = 'attachment; filename=' . $serveFilenameAs
-            . "; filename*=UTF-8''" . rawurlencode($serveFilenameAs);
-
-        $this->response = $this->response
-            ->withHeader('Content-Disposition', $disposition);
-        
-        return $this;
-    }
-
-    /**
-     * @param string|resource|StreamInterface $file
-     *
-     * @return StreamInterface
-     */
-    private function getFileAsStream($file): StreamInterface
-    {
-        if (is_string($file)) {
-            $file = $this->factory->createStreamFromFile($file, 'r');
-        } elseif (is_resource($file)) {
-            $file = $this->factory->createStreamFromResource($file);
-        }
-
-        return $file;
+        parent::__construct($this->createEmbeddedFileResponse($file));
     }
 }

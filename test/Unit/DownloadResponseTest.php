@@ -14,42 +14,49 @@ namespace BitFrame\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
 use BitFrame\Factory\HttpFactory;
-use BitFrame\Http\Message\FileResponse;
+use BitFrame\Http\Message\DownloadResponse;
 use TypeError;
 use InvalidArgumentException;
 
 use function mime_content_type;
+use function rawurlencode;
 use function ctype_xdigit;
 use function preg_match;
 
 /**
- * @covers \BitFrame\Http\Message\FileResponse
+ * @covers \BitFrame\Http\Message\DownloadResponse
  */
-class FileResponseTest extends TestCase
+class DownloadResponseTest extends TestCase
 {
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
-    
+
+    /**
+     * @throws \Exception
+     */
     public function testConstructorAcceptsStringFileName(): void
     {
         $file = self::ASSETS_DIR . 'test.txt';
         $mimeType = mime_content_type($file);
         $body = 'test';
 
-        $response = new FileResponse($file);
+        $response = new DownloadResponse($file);
 
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame($mimeType, $response->getHeaderLine('Content-Type'));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testConstructorAcceptsResource(): void
     {
         $stream = fopen('php://temp/maxmemory:1024', 'r+');
         fputs($stream, 'test');
         $body = 'test';
 
-        $response = new FileResponse($stream);
+        $response = new DownloadResponse($stream);
 
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
@@ -59,12 +66,15 @@ class FileResponseTest extends TestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testConstructorAcceptsStreamInterfaceObject(): void
     {
         $stream = HttpFactory::createStream('test');
         $body = 'test';
 
-        $response = new FileResponse($stream);
+        $response = new DownloadResponse($stream);
 
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
@@ -74,6 +84,9 @@ class FileResponseTest extends TestCase
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testCanAddStatusAndHeader(): void
     {
         $stream = HttpFactory::createStream('test');
@@ -81,7 +94,7 @@ class FileResponseTest extends TestCase
         $body = 'test';
         $status = 404;
 
-        $response = (new FileResponse($stream))
+        $response = (new DownloadResponse($stream))
             ->withStatus($status)
             ->withHeader('Content-Type', 'foo/file');
 
@@ -90,38 +103,100 @@ class FileResponseTest extends TestCase
         $this->assertSame($body, (string) $response->getBody());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testStaticCreateFromStringWithCustomContentType(): void
     {
-        $response = FileResponse::fromPath(self::ASSETS_DIR . 'test.txt')
+        $response = DownloadResponse::fromPath(self::ASSETS_DIR . 'test.txt')
             ->withHeader('content-type', 'foo/file');
 
         $this->assertSame('foo/file', $response->getHeaderLine('Content-Type'));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testStaticCreateFromResourceWithCustomContentType(): void
     {
         $stream = fopen('php://temp/maxmemory:1024', 'r+');
 
-        $response = FileResponse::fromResource($stream)
+        $response = DownloadResponse::fromResource($stream)
             ->withHeader('content-type', 'foo/file');
 
         $this->assertSame('foo/file', $response->getHeaderLine('Content-Type'));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testStaticCreateFromResourceWithInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        FileResponse::fromResource('test');
+        DownloadResponse::fromResource('test');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testStaticCreateFromStreamWithCustomContentType(): void
     {
         $stream = HttpFactory::createStream('test');
 
-        $response = FileResponse::fromStream($stream)
+        $response = DownloadResponse::fromStream($stream)
             ->withHeader('content-type', 'foo/file');
 
         $this->assertSame('foo/file', $response->getHeaderLine('Content-Type'));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCanAddDownloadHeaders(): void
+    {
+        $stream = HttpFactory::createStream('test');
+
+        $body = 'test';
+        $status = 202;
+
+        $response = (new DownloadResponse($stream, 'foo.txt'))
+            ->withStatus($status)
+            ->withHeader('x-foo', 'bar');
+
+        $dispositionHeader = 'attachment; filename=foo.txt; filename*=UTF-8\'\'' . rawurlencode('foo.txt');
+
+        $this->assertSame('bar', $response->getHeaderLine('x-foo'));
+        $this->assertSame('application/octet-stream', $response->getHeaderLine('content-type'));
+        $this->assertSame($dispositionHeader, $response->getHeaderLine('content-disposition'));
+        $this->assertSame(202, $response->getStatusCode());
+        $this->assertSame($body, (string) $response->getBody());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCanServeDownloadFileNameFromFileBaseName(): void
+    {
+        $response = new DownloadResponse(self::ASSETS_DIR . 'test.txt');
+
+        $dispositionHeader = 'attachment; filename=test.txt; filename*=UTF-8\'\'' . rawurlencode('test.txt');
+
+        $this->assertSame($dispositionHeader, $response->getHeaderLine('content-disposition'));
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testCanAutoGenerateFileName(): void
+    {
+        $stream = HttpFactory::createStream('test');
+
+        $response = new DownloadResponse($stream);
+
+        $responseHeader = $response->getHeaderLine('content-disposition');
+        preg_match('/filename=([^;]*)/', $responseHeader, $matches);
+
+        $this->assertTrue($this->isRandomlyGeneratedFileName($matches[1]));
     }
 
     public function invalidFileProvider(): array
@@ -143,17 +218,19 @@ class FileResponseTest extends TestCase
      * @dataProvider invalidFileProvider
      *
      * @param mixed $body
+     *
+     * @throws \Exception
      */
     public function testRaisesExceptionforInvalidArguments($body): void
     {
         $this->expectException(TypeError::class);
-        new FileResponse($body);
+        new DownloadResponse($body);
     }
 
     public function testRaisesExceptionWhenStringIsNotAFilePath(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new FileResponse('foo');
+        new DownloadResponse('foo');
     }
 
     /**

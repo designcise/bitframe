@@ -13,12 +13,13 @@ declare(strict_types=1);
 namespace BitFrame\Http\Message;
 
 use Psr\Http\Message\UriInterface;
+use BitFrame\Factory\HttpFactory;
 use InvalidArgumentException;
 
 /**
  * Http response for redirect.
  */
-class RedirectResponse extends Response
+class RedirectResponse extends ResponseDecorator
 {
     /**
      * @param string|UriInterface $redirectTo
@@ -46,11 +47,11 @@ class RedirectResponse extends Response
                 (\is_object($redirectTo) ? \get_class($redirectTo) : \gettype($redirectTo))
             ));
         }
-        
-        parent::__construct();
 
-        $this->response = $this->response
+        $response = HttpFactory::createResponse()
             ->withStatus($statusCode)
             ->withHeader('Location', (string) $redirectTo);
+
+        parent::__construct($response);
     }
 }

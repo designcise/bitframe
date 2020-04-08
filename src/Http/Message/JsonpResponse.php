@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace BitFrame\Http\Message;
 
+use BitFrame\Factory\HttpFactory;
 use InvalidArgumentException;
 
 use function explode;
@@ -29,7 +30,7 @@ use const JSON_UNESCAPED_SLASHES;
 /**
  * Http response containing JSON data with padding.
  */
-class JsonpResponse extends Response
+class JsonpResponse extends ResponseDecorator
 {
     /** @var string */
     private const MIME_TYPE = 'application/javascript';
@@ -76,8 +77,6 @@ class JsonpResponse extends Response
             throw new InvalidArgumentException('Callback name is invalid');
         }
 
-        parent::__construct();
-
         $encodingOptions |= JSON_THROW_ON_ERROR
             | JSON_HEX_QUOT
             | JSON_HEX_TAG
@@ -87,10 +86,13 @@ class JsonpResponse extends Response
 
         $body = $callback . '(' . json_encode($data, $encodingOptions, $maxDepth) . ')';
 
-        $this->response = $this->response
+        $factory = HttpFactory::getFactory();
+        $response = $factory->createResponse()
             ->withHeader('Content-Type', self::MIME_TYPE . '; charset=utf-8')
             ->withHeader('X-Content-Type-Options', 'nosniff')
-            ->withBody($this->factory->createStream($body));
+            ->withBody($factory->createStream($body));
+
+        parent::__construct($response);
     }
 
     /**

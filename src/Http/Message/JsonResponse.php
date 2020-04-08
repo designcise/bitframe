@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace BitFrame\Http\Message;
 
+use BitFrame\Factory\HttpFactory;
+
 use function json_encode;
 
 use const JSON_HEX_AMP;
@@ -24,7 +26,7 @@ use const JSON_UNESCAPED_SLASHES;
 /**
  * Http response containing JSON data.
  */
-class JsonResponse extends Response
+class JsonResponse extends ResponseDecorator
 {
     /** @var string */
     private const MIME_TYPE = 'application/json';
@@ -58,8 +60,6 @@ class JsonResponse extends Response
         int $encodingOptions = 0,
         int $maxDepth = 512
     ) {
-        parent::__construct();
-
         $encodingOptions |= JSON_THROW_ON_ERROR
             | JSON_HEX_QUOT
             | JSON_HEX_TAG
@@ -69,8 +69,11 @@ class JsonResponse extends Response
         
         $json = json_encode($data, $encodingOptions, $maxDepth);
 
-        $this->response = $this->response
+        $factory = HttpFactory::getFactory();
+        $response = $factory->createResponse()
             ->withHeader('Content-Type', self::MIME_TYPE . '; charset=utf-8')
-            ->withBody($this->factory->createStream($json));
+            ->withBody($factory->createStream($json));
+
+        parent::__construct($response);
     }
 }

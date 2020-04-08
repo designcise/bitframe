@@ -12,10 +12,12 @@ declare(strict_types=1);
 
 namespace BitFrame\Http\Message;
 
+use BitFrame\Factory\HttpFactory;
+
 /**
  * Http response containing plain text.
  */
-class TextResponse extends Response
+class TextResponse extends ResponseDecorator
 {
     /** @var string */
     private const MIME_TYPE = 'text/plain';
@@ -35,10 +37,11 @@ class TextResponse extends Response
      */
     public function __construct(string $text)
     {
-        parent::__construct();
-
-        $this->response = $this->response
+        $factory = HttpFactory::getFactory();
+        $response = $factory->createResponse()
             ->withHeader('Content-Type', self::MIME_TYPE . '; charset=utf-8')
-            ->withBody($this->factory->createStream($text));
+            ->withBody($factory->createStream($text));
+
+        parent::__construct($response);
     }
 }

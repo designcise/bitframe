@@ -12,10 +12,12 @@ declare(strict_types=1);
 
 namespace BitFrame\Http\Message;
 
+use BitFrame\Factory\HttpFactory;
+
 /**
  * Http response containing XML data.
  */
-class XmlResponse extends Response
+class XmlResponse extends ResponseDecorator
 {
     /** @var string */
     private const MIME_TYPE = 'application/xml';
@@ -35,10 +37,11 @@ class XmlResponse extends Response
      */
     public function __construct(string $xml)
     {
-        parent::__construct();
-
-        $this->response = $this->response
+        $factory = HttpFactory::getFactory();
+        $response = $factory->createResponse()
             ->withHeader('Content-Type', self::MIME_TYPE . '; charset=utf-8')
-            ->withBody($this->factory->createStream($xml));
+            ->withBody($factory->createStream($xml));
+
+        parent::__construct($response);
     }
 }

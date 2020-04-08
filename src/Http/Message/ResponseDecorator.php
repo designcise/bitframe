@@ -13,23 +13,21 @@ declare(strict_types=1);
 namespace BitFrame\Http\Message;
 
 use Psr\Http\Message\{ResponseInterface, StreamInterface};
-use BitFrame\Factory\HttpFactory;
 
 /**
  * Http Response.
  */
-class Response implements ResponseInterface
+class ResponseDecorator implements ResponseInterface
 {
     /** @var ResponseInterface */
-    protected ResponseInterface $response;
+    private ResponseInterface $response;
 
-    /** @var object */
-    protected object $factory;
-
-    public function __construct()
+    /**
+     * @param ResponseInterface $response
+     */
+    public function __construct(ResponseInterface $response)
     {
-        $this->factory = HttpFactory::getFactory();
-        $this->response = $this->factory->createResponse();
+        $this->response = $response;
     }
     
     /**
@@ -37,8 +35,8 @@ class Response implements ResponseInterface
      */
     public function withStatus($code, $reasonPhrase = '')
     {
-        $this->response = $this->response->withStatus($code, $reasonPhrase);
-        return $this;
+        $response = $this->response->withStatus($code, $reasonPhrase);
+        return new self($response);
     }
     
     /**
@@ -46,8 +44,8 @@ class Response implements ResponseInterface
      */
     public function withHeader($name, $value)
     {
-        $this->response = $this->response->withHeader($name, $value);
-        return $this;
+        $response = $this->response->withHeader($name, $value);
+        return new self($response);
     }
     
     /**
@@ -55,8 +53,8 @@ class Response implements ResponseInterface
      */
     public function withAddedHeader($name, $value)
     {
-        $this->response = $this->response->withAddedHeader($name, $value);
-        return $this;
+        $response = $this->response->withAddedHeader($name, $value);
+        return new self($response);
     }
     
     /**
@@ -64,8 +62,8 @@ class Response implements ResponseInterface
      */
     public function withoutHeader($name)
     {
-        $this->response = $this->response->withoutHeader($name);
-        return $this;
+        $response = $this->response->withoutHeader($name);
+        return new self($response);
     }
     
     /**
@@ -73,8 +71,8 @@ class Response implements ResponseInterface
      */
     public function withProtocolVersion($version)
     {
-        $this->response = $this->response->withProtocolVersion($version);
-        return $this;
+        $response = $this->response->withProtocolVersion($version);
+        return new self($response);
     }
     
     /**
@@ -82,8 +80,8 @@ class Response implements ResponseInterface
      */
     public function withBody(StreamInterface $body)
     {
-        $this->response = $this->response->withBody($body);
-        return $this;
+        $response = $this->response->withBody($body);
+        return new self($response);
     }
 
     /**
