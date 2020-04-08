@@ -40,7 +40,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
         $this->middlewareDecorator = $this->getMockForTrait(MiddlewareDecoratorTrait::class);
     }
 
-    public function emptyValuesProvider()
+    public function emptyValuesProvider(): array
     {
         return [
             'null' => [null],
@@ -143,7 +143,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
      *
      * @param array|string|callable|MiddlewareInterface $middleware
      */
-    public function testGetDecoratedMiddleware($middleware)
+    public function testGetDecoratedMiddleware($middleware): void
     {
         $this->assertInstanceOf(
             MiddlewareInterface::class,

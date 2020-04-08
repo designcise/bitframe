@@ -13,6 +13,7 @@ namespace BitFrame\Test\Unit;
 use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use BitFrame\App;
+use InvalidArgumentException;
 
 /**
  * @covers \BitFrame\App
@@ -45,5 +46,30 @@ class AppTest extends TestCase
 
             return $handler($req);
         });
+    }
+
+    public function emptyValuesProvider(): array
+    {
+        return [
+            'null' => [null],
+            'empty string' => [''],
+            'empty array' => [[]],
+            'boolean' => [false],
+            'number 0' => [0],
+            'float 0.0' => [0.0],
+            'string 0' => ['0'],
+        ];
+    }
+
+    /**
+     * @dataProvider emptyValuesProvider
+     *
+     * @param mixed $middleware
+     */
+    public function testRunWithoutMiddleware($middleware): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->app->run($middleware);
     }
 }
