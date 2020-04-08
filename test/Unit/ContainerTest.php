@@ -99,6 +99,7 @@ class ContainerTest extends TestCase
     {
         $container = $this->container;
         $container['service'] = static fn () => new NoopService();
+        $container['service'];
 
         unset($container['service']);
 

@@ -98,11 +98,11 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
             throw new ContainerItemFrozenException($id);
         }
 
-        unset($this->bag[$id], $this->frozen[$id]);
-
         if (isset($this->instantiated[$id]) && is_object($this->instantiated[$id])) {
             unset($this->factories[$this->bag[$id]]);
         }
+
+        unset($this->bag[$id], $this->frozen[$id]);
     }
 
     /**
