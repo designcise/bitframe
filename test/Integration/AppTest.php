@@ -34,14 +34,14 @@ class AppTest extends TestCase
         $request = HttpFactory::createServerRequest('HEAD', '/', []);
         $response = $this->app->handle($request);
 
-        $this->assertEmpty((string)$response->getBody());
+        $this->assertEmpty((string) $response->getBody());
     }
 
     public function testCanWriteToStream(): void
     {
         $this->app->write('Hello world!');
 
-        $this->assertSame('Hello world!', (string)$this->app->getResponse()->getBody());
+        $this->assertSame('Hello world!', (string) $this->app->getResponse()->getBody());
     }
 
     public function testIsXhrRequest(): void

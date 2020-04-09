@@ -42,15 +42,14 @@ class ContentNegotiator
     public const CONTENT_TYPE_XML = 'xml';
 
     /** @var array Supported MIME types per content type. */
-    private static $contentTypes = [
+    private static array $contentTypes = [
         self::CONTENT_TYPE_HTML => ['text/html', 'application/xhtml+xml'],
         self::CONTENT_TYPE_JSON => ['application/json', 'text/json', 'application/x-json'],
         self::CONTENT_TYPE_XML => ['text/xml', 'application/xml', 'application/x-xml'],
         self::CONTENT_TYPE_TEXT => ['text/plain']
     ];
 
-    /** @var array */
-    private static $contentParsers = [
+    private static array $contentParsers = [
         self::CONTENT_TYPE_DEFAULT => 'BitFrame\Parser\DefaultMediaParser',
         self::CONTENT_TYPE_JSON => 'BitFrame\Parser\JsonMediaParser',
         self::CONTENT_TYPE_XML => 'BitFrame\Parser\XmlMediaParser',

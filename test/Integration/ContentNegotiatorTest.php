@@ -39,6 +39,8 @@ class ContentNegotiatorTest extends TestCase
             'app_x_xml' => ['application/x-xml', XmlMediaParser::class],
 
             'text_plain' => ['text/plain', DefaultMediaParser::class],
+            'form_urlencoded' => ['application/x-www-form-urlencoded', DefaultMediaParser::class],
+            'form_data' => ['multipart/form-data', DefaultMediaParser::class],
         ];
     }
 

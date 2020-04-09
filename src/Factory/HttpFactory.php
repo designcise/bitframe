@@ -110,7 +110,7 @@ class HttpFactory
      * @param array $parsedBody
      * @param array $cookies
      * @param array $files
-     * @param resource|string $body
+     * @param resource|string|StreamInterface $body
      *
      * @return ServerRequestInterface
      */

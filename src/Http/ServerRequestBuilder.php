@@ -32,6 +32,7 @@ use function strtolower;
 use function substr;
 use function str_replace;
 use function urldecode;
+use function call_user_func;
 
 use const PHP_URL_PORT;
 use const PREG_SET_ORDER;
@@ -135,7 +136,7 @@ class ServerRequestBuilder
         $isBodyEmpty = (null === $this->body);
 
         if (empty($this->parsedBody) && ! $isBodyEmpty) {
-            $parser = \call_user_func(self::$preferredMediaParser, $request);
+            $parser = call_user_func(self::$preferredMediaParser, $request);
             $this->parsedBody = $parser->parse((string) $this->body);
         }
 
