@@ -181,7 +181,7 @@ abstract class AbstractRouter
      */
     public function any(string $path, $handler): void
     {
-        $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $path, $handler);
+        $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'], $path, $handler);
     }
 
     /**
