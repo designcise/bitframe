@@ -136,10 +136,5 @@ class RouteGroupTest extends TestCase
         $this->assertSame('OPTIONS', $routeData['method']);
         $this->assertSame('/foo/bar', $routeData['path']);
         $this->assertSame($handler, $routeData['handler']);
-
-        $routeData = $this->router->getRouteDataByMethod('HEAD');
-        $this->assertSame('HEAD', $routeData['method']);
-        $this->assertSame('/foo/bar', $routeData['path']);
-        $this->assertSame($handler, $routeData['handler']);
     }
 }
