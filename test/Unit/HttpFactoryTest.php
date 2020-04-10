@@ -12,10 +12,16 @@ declare(strict_types=1);
 
 namespace BitFrame\Test\Unit;
 
+use ReflectionClass;
+use ReflectionObject;
 use PHPUnit\Framework\TestCase;
 use BitFrame\Factory\{HttpFactoryInterface, HttpFactory};
 use BitFrame\Test\Asset\InteropMiddleware;
 use InvalidArgumentException;
+use RuntimeException;
+
+use function get_class;
+use function in_array;
 
 /**
  * @covers \BitFrame\Factory\HttpFactory
@@ -54,5 +60,59 @@ class HttpFactoryTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         HttpFactory::addFactory($factory);
+    }
+
+    /**
+     * @runInSeparateProcess
+     *
+     * @throws \ReflectionException
+     */
+    public function testNoFactoriesFound(): void
+    {
+        $reflection = new ReflectionClass(HttpFactory::class);
+        $property = $reflection->getProperty('factoriesList');
+        $property->setAccessible(true);
+        $property->setValue([]);
+
+        $this->expectException(RuntimeException::class);
+
+        HttpFactory::getFactory();
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testCanResolveCustomFactoryByClassName(): void
+    {
+        $customFactory = $this->getMockBuilder(HttpFactoryInterface::class)
+            ->getMock();
+
+        HttpFactory::addFactory($customFactory);
+
+        $this->assertInstanceOf(get_class($customFactory), HttpFactory::getFactory());
+    }
+
+    /**
+     * @runInSeparateProcess
+     *
+     * @throws \ReflectionException
+     */
+    public function testSkipsAndRemovesNonExistingFactory(): void
+    {
+        $reflection = new ReflectionClass(HttpFactory::class);
+        $property = $reflection->getProperty('factoriesList');
+        $property->setAccessible(true);
+        $property->setValue([
+            '\Non\Existent\Factory',
+            ...$property->getValue('factoriesList'),
+        ]);
+
+        HttpFactory::getFactory();
+
+        $propertyAfter = $reflection->getProperty('factoriesList');
+        $propertyAfter->setAccessible(true);
+        $activeFactoriesList = $propertyAfter->getValue('factoriesList');
+
+        $this->assertNotContains('\Non\Existent\Factory', $activeFactoriesList);
     }
 }
