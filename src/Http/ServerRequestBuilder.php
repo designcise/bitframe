@@ -14,6 +14,7 @@ namespace BitFrame\Http;
 
 use Psr\Http\Message\{
     ServerRequestInterface,
+    StreamFactoryInterface,
     StreamInterface,
     UploadedFileInterface
 };
@@ -323,22 +324,85 @@ class ServerRequestBuilder
     public function addUploadedFiles(array $files): self
     {
         if (! empty($files)) {
-            foreach ($files as $key => $value) {
-                if ($value instanceof UploadedFileInterface) {
-                    $this->uploadedFiles[$key] = $value;
-                } elseif (is_array($value)) {
-                    $this->uploadedFiles[$key] = (isset($value['tmp_name']))
-                        ? $this->createUploadedFileFromSpec($value)
-                        : $this->addUploadedFiles($value);
-
-                    continue;
-                }
-
-                throw new InvalidArgumentException('Invalid value in files specification');
-            }
+            $this->uploadedFiles = self::normalizeUploadedFiles($files, $this->factory);
         }
 
         return $this;
+    }
+
+    /**
+     * Create and return an UploadedFile instance from a `$_FILES` specification.
+     *
+     * If the specification represents an array of values, this method will loops
+     * through all nested files and return a normalized array of `UploadedFileInterface`
+     * instances.
+     *
+     * @param array $files `$_FILES` struct.
+     * @param StreamFactoryInterface $streamFactory
+     *
+     * @return UploadedFileInterface[]|UploadedFileInterface
+     */
+    private static function createUploadedFileFromSpec(
+        array $files,
+        StreamFactoryInterface $streamFactory
+    ) {
+        if (is_array($files['tmp_name'])) {
+            $normalizedFiles = [];
+
+            foreach ($files['tmp_name'] as $key => $file) {
+                $normalizedFiles[$key] = self::createUploadedFileFromSpec([
+                    'tmp_name' => $files['tmp_name'][$key],
+                    'size' => $files['size'][$key],
+                    'error' => $files['error'][$key],
+                    'name' => $files['name'][$key],
+                    'type' => $files['type'][$key],
+                ], $streamFactory);
+            }
+
+            return $normalizedFiles;
+        }
+
+        $stream = ($files['tmp_name'] instanceof StreamInterface)
+            ? $files['tmp_name']
+            : $streamFactory->createStreamFromFile($files['tmp_name'], 'r+');
+
+        return $streamFactory->createUploadedFile(
+            $stream, $files['size'], (int) $files['error'], $files['name'], $files['type']
+        );
+    }
+
+    /**
+     * Transforms each value into an `UploadedFile` instance, and ensures that nested
+     * arrays are normalized.
+     *
+     * @param array $files
+     * @param StreamFactoryInterface $streamFactory
+     *
+     * @return UploadedFileInterface[]
+     *
+     * @throws InvalidArgumentException
+     */
+    private static function normalizeUploadedFiles(
+        array $files,
+        StreamFactoryInterface $streamFactory
+    ): array {
+        $normalized = [];
+
+        foreach ($files as $key => $value) {
+            if ($value instanceof UploadedFileInterface) {
+                $normalized[$key] = $value;
+            } elseif (\is_array($value)) {
+                $normalized[$key] = (isset($value['tmp_name']))
+                    ? self::createUploadedFileFromSpec($value, $streamFactory)
+                    : self::normalizeUploadedFiles($value, $streamFactory);
+
+                continue;
+            }
+
+            throw new InvalidArgumentException('Invalid value in files specification');
+        }
+
+        return $normalized;
     }
 
     /**
@@ -371,49 +435,6 @@ class ServerRequestBuilder
         (substr($authority, -1) === '/')
             ? rtrim($authority, '/') . ":{$server['SERVER_PORT']}/"
             : "{$authority}:{$server['SERVER_PORT']}"
-        );
-    }
-
-    /**
-     * Create and return an UploadedFile instance from a `$_FILES` specification.
-     *
-     * If the specification represents an array of values, this method will loops
-     * through all nested files and return a normalized array of `UploadedFileInterface`
-     * instances.
-     *
-     * @param array $files `$_FILES` struct.
-     * @return UploadedFileInterface[]|UploadedFileInterface
-     */
-    private function createUploadedFileFromSpec(array $files)
-    {
-        $streamFactory = $this->factory;
-
-        if (is_array($files['tmp_name'])) {
-            $normalizedFiles = [];
-
-            foreach ($files['tmp_name'] as $key => $file) {
-                $normalizedFiles[$key] = $this->createUploadedFileFromSpec([
-                    'tmp_name' => $files['tmp_name'][$key],
-                    'size' => $files['size'][$key],
-                    'error' => $files['error'][$key],
-                    'name' => $files['name'][$key],
-                    'type' => $files['type'][$key],
-                ]);
-            }
-
-            return $normalizedFiles;
-        }
-
-        $stream = ($files['tmp_name'] instanceof StreamInterface)
-            ? $files['tmp_name']
-            : $streamFactory->createStreamFromFile($files['tmp_name'], 'r+');
-
-        return $streamFactory->createUploadedFile(
-            $stream,
-            $files['size'],
-            (int) $files['error'],
-            $files['name'],
-            $files['type']
         );
     }
 

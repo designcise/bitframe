@@ -13,9 +13,9 @@ declare(strict_types=1);
 namespace BitFrame\Test\Integration;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\ServerRequestBuilder;
-use Psr\Http\Message\StreamInterface;
 use UnexpectedValueException;
 
 /**
@@ -392,5 +392,126 @@ class ServerRequestBuilderTest extends TestCase
         (new ServerRequestBuilder(['SERVER_PROTOCOL' => $protocol], $this->factory))
             ->addProtocolVersion()
             ->build();
+    }
+
+    public function testCanAddUploadedFiles()
+    {
+        $stream = HttpFactory::createStreamFromFile('php://temp');
+        $files = [
+                'files' => [
+                'tmp_name' => $stream,
+                'size' => 0,
+                'error' => 0,
+                'name' => 'foo.bar',
+                'type' => 'text/plain',
+            ]
+        ];
+
+        $request = (new ServerRequestBuilder([], $this->factory))
+            ->addUploadedFiles($files)
+            ->build();
+
+        $expectedFiles = [
+            'files' => HttpFactory::createUploadedFile($stream, 0, 0, 'foo.bar', 'text/plain')
+        ];
+
+        $this->assertEquals($expectedFiles, $request->getUploadedFiles());
+    }
+
+    public function testAddUploadedFileFromFileSpecification(): void
+    {
+        $files = [
+            'logo' => [
+                'tmp_name' => self::ASSETS_DIR . 'logo.png',
+                'name' => 'bitframe-logo.png',
+                'size' => 8316,
+                'type' => 'image/png',
+                'error' => 0,
+            ],
+        ];
+
+        $request = (new ServerRequestBuilder([], $this->factory))
+            ->addUploadedFiles($files)
+            ->build();
+
+        $normalized = $request->getUploadedFiles();
+
+        $this->assertCount(1, $normalized);
+        $this->assertInstanceOf(UploadedFileInterface::class, $normalized['logo']);
+        $this->assertEquals('bitframe-logo.png', $normalized['logo']->getClientFilename());
+    }
+
+    public function testTraversesNestedFileSpecificationToExtractUploadedFile(): void
+    {
+        $files = [
+            'my-form' => [
+                'details' => [
+                    'logo' => [
+                        'tmp_name' => self::ASSETS_DIR . 'logo.png',
+                        'name' => 'bitframe-logo.png',
+                        'size' => 8316,
+                        'type' => 'image/png',
+                        'error' => 0,
+                    ],
+                ],
+            ],
+        ];
+
+        $request = (new ServerRequestBuilder([], $this->factory))
+            ->addUploadedFiles($files)
+            ->build();
+
+        $normalized = $request->getUploadedFiles();
+
+        $this->assertCount(1, $normalized);
+        $this->assertEquals('bitframe-logo.png', $normalized['my-form']['details']['logo']->getClientFilename());
+    }
+
+    public function testTraversesNestedFileSpecificationContainingNumericIndicesToExtractUploadedFiles(): void
+    {
+        $files = [
+            'my-form' => [
+                'details' => [
+                    'avatars' => [
+                        'tmp_name' => [
+                            0 => self::ASSETS_DIR . 'logo.png',
+                            1 => self::ASSETS_DIR . 'logo-1.png',
+                            2 => self::ASSETS_DIR . 'logo-2.png',
+                        ],
+                        'name' => [
+                            0 => 'file1.txt',
+                            1 => 'file2.txt',
+                            2 => 'file3.txt',
+                        ],
+                        'size' => [
+                            0 => 100,
+                            1 => 240,
+                            2 => 750,
+                        ],
+                        'type' => [
+                            0 => 'plain/txt',
+                            1 => 'image/jpg',
+                            2 => 'image/png',
+                        ],
+                        'error' => [
+                            0 => 0,
+                            1 => 0,
+                            2 => 0,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $request = (new ServerRequestBuilder([], $this->factory))
+            ->addUploadedFiles($files)
+            ->build();
+
+        $normalized = $request->getUploadedFiles();
+
+        $this->assertCount(3, $normalized['my-form']['details']['avatars']);
+        $this->assertEquals('file1.txt', $normalized['my-form']['details']['avatars'][0]->getClientFilename());
+        $this->assertEquals('file2.txt', $normalized['my-form']['details']['avatars'][1]->getClientFilename());
+        $this->assertEquals('file3.txt', $normalized['my-form']['details']['avatars'][2]->getClientFilename());
     }
 }
