@@ -15,6 +15,7 @@ namespace BitFrame\Test\Integration;
 use PHPUnit\Framework\TestCase;
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\ServerRequestBuilder;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * @covers \BitFrame\Http\ServerRequestBuilder
@@ -172,7 +173,7 @@ class ServerRequestBuilderTest extends TestCase
      * @param array $serverParams
      * @param string $expectedUri
      */
-    public function testCanSetAllUriProperties(
+    public function testCanUriFromServerParams(
         array $serverParams,
         string $expectedUri
     ): void {
@@ -236,6 +237,9 @@ class ServerRequestBuilderTest extends TestCase
 
     /**
      * @dataProvider methodProvider
+     *
+     * @param array $serverParams
+     * @param string $expectedMethod
      */
     public function testCanAddMethod(array $serverParams, string $expectedMethod): void
     {
@@ -244,5 +248,97 @@ class ServerRequestBuilderTest extends TestCase
             ->build();
 
         $this->assertSame($expectedMethod, $serverRequest->getMethod());
+    }
+
+    public function cookiesProvider(): array
+    {
+        return [
+            'no cookies' => [[], [], []],
+            'cookies via HTTP_COOKIE' => [
+                [
+                    'HTTP_COOKIE' => 'Set-Cookie: foo=bar; domain=test.com; path=/; expires=Wed, 30 Aug 2019 00:00:00 GMT',
+                ],
+                [],
+                ['foo' => 'bar']
+            ],
+            'parsed cookies' => [
+                [],
+                ['foo' => 'bar'],
+                ['foo' => 'bar']
+            ],
+            'parsed cookies take precedence over HTTP_COOKIE' => [
+                [
+                    'HTTP_COOKIE' => 'Set-Cookie: foo=bar; domain=test.com; path=/; expires=Wed, 30 Aug 2019 00:00:00 GMT',
+                ],
+                ['hello' => 'world'],
+                ['hello' => 'world']
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider cookiesProvider
+     *
+     * @param array $serverParams
+     * @param array $cookieParams
+     * @param array $expected
+     */
+    public function testCanAddCookieParams(
+        array $serverParams,
+        array $cookieParams,
+        array $expected
+    ): void {
+        $serverRequest = (new ServerRequestBuilder($serverParams, $this->factory))
+            ->addCookieParams($cookieParams)
+            ->build();
+
+        $this->assertSame($expected, $serverRequest->getCookieParams());
+    }
+
+    public function bodyProvider(): array
+    {
+        $resource = fopen('php://temp', 'r+');
+        fwrite($resource, 'Hello world');
+
+        return [
+            'null' => [null, ''],
+            'empty string' => ['', ''],
+            'empty array' => [[], ''],
+            'boolean false' => [false, ''],
+            'boolean true' => [true, '1'],
+            'number 0' => [0, '0'],
+            'float 0.0' => [0.0, '0'],
+            'string 0' => ['0', '0'],
+            'array is ignored' => [['foo', 'bar'], ''],
+            'object is ignored' => [(object) ['foo', 'bar'], ''],
+            'accepts string' => ['hello world', 'hello world'],
+            'accepts number' => [123456789, '123456789'],
+            'accepts float' => [1.25, '1.25'],
+            'accepts numeric string' => ['0123456789', '0123456789'],
+            'accepts boolean true as string' => ['true', 'true'],
+            'accepts boolean false as string' => ['false', 'false'],
+            'accepts resource' => [$resource, 'Hello world'],
+            'accepts StreamInterface' => [HttpFactory::createStream('Foo'), 'Foo'],
+        ];
+    }
+
+    /**
+     * @dataProvider bodyProvider
+     *
+     * @param resource|string|StreamInterface $body
+     * @param string $expected
+     */
+    public function testCanAddBody(
+        $body,
+        string $expected
+    ): void {
+        $serverRequest = (new ServerRequestBuilder([], $this->factory))
+            ->addBody($body)
+            ->build();
+
+        $requestBody = $serverRequest->getBody();
+
+        $this->assertInstanceOf(StreamInterface::class, $requestBody);
+        $this->assertSame($expected, (string) $requestBody);
     }
 }

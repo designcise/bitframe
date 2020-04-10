@@ -23,7 +23,7 @@ use UnexpectedValueException;
 use function array_keys;
 use function is_array;
 use function is_resource;
-use function is_string;
+use function is_object;
 use function ltrim;
 use function parse_url;
 use function preg_match_all;
@@ -293,12 +293,16 @@ class ServerRequestBuilder
      */
     public function addBody($body): self
     {
-        if (! empty($body)) {
-            $body = $this->getBodyAsStream($body);
-
-            if ((string) $body !== '') {
-                $this->body = $body;
+        if (! $body instanceof StreamInterface) {
+            if (is_resource($body)) {
+                $body = $this->factory->createStreamFromResource($body);
+            } elseif (! is_array($body) && ! is_object($body)) {
+                $body = $this->factory->createStream((string) $body);
             }
+        }
+
+        if ($body instanceof StreamInterface && (string) $body !== '') {
+            $this->body = $body;
         }
 
         return $this;
@@ -472,23 +476,5 @@ class ServerRequestBuilder
         }
 
         return $request;
-    }
-
-    /**
-     * @param string|resource|StreamInterface $body
-     *
-     * @return StreamInterface
-     */
-    private function getBodyAsStream($body): StreamInterface
-    {
-        if (! $body instanceof StreamInterface) {
-            if (is_string($body)) {
-                $body = $this->factory->createStream($body);
-            } elseif (is_resource($body)) {
-                $body = $this->factory->createStreamFromResource($body);
-            }
-        }
-
-        return $body;
     }
 }
