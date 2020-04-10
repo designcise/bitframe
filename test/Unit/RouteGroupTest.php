@@ -49,7 +49,7 @@ class RouteGroupTest extends TestCase
         };
     }
 
-    public function testRoutesCanBeGrouped()
+    public function testRoutesCanBeGrouped(): void
     {
         $handler = static function() {};
 
@@ -99,7 +99,7 @@ class RouteGroupTest extends TestCase
         $this->assertSame($handler, $routeData['handler']);
     }
 
-    public function testAnyRouteCanBeAddedInRouteGroup()
+    public function testAnyRouteCanBeAddedInRouteGroup(): void
     {
         $handler = static function() {};
 
@@ -136,5 +136,48 @@ class RouteGroupTest extends TestCase
         $this->assertSame('OPTIONS', $routeData['method']);
         $this->assertSame('/foo/bar', $routeData['path']);
         $this->assertSame($handler, $routeData['handler']);
+    }
+
+    public function groupPathProvider(): array
+    {
+        return [
+            'empty group path' => ['', '/', '/'],
+            'empty route path' => ['/', '', '/'],
+            'empty group and route path' => ['', '', '/'],
+            'group group and route with slashes' => ['/', '/', '/'],
+            'group path without slash' => ['foo', '', '/foo'],
+            'group path with trailing slash' => ['foo/', '', '/foo/'],
+            'group route only with trailing slash' => ['foo', '/', '/foo'],
+            'group group and route with trailing slash' => ['foo/', '/', '/foo/'],
+            'group path with slash' => ['/foo', '', '/foo'],
+            'group route without slash' => ['', 'bar', '/bar'],
+            'group route with slash' => ['', '/bar', '/bar'],
+            'group path and route without slashes' => ['foo', 'bar', '/foo/bar'],
+            'group path and route with slashes' => ['/foo', '/bar', '/foo/bar'],
+            'group route with trailing slash' => ['/foo', '/bar/', '/foo/bar/'],
+            'group route and route with trailing slash' => ['/foo/', '/bar/', '/foo/bar/'],
+        ];
+    }
+
+    /**
+     * @dataProvider groupPathProvider
+     *
+     * @param string $groupPath
+     * @param string $routePath
+     * @param string $expected
+     */
+    public function testGroupPath(
+        string $groupPath,
+        string $routePath,
+        string $expected
+    ): void {
+        $handler = static function() {};
+
+        $group = new RouteGroup($groupPath, $handler, $this->router);
+
+        $group->map(['GET'], $routePath, $handler);
+
+        $routeData = $this->router->getRouteDataByMethod('GET');
+        $this->assertSame($expected, $routeData['path']);
     }
 }

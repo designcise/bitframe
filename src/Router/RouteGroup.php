@@ -50,10 +50,12 @@ class RouteGroup extends AbstractRouter
      */
     public function map($methods, string $path, $handler)
     {
-        $path = ($path === '' || $path === '/')
-            ? ''
-            : ('/' . ltrim($path, '/'))
-        ;
+        if ($path === '' || $path === '/') {
+            $path = '';
+        } else {
+            $path = ((substr($this->prefix, -1) === '/') ? '' : '/')
+                . ltrim($path, '/');
+        }
 
         $this->routeMapper
             ->map($methods, $this->prefix . $path, $handler);
