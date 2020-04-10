@@ -214,7 +214,7 @@ abstract class AbstractRouter
         $this->map(
             (array) $methods,
             $route,
-            static fn () => (new HtmlResponse($html))->withStatus($statusCode)
+            static fn (): ResponseInterface => (new HtmlResponse($html))->withStatus($statusCode)
         );
     }
 
@@ -231,7 +231,7 @@ abstract class AbstractRouter
         $this->map(
             (array) $methods,
             $route,
-            static fn () => (new JsonResponse($data))->withStatus($statusCode)
+            static fn (): ResponseInterface => (new JsonResponse($data))->withStatus($statusCode)
         );
     }
 
@@ -254,7 +254,7 @@ abstract class AbstractRouter
         $this->map(
             (array) $methods,
             $route,
-            static fn () => (new JsonpResponse($data, $callback))->withStatus($statusCode)
+            static fn (): ResponseInterface => (new JsonpResponse($data, $callback))->withStatus($statusCode)
         );
     }
     
@@ -271,7 +271,7 @@ abstract class AbstractRouter
         $this->map(
             (array) $methods,
             $route,
-            static fn () => (new XmlResponse($xml))->withStatus($statusCode)
+            static fn (): ResponseInterface => (new XmlResponse($xml))->withStatus($statusCode)
         );
     }
 
@@ -279,14 +279,14 @@ abstract class AbstractRouter
      * Add a route that sends a file response.
      *
      * @param string $route
-     * @param string $fileUrl
+     * @param string $filePath
      */
-    public function file(string $route, string $fileUrl): void
+    public function file(string $route, string $filePath): void
     {
         $this->map(
             ['GET'],
             $route,
-            static fn () => new FileResponse($fileUrl)
+            static fn (): ResponseInterface => new FileResponse($filePath)
         );
     }
 
@@ -305,7 +305,7 @@ abstract class AbstractRouter
         $this->map(
             ['GET'],
             $route,
-            static fn () => new DownloadResponse($downloadUrl, $serveFilenameAs)
+            static fn (): ResponseInterface => new DownloadResponse($downloadUrl, $serveFilenameAs)
         );
     }
     
@@ -321,7 +321,7 @@ abstract class AbstractRouter
         $this->map(
             ['GET'],
             $fromUrl,
-            static fn () => new RedirectResponse($toUrl, $statusCode)
+            static fn (): ResponseInterface => new RedirectResponse($toUrl, $statusCode)
         );
     }
 

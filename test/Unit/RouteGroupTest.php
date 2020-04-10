@@ -11,6 +11,7 @@
 namespace BitFrame\Test;
 
 use PHPUnit\Framework\TestCase;
+use BitFrame\Test\Asset\SingleRouteRouter;
 use BitFrame\Router\AbstractRouter;
 use BitFrame\Router\RouteGroup;
 
@@ -19,30 +20,11 @@ use BitFrame\Router\RouteGroup;
  */
 class RouteGroupTest extends TestCase
 {
-    /** @var \PHPUnit\Framework\MockObject\MockObject|AbstractRouter */
-    private $router;
+    private AbstractRouter $router;
 
     public function setUp(): void
     {
-        $this->router = new class extends AbstractRouter {
-            private array $route = [];
-
-            public function map($methods, string $path, $handler)
-            {
-                foreach ($methods as $method) {
-                    $this->route[$method] = [
-                        'method' => $method,
-                        'path' => $path,
-                        'handler' => $handler,
-                    ];
-                }
-            }
-
-            public function getRouteDataByMethod(string $method): array
-            {
-                return $this->route[$method] ?? [];
-            }
-        };
+        $this->router = new SingleRouteRouter();
     }
 
     public function testRoutesCanBeGrouped(): void
