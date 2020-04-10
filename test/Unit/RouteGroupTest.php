@@ -1,15 +1,11 @@
 <?php
 
 /**
- * BitFrame Framework (https://bitframe.designcise.com)
+ * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2018 Daniyal Hamid (https://designcise.com)
- *
- * @author    Phil Bennett <philipobenito@gmail.com>
- * @copyright Copyright (c) 2017 Phil Bennett <philipobenito@gmail.com>
- *
- * @license   https://github.com/designcise/bitframe/blob/master/LICENSE.md MIT License
+ * @copyright Copyright (c) 2017-2020 Daniyal Hamid (https://designcise.com)
+ * @license   https://bitframephp.com/about/license MIT License
  */
 
 namespace BitFrame\Test;
