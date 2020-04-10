@@ -33,6 +33,8 @@ use function substr;
 use function str_replace;
 use function urldecode;
 use function call_user_func;
+use function strtr;
+use function sprintf;
 
 use const PHP_URL_PORT;
 use const PREG_SET_ORDER;
@@ -221,12 +223,12 @@ class ServerRequestBuilder
             isset($this->server['SERVER_PROTOCOL'])
             && $this->server['SERVER_PROTOCOL'] !== "HTTP/{$this->protocolVer}"
         ) {
-            $this->protocolVer = \strtr($this->server['SERVER_PROTOCOL'], ['HTTP/' => '']);
+            $this->protocolVer = strtr((string) $this->server['SERVER_PROTOCOL'], ['HTTP/' => '']);
 
             $isNumeric = (int) $this->protocolVer;
 
             if (! $isNumeric) {
-                throw new UnexpectedValueException(\sprintf(
+                throw new UnexpectedValueException(sprintf(
                     'Unrecognized protocol version "%s"',
                     $this->protocolVer
                 ));

@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\ServerRequestBuilder;
 use Psr\Http\Message\StreamInterface;
+use UnexpectedValueException;
 
 /**
  * @covers \BitFrame\Http\ServerRequestBuilder
@@ -340,5 +341,56 @@ class ServerRequestBuilderTest extends TestCase
 
         $this->assertInstanceOf(StreamInterface::class, $requestBody);
         $this->assertSame($expected, (string) $requestBody);
+    }
+
+    public function validProtocolVersionProvider(): array
+    {
+        return [
+            'default value when not set' => [[], '1.1'],
+            'int' => [['SERVER_PROTOCOL' => 1], '1'],
+            'string int' => [['SERVER_PROTOCOL' => '1'], '1'],
+            'float' => [['SERVER_PROTOCOL' => 1.5], '1.5'],
+            'string float' => [['SERVER_PROTOCOL' => '2.0'], '2.0'],
+            'standard protocol syntax' => [['SERVER_PROTOCOL' => 'HTTP/2.0'], '2.0'],
+        ];
+    }
+
+    /**
+     * @dataProvider validProtocolVersionProvider
+     *
+     * @param array $serverParams
+     * @param string $expected
+     */
+    public function testCanAddProtocolVersion(
+        array $serverParams,
+        string $expected
+    ): void {
+        $serverRequest = (new ServerRequestBuilder($serverParams, $this->factory))
+            ->addProtocolVersion()
+            ->build();
+
+        $this->assertSame($expected, $serverRequest->getProtocolVersion());
+    }
+
+    public function invalidProtocolVersionProvider(): array
+    {
+        return [
+            'invalid protocol' => ['INVALID/2.0'],
+            'letters only' => ['abc'],
+            'alphanumeric' => ['abc123'],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidProtocolVersionProvider
+     *
+     * @param string $protocol
+     */
+    public function testInvalidProtocolVersionShouldThrowException(string $protocol): void {
+        $this->expectException(UnexpectedValueException::class);
+
+        (new ServerRequestBuilder(['SERVER_PROTOCOL' => $protocol], $this->factory))
+            ->addProtocolVersion()
+            ->build();
     }
 }
