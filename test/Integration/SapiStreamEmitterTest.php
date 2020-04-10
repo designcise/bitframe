@@ -12,8 +12,15 @@ declare(strict_types=1);
 
 namespace BitFrame\Test\Integration;
 
+use BitFrame\Factory\HttpFactory;
+use BitFrame\Factory\HttpFactoryInterface;
+use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Http\Message\StreamInterface;
+use ReflectionClass;
 use BitFrame\Emitter\SapiStreamEmitter;
 use BitFrame\Http\Message\TextResponse;
+
+use function get_class;
 
 /**
  * @covers \BitFrame\Emitter\SapiStreamEmitter
@@ -36,5 +43,21 @@ class SapiStreamEmitterTest extends AbstractSapiEmitterTest
         $this->emitter->emit($response);
         $this->assertSame('text/plain; charset=utf-8', $response->getHeaderLine('content-type'));
         $this->assertSame($contents, ob_get_clean());
+    }
+
+    public function testReturnsBodyWhenNotReadableButIsSeekable(): void
+    {
+        $body = $this->getMockBuilder(StreamInterface::class)
+            ->onlyMethods(['isSeekable', 'isReadable', '__toString'])
+            ->getMockForAbstractClass();
+
+        $body->method('isSeekable')->willReturn(true);
+        $body->method('isReadable')->willReturn(false);
+        $body->method('__toString')->willReturn('hello');
+
+        $response = HttpFactory::createResponse()
+            ->withBody($body);
+
+        $this->assertSame('hello', (string) $response->getBody());
     }
 }
