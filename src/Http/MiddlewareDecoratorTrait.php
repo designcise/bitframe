@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace BitFrame\Http;
 
+use RecursiveIteratorIterator;
+use RecursiveArrayIterator;
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
 use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
 
@@ -33,15 +35,17 @@ trait MiddlewareDecoratorTrait
      *
      * @return array
      */
-    public function getUnpackedMiddleware($middleware, $collection = []): array
+    public function getUnpackedMiddleware($middleware): array
     {
         if (empty($middleware)) {
             return [];
         }
 
         if (is_array($middleware) && ! is_callable($middleware, true)) {
+            $collection = [];
+
             foreach ($middleware as $md) {
-                $collection = [...$collection, ...$this->getUnpackedMiddleware($md, $collection)];
+                $collection = [...$collection, ...$this->getUnpackedMiddleware($md)];
             }
 
             return $collection;

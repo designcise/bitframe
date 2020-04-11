@@ -15,13 +15,6 @@ use Psr\Http\Server\{RequestHandlerInterface, MiddlewareInterface};
 
 class InteropMiddleware implements MiddlewareInterface
 {
-    public function __invoke(
-        ServerRequestInterface $request, 
-        RequestHandlerInterface $handler
-    ): ResponseInterface {
-        return $this->run($request, $handler);
-    }
-
     public static function staticRun(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler

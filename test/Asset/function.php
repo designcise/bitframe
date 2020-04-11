@@ -22,8 +22,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  * @return ResponseInterface
  */
 function helloWorldCallable(
-    ServerRequestInterface $request, 
-    ResponseInterface $handler
+    ServerRequestInterface $request,
+    RequestHandlerInterface $handler
 ): ResponseInterface {
     $response = $handler->handle($request);
     $response->getBody()->write('Hello World!');

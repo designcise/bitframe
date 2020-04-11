@@ -11,12 +11,16 @@
 namespace BitFrame\Test\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Closure;
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
 use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
 use BitFrame\Http\MiddlewareDecoratorTrait;
 use BitFrame\Factory\HttpFactory;
-use BitFrame\Test\Asset\{HelloWorldMiddleware, InteropMiddleware};
+use BitFrame\Test\Asset\{
+    CallableClass,
+    HelloWorldMiddleware,
+    InteropMiddleware,
+    HelloWorldMiddlewareTrait
+};
 use TypeError;
 
 /**
@@ -24,6 +28,8 @@ use TypeError;
  */
 class MiddlewareDecoratorTraitTest extends TestCase
 {
+    use HelloWorldMiddlewareTrait;
+
     /** @var MiddlewareDecoratorTrait */
     private $middlewareDecorator;
     
@@ -68,7 +74,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
         $middlewares = [
             $this->getHelloWorldMiddlewareAsPsr15(),
             $this->getHelloWorldMiddlewareAsClosure(),
-            new InteropMiddleware(),
+            new CallableClass(),
             HelloWorldMiddleware::class,
             InteropMiddleware::class . '::staticRun',
             'BitFrame\Test\Asset\helloWorldCallable',
@@ -129,7 +135,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
         return [
             ['psr15' => $this->getHelloWorldMiddlewareAsPsr15()],
             ['closure' => $this->getHelloWorldMiddlewareAsClosure()],
-            ['invokable_class' => new InteropMiddleware()],
+            ['invokable_class' => new CallableClass()],
             ['string_class' => HelloWorldMiddleware::class],
             ['string_static_callable' => InteropMiddleware::class . '::staticRun'],
             ['string_function' => 'BitFrame\Test\Asset\helloWorldCallable'],
@@ -155,7 +161,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     {
         return [
             ['closure' => $this->getHelloWorldMiddlewareAsClosure()],
-            ['invokable_class' => new InteropMiddleware()],
+            ['invokable_class' => new CallableClass()],
             ['string_static_callable' => InteropMiddleware::class . '::staticRun'],
             ['array_object_callable' => [new InteropMiddleware, 'run']],
             ['array_string_callable' => [InteropMiddleware::class, 'staticRun']]
@@ -173,34 +179,6 @@ class MiddlewareDecoratorTraitTest extends TestCase
         $response = $middleware->process($this->request, $this->getRequestHandlerMock());
 
         $this->assertSame('Hello World!', (string) $response->getBody());
-    }
-
-    private function getHelloWorldMiddlewareAsPsr15(): MiddlewareInterface
-    {
-        return new class implements MiddlewareInterface {
-            public function process(
-                ServerRequestInterface $request, 
-                RequestHandlerInterface $handler
-            ): ResponseInterface {
-                $response = $handler->handle($request);
-                $response->getBody()->write('Hello World!');
-
-                return $response;
-            }
-        };
-    }
-
-    private function getHelloWorldMiddlewareAsClosure(): Closure
-    {
-        return function (
-            ServerRequestInterface $request, 
-            RequestHandlerInterface $handler
-        ): ResponseInterface {
-            $response = $handler->handle($request);
-            $response->getBody()->write('Hello World!');
-
-            return $response;
-        };
     }
 
     /**

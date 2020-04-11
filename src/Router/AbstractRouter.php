@@ -346,7 +346,7 @@ abstract class AbstractRouter
             return $routeController;
         }
 
-        $methodName = $this->createMethodNameFromPath($pathChunks);
+        $methodName = $this->createMethodNameFromPathChunks($pathChunks);
         $methodName = "{$methodName}Action";
 
         if (isset($pathChunks[1]) && method_exists($routeController, $methodName)) {
@@ -382,7 +382,7 @@ abstract class AbstractRouter
      * @param array $pathChunks
      * @return string
      */
-    protected function createMethodNameFromPath(array $pathChunks): string
+    private function createMethodNameFromPathChunks(array $pathChunks): string
     {
         $methodName = '';
         $totalPathChunks = count($pathChunks);

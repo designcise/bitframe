@@ -10,16 +10,26 @@
 
 namespace BitFrame\Test\Integration;
 
-use BitFrame\Factory\HttpFactory;
 use PHPUnit\Framework\TestCase;
+use BitFrame\Factory\HttpFactory;
 use BitFrame\App;
-use BitFrame\Test\Asset\HelloWorldMiddleware;
+use BitFrame\Test\Asset\{
+    CallableClass,
+    HelloWorldMiddleware,
+    InteropMiddleware,
+    HelloWorldMiddlewareTrait
+};
+use Psr\Http\Message\ResponseInterface;
+
+use function str_repeat;
 
 /**
  * @covers \BitFrame\App
  */
 class AppTest extends TestCase
 {
+    use HelloWorldMiddlewareTrait;
+
     private App $app;
 
     public function setUp(): void
@@ -35,6 +45,57 @@ class AppTest extends TestCase
         $response = $this->app->handle($request);
 
         $this->assertEmpty((string) $response->getBody());
+    }
+
+    public function testRun(): void
+    {
+        $arrayOfMiddlewares = [
+            $this->getHelloWorldMiddlewareAsPsr15(),
+            $this->getHelloWorldMiddlewareAsClosure(),
+            new CallableClass(),
+            HelloWorldMiddleware::class,
+            InteropMiddleware::class . '::staticRun',
+            'BitFrame\Test\Asset\helloWorldCallable',
+            [new InteropMiddleware(), 'run'],
+            [InteropMiddleware::class, 'staticRun'],
+        ];
+
+        /** @var ResponseInterface $response */
+        $response = $this->app->run($arrayOfMiddlewares);
+
+        $this->assertSame(
+            str_repeat('Hello World!', count($arrayOfMiddlewares)),
+            (string) $response->getBody()
+        );
+    }
+
+    public function testUseWithArrayOfMiddlewares(): void
+    {
+        $request = HttpFactory::createServerRequest('GET', '/');
+
+        $arrayOfMiddlewares = [
+            $this->getHelloWorldMiddlewareAsPsr15(),
+            $this->getHelloWorldMiddlewareAsClosure(),
+            new CallableClass(),
+            HelloWorldMiddleware::class,
+            InteropMiddleware::class . '::staticRun',
+            'BitFrame\Test\Asset\helloWorldCallable',
+            [new InteropMiddleware(), 'run'],
+            [InteropMiddleware::class, 'staticRun'],
+        ];
+
+        $app = $this->app;
+
+        $arr = [];
+        array_push($arr, $arrayOfMiddlewares, ...$arrayOfMiddlewares);
+
+        $app->use([$arr]);
+        $response = $app->handle($request);
+
+        $this->assertSame(
+            str_repeat('Hello World!', 16),
+            (string) $response->getBody()
+        );
     }
 
     public function testCanWriteToStream(): void
