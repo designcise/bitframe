@@ -33,8 +33,8 @@ use function strtolower;
 use function substr;
 use function str_replace;
 use function urldecode;
-use function call_user_func;
 use function strtr;
+use function count;
 use function sprintf;
 
 use const PHP_URL_PORT;
@@ -69,8 +69,8 @@ class ServerRequestBuilder
     /** @var array */
     private array $cookieParams = [];
 
-    /** @var null|array */
-    private ?array $parsedBody;
+    /** @var null|array|object */
+    private $parsedBody;
 
     /** @var null|StreamInterface */
     private ?StreamInterface $body = null;
@@ -139,11 +139,15 @@ class ServerRequestBuilder
         $isBodyEmpty = (null === $this->body);
 
         if (empty($this->parsedBody) && ! $isBodyEmpty) {
-            $parser = call_user_func(self::$preferredMediaParser, $request);
+            $parser = (self::$preferredMediaParser)($request);
             $this->parsedBody = $parser->parse((string) $this->body);
         }
 
-        if (! empty($this->parsedBody)) {
+        if (
+            null === $this->parsedBody
+            || is_array($this->parsedBody)
+            || is_object($this->parsedBody)
+        ) {
             $request = $request->withParsedBody($this->parsedBody);
         }
 
@@ -279,12 +283,18 @@ class ServerRequestBuilder
     }
 
     /**
-     * @param null|array $parsedBody
+     * @param null|array|object $parsedBody
      *
      * @return $this
      */
-    public function addParsedBody(?array $parsedBody): self
+    public function addParsedBody($parsedBody): self
     {
+        if (null !== $parsedBody && ! is_array($parsedBody) && ! is_object($parsedBody)) {
+            throw new InvalidArgumentException(
+                'Parsed body can only be null, an array or an object'
+            );
+        }
+
         $this->parsedBody = $parsedBody;
         return $this;
     }
@@ -391,15 +401,13 @@ class ServerRequestBuilder
         foreach ($files as $key => $value) {
             if ($value instanceof UploadedFileInterface) {
                 $normalized[$key] = $value;
-            } elseif (\is_array($value)) {
+            } elseif (is_array($value)) {
                 $normalized[$key] = (isset($value['tmp_name']))
                     ? self::createUploadedFileFromSpec($value, $streamFactory)
                     : self::normalizeUploadedFiles($value, $streamFactory);
-
-                continue;
+            } else {
+                throw new InvalidArgumentException('Invalid value in files specification');
             }
-
-            throw new InvalidArgumentException('Invalid value in files specification');
         }
 
         return $normalized;
@@ -452,16 +460,20 @@ class ServerRequestBuilder
      */
     private function parseCookieHeader(string $cookieHeader): array
     {
-        preg_match_all(
-            '/^(?:Set-Cookie:)\s*(?P<name>[^=]*)=(?P<value>[^;]*)/i',
-            $cookieHeader,
-            $matches,
-            PREG_SET_ORDER
-        );
+        preg_match_all('(
+            (?:^\\n?[ \t]*|[;:][ ])
+            (?P<name>[!#$%&\'*+-.0-9A-Z^_`a-z|~]+)
+            =
+            (?P<DQUOTE>"?)
+                (?P<value>[\x21\x23-\x2b\x2d-\x3a\x3c-\x5b\x5d-\x7e]*)
+            (?P=DQUOTE)
+            (?=\\n?[ \t]*$|;[ ])
+        )x', $cookieHeader, $matches, PREG_SET_ORDER);
+
         $cookies = [];
 
         foreach ($matches as $match) {
-            $cookies[$match['name']] = urldecode($match['value']);
+            $cookies[$match['name']] = \urldecode($match['value']);
         }
 
         return $cookies;
@@ -477,7 +489,7 @@ class ServerRequestBuilder
     ): ServerRequestInterface {
         $originalHeaders = $this->headers['original'];
         $normalizedHeaders = $this->headers['normalized'];
-        $totalMatches = \count($normalizedHeaders);
+        $totalMatches = count($normalizedHeaders);
 
         for ($i = 0; $i < $totalMatches; $i++) {
             $isRedirect = ! (empty($normalizedHeaders[$i][1]));

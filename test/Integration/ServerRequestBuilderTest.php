@@ -12,11 +12,13 @@ declare(strict_types=1);
 
 namespace BitFrame\Test\Integration;
 
+use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\ServerRequestBuilder;
 use UnexpectedValueException;
+use InvalidArgumentException;
 
 /**
  * @covers \BitFrame\Http\ServerRequestBuilder
@@ -255,12 +257,13 @@ class ServerRequestBuilderTest extends TestCase
     {
         return [
             'no cookies' => [[], [], []],
-            'cookies via HTTP_COOKIE' => [
+            'HTTP_COOKIE array' => [['HTTP_COOKIE' => 'foo_bar=baz'], [], ['foo_bar' => 'baz']],
+            'HTTP_COOKIE string' => [
                 [
                     'HTTP_COOKIE' => 'Set-Cookie: foo=bar; domain=test.com; path=/; expires=Wed, 30 Aug 2019 00:00:00 GMT',
                 ],
                 [],
-                ['foo' => 'bar']
+                ['foo' => 'bar', 'domain' => 'test.com', 'path' => '/']
             ],
             'parsed cookies' => [
                 [],
@@ -273,6 +276,36 @@ class ServerRequestBuilderTest extends TestCase
                 ],
                 ['hello' => 'world'],
                 ['hello' => 'world']
+            ],
+            'ows-without-fold' => [
+                ['HTTP_COOKIE' => "\tfoo=bar "],
+                [],
+                ['foo' => 'bar'],
+            ],
+            'url-encoded-value' => [
+                ['HTTP_COOKIE' => 'foo=bar%3B+'],
+                [],
+                ['foo' => 'bar; '],
+            ],
+            'double-quoted-value' => [
+                ['HTTP_COOKIE' => 'foo="bar"'],
+                [],
+                ['foo' => 'bar'],
+            ],
+            'multiple-pairs' => [
+                ['HTTP_COOKIE' => 'foo=bar; baz="bat"; bau=bai'],
+                [],
+                ['foo' => 'bar', 'baz' => 'bat', 'bau' => 'bai'],
+            ],
+            'same-name-pairs' => [
+                ['HTTP_COOKIE' => 'foo=bar; foo="bat"'],
+                [],
+                ['foo' => 'bat'],
+            ],
+            'period-in-name' => [
+                ['HTTP_COOKIE' => 'foo.bar=baz'],
+                [],
+                ['foo.bar' => 'baz'],
             ],
         ];
     }
@@ -343,6 +376,129 @@ class ServerRequestBuilderTest extends TestCase
         $this->assertSame($expected, (string) $requestBody);
     }
 
+    public function invalidParsedBodyProvider(): array
+    {
+        return [
+            'string' => ['foobar'],
+            'float' => [1.5],
+            'int' => [1234],
+            'resource' => [fopen('php://temp', 'rb+')],
+            'boolean' => [true],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidParsedBodyProvider
+     *
+     * @param mixed $parsedBody
+     */
+    public function testCantAddInvalidParsedBody($parsedBody): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        (new ServerRequestBuilder([], $this->factory))
+            ->addParsedBody($parsedBody)
+            ->build();
+    }
+
+    public function validParsedBodyProvider(): array
+    {
+        return [
+            'null' => [null],
+            'empty array' => [[]],
+            'array' => [['foo' => 'bar']],
+            'object' => [new SimpleXMLElement('<data value="tada">Test</data>')],
+        ];
+    }
+
+    /**
+     * @dataProvider validParsedBodyProvider
+     *
+     * @param null|array|object $parsedBody
+     */
+    public function testCanAddParsedBody($parsedBody): void
+    {
+        $request = (new ServerRequestBuilder([], $this->factory))
+            ->addParsedBody($parsedBody)
+            ->build();
+
+        $this->assertSame($parsedBody, $request->getParsedBody());
+    }
+
+    public function parseBodyProvider(): array
+    {
+        $resource = fopen('php://temp', 'r+');
+        fwrite($resource, 'Hello world');
+
+        return [
+            'string' => ['hello world', ['hello_world' => '']],
+            'query string' => ['foo=bar&baz=qux', ['foo' => 'bar', 'baz' => 'qux']],
+            'query string name mangling' => ['Foo bar=baz qux', ['Foo_bar' => 'baz qux']],
+            'number' => [123456789, ['123456789' => '']],
+            'float' => [1.25, ['1_25' => '']],
+            'numeric string' => ['0123456789', ['0123456789' => '']],
+            'boolean true as string' => ['true', ['true' => '']],
+            'boolean false as string' => ['false', ['false' => '']],
+            'resource' => [$resource, ['Hello_world' => '']],
+            'StreamInterface' => [HttpFactory::createStream('Foo'), ['Foo' => '']],
+            'StreamInterface query string' => [
+                HttpFactory::createStream('foo=bar&baz=qux'),
+                ['foo' => 'bar', 'baz' => 'qux']
+            ],
+            'StreamInterface query string name mangling' => [
+                HttpFactory::createStream('Foo bar=baz qux'),
+                ['Foo_bar' => 'baz qux']
+            ],
+            'empty_json' => ['{}', [], 'application/json'],
+            'basic_json' => [
+                '{"name":"John", "age":30, "car":null}', [
+                    'name' => 'John',
+                    'age' => 30,
+                    'car' => null,
+                ],
+                'application/json'
+            ],
+            'json_array' => [
+                '{"name":"John", "age":30, "cars":[ "Ford", "BMW", "Fiat" ]}', [
+                    'name' => 'John',
+                    'age' => 30,
+                    'cars' => ['Ford', 'BMW', 'Fiat'],
+                ],
+                'application/json'
+            ],
+            'empty_key' => [
+                '{ "": { "foo": "" } }',
+                ['' => ['foo' => '']],
+                'application/json'
+            ],
+            'empty_key_value' => [
+                '{ "": { "": "" } }',
+                ['' => ['' => '']],
+                'application/json'
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider parseBodyProvider
+     *
+     * @param resource|string|StreamInterface $body
+     * @param array $expected
+     * @param string $mimeType
+     */
+    public function testShouldParseBodyWhenParsedBodyIsEmpty(
+        $body,
+        $expected,
+        string $mimeType = 'text/plain'
+    ): void {
+        $request = (new ServerRequestBuilder(['HTTP_ACCEPT' => $mimeType], $this->factory))
+            ->addHeaders()
+            ->addBody($body)
+            ->build();
+
+        $this->assertSame($expected, $request->getParsedBody());
+    }
+
     public function validProtocolVersionProvider(): array
     {
         return [
@@ -394,7 +550,7 @@ class ServerRequestBuilderTest extends TestCase
             ->build();
     }
 
-    public function testCanAddUploadedFiles()
+    public function testCanAddUploadedFiles(): void
     {
         $stream = HttpFactory::createStreamFromFile('php://temp');
         $files = [
@@ -513,5 +669,37 @@ class ServerRequestBuilderTest extends TestCase
         $this->assertEquals('file1.txt', $normalized['my-form']['details']['avatars'][0]->getClientFilename());
         $this->assertEquals('file2.txt', $normalized['my-form']['details']['avatars'][1]->getClientFilename());
         $this->assertEquals('file3.txt', $normalized['my-form']['details']['avatars'][2]->getClientFilename());
+    }
+
+    public function testInvalidNestedFileSpecShouldThrowException(): void
+    {
+        $files = [
+            'test' => false,
+        ];
+
+        $this->expectException(InvalidArgumentException::class);
+
+        (new ServerRequestBuilder([], $this->factory))
+            ->addUploadedFiles($files)
+            ->build();
+    }
+
+    public function testCanAddAlreadyNormalizedUploadedFileSpec(): void
+    {
+        $stream = HttpFactory::createStreamFromFile('php://temp');
+        $uploadedFile = HttpFactory::createUploadedFile($stream, 0, 0, 'foo.bar', 'text/plain');
+
+        $files = [
+            'foo_bar' => $uploadedFile,
+        ];
+
+        $request = (new ServerRequestBuilder([], $this->factory))
+            ->addUploadedFiles($files)
+            ->build();
+
+        $normalized = $request->getUploadedFiles();
+
+        $this->assertCount(1, $normalized);
+        $this->assertInstanceOf(UploadedFileInterface::class, $normalized['foo_bar']);
     }
 }
