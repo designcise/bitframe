@@ -202,7 +202,7 @@ class AbstractRouterTest extends TestCase
 
     public function testText(): void
     {
-        $this->router->text(['GET', 'POST'], '/hello/world', 'Testing 123', 200);
+        $this->router->text(['GET', 'POST'], '/hello/world', 'Testing 123', 202);
 
         $routeData = $this->router->getRouteDataByMethod('GET');
         /** @var ResponseInterface $response */
@@ -210,6 +210,7 @@ class AbstractRouterTest extends TestCase
 
         $this->assertEquals('GET', $routeData['method']);
         $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertSame(202, $response->getStatusCode());
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame('Testing 123', (string) $response->getBody());
         $this->assertSame('text/plain; charset=utf-8', $response->getHeaderLine('content-type'));
@@ -220,6 +221,7 @@ class AbstractRouterTest extends TestCase
 
         $this->assertEquals('POST', $routeData['method']);
         $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertSame(202, $response->getStatusCode());
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame('Testing 123', (string) $response->getBody());
         $this->assertSame('text/plain; charset=utf-8', $response->getHeaderLine('content-type'));
@@ -227,7 +229,7 @@ class AbstractRouterTest extends TestCase
 
     public function testHtml(): void
     {
-        $this->router->html(['GET', 'POST'], '/hello/world', '<h1>Testing 123</h1>', 200);
+        $this->router->html(['GET', 'POST'], '/hello/world', '<h1>Testing 123</h1>', 202);
 
         $routeData = $this->router->getRouteDataByMethod('GET');
         /** @var ResponseInterface $response */
@@ -235,6 +237,7 @@ class AbstractRouterTest extends TestCase
 
         $this->assertEquals('GET', $routeData['method']);
         $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertSame(202, $response->getStatusCode());
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame('<h1>Testing 123</h1>', (string) $response->getBody());
         $this->assertSame('text/html; charset=utf-8', $response->getHeaderLine('content-type'));
@@ -245,14 +248,19 @@ class AbstractRouterTest extends TestCase
 
         $this->assertEquals('POST', $routeData['method']);
         $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertSame(202, $response->getStatusCode());
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame('<h1>Testing 123</h1>', (string) $response->getBody());
         $this->assertSame('text/html; charset=utf-8', $response->getHeaderLine('content-type'));
     }
 
-    public function testXml(): void
+    public function testJson(): void
     {
-        $this->router->xml(['GET', 'POST'], '/hello/world', '<test>Test XML</test>', 200);
+        $this->router->json(['GET', 'POST'], '/hello/world', [
+            'name' => 'John',
+            'age' => 30,
+            'car' => null,
+        ], 202);
 
         $routeData = $this->router->getRouteDataByMethod('GET');
         /** @var ResponseInterface $response */
@@ -260,6 +268,65 @@ class AbstractRouterTest extends TestCase
 
         $this->assertEquals('GET', $routeData['method']);
         $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertEquals(202, $response->getStatusCode());
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertSame('{"name":"John","age":30,"car":null}', (string) $response->getBody());
+        $this->assertSame('application/json; charset=utf-8', $response->getHeaderLine('Content-Type'));
+
+        $routeData = $this->router->getRouteDataByMethod('POST');
+        /** @var ResponseInterface $response */
+        $response = $routeData['handler']();
+
+        $this->assertEquals('POST', $routeData['method']);
+        $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertEquals(202, $response->getStatusCode());
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertSame('{"name":"John","age":30,"car":null}', (string) $response->getBody());
+        $this->assertSame('application/json; charset=utf-8', $response->getHeaderLine('Content-Type'));
+    }
+
+    public function testJsonp(): void
+    {
+        $this->router->jsonp(['GET', 'POST'], '/hello/world', [
+            'name' => 'John',
+            'age' => 30,
+            'car' => null,
+        ], 'myCallback', 202);
+
+        $routeData = $this->router->getRouteDataByMethod('GET');
+        /** @var ResponseInterface $response */
+        $response = $routeData['handler']();
+
+        $this->assertEquals('GET', $routeData['method']);
+        $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertEquals(202, $response->getStatusCode());
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertSame('myCallback({"name":"John","age":30,"car":null})', (string) $response->getBody());
+        $this->assertSame('application/javascript; charset=utf-8', $response->getHeaderLine('Content-Type'));
+
+        $routeData = $this->router->getRouteDataByMethod('POST');
+        /** @var ResponseInterface $response */
+        $response = $routeData['handler']();
+
+        $this->assertEquals('POST', $routeData['method']);
+        $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertEquals(202, $response->getStatusCode());
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertSame('myCallback({"name":"John","age":30,"car":null})', (string) $response->getBody());
+        $this->assertSame('application/javascript; charset=utf-8', $response->getHeaderLine('Content-Type'));
+    }
+
+    public function testXml(): void
+    {
+        $this->router->xml(['GET', 'POST'], '/hello/world', '<test>Test XML</test>', 202);
+
+        $routeData = $this->router->getRouteDataByMethod('GET');
+        /** @var ResponseInterface $response */
+        $response = $routeData['handler']();
+
+        $this->assertEquals('GET', $routeData['method']);
+        $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertSame(202, $response->getStatusCode());
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame('<test>Test XML</test>', (string) $response->getBody());
         $this->assertSame('application/xml; charset=utf-8', $response->getHeaderLine('Content-Type'));
@@ -270,6 +337,7 @@ class AbstractRouterTest extends TestCase
 
         $this->assertEquals('POST', $routeData['method']);
         $this->assertSame('/hello/world', $routeData['path']);
+        $this->assertSame(202, $response->getStatusCode());
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame('<test>Test XML</test>', (string) $response->getBody());
         $this->assertSame('application/xml; charset=utf-8', $response->getHeaderLine('Content-Type'));
