@@ -12,11 +12,9 @@ declare(strict_types=1);
 
 namespace BitFrame\Test\Integration;
 
-use Mockery;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\{ServerRequestInterface, StreamInterface, UploadedFileInterface};
+use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
-use BitFrame\Http\ServerRequestBuilder;
 
 use function fopen;
 use function fwrite;
@@ -30,11 +28,6 @@ class HttpFactoryTest extends TestCase
 {
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
-
-    public function tearDown(): void
-    {
-        Mockery::close();
-    }
 
     public function responseArgsProvider(): array
     {
@@ -145,64 +138,6 @@ class HttpFactoryTest extends TestCase
         $this->assertEquals('bitframe-logo.png', $uploadedFiles['logo']->getClientFilename());
         $this->assertInstanceOf(StreamInterface::class, $reqBody);
         $this->assertSame('hello world!', (string) $reqBody);
-    }
-
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     *
-     * @throws \ReflectionException
-     */
-    public function testInjectAvailableFactoryIntoServerRequestFromGlobals(): void
-    {
-        $request = $this->getMockBuilder(ServerRequestInterface::class)
-            ->onlyMethods(['getParsedBody', 'withParsedBody', 'withHeader', 'withProtocolVersion', 'withCookieParams', 'withBody', 'withUploadedFiles'])
-            ->getMockForAbstractClass();
-
-        $request->method('getParsedBody')->willReturn(['foo' => 'bar']);
-        $request->method('withParsedBody')->willReturn($request);
-        $request->method('withHeader')->willReturn($request);
-        $request->method('withProtocolVersion')->willReturn($request);
-        $request->method('withCookieParams')->willReturn($request);
-        $request->method('withBody')->willReturn($request);
-        $request->method('withUploadedFiles')->willReturn($request);
-
-        $stream = $this->getMockBuilder(StreamInterface::class)
-            ->getMockForAbstractClass();
-
-        $httpFactory = new class($request, $stream) {
-            private ServerRequestInterface $request;
-
-            private StreamInterface $stream;
-
-            public function __construct(ServerRequestInterface $request, StreamInterface $stream)
-            {
-                $this->request = $request;
-                $this->stream = $stream;
-            }
-
-            public function createStream(): StreamInterface
-            {
-                return $this->stream;
-            }
-
-            public function createServerRequest(): ServerRequestInterface
-            {
-                return $this->request;
-            }
-        };
-
-        $mockedFactory = Mockery::mock('alias:' . HttpFactory::class);
-        $mockedFactory
-            ->shouldReceive('getFactory')
-            ->andReturn($httpFactory);
-        $mockedFactory
-            ->shouldReceive('createServerRequestFromGlobals')
-            ->andReturn(ServerRequestBuilder::fromSapi([], $httpFactory));
-
-        $request = HttpFactory::createServerRequestFromGlobals();
-
-        $this->assertSame(['foo' => 'bar'], $request->getParsedBody());
     }
 
     public function createStreamArgsProvider(): array
