@@ -508,6 +508,9 @@ class ServerRequestBuilderTest extends TestCase
             'float' => [['SERVER_PROTOCOL' => 1.5], '1.5'],
             'string float' => [['SERVER_PROTOCOL' => '2.0'], '2.0'],
             'standard protocol syntax' => [['SERVER_PROTOCOL' => 'HTTP/2.0'], '2.0'],
+            'HTTP/1.0' => [['SERVER_PROTOCOL' => 'HTTP/1.0'], '1.0'],
+            'HTTP/1.1' => [['SERVER_PROTOCOL' => 'HTTP/1.1'], '1.1'],
+            'HTTP/2' => [['SERVER_PROTOCOL' => 'HTTP/2'], '2'],
         ];
     }
 
@@ -534,6 +537,8 @@ class ServerRequestBuilderTest extends TestCase
             'invalid protocol' => ['INVALID/2.0'],
             'letters only' => ['abc'],
             'alphanumeric' => ['abc123'],
+            'lowercase' => ['http/2.0'],
+            'mixed case' => ['hTtP/2.0'],
         ];
     }
 
@@ -701,5 +706,75 @@ class ServerRequestBuilderTest extends TestCase
 
         $this->assertCount(1, $normalized);
         $this->assertInstanceOf(UploadedFileInterface::class, $normalized['foo_bar']);
+    }
+
+    public function testCanMarshalHeadersPrefixedByApache(): void
+    {
+        $serverParams = [
+            'HTTP_X_FOO_BAR' => 'nonprefixed',
+            'REDIRECT_HTTP_AUTHORIZATION' => 'token',
+            'REDIRECT_HTTP_X_FOO_BAR' => 'prefixed',
+        ];
+        $expected = [
+            'authorization' => ['token'],
+            'x-foo-bar' => ['nonprefixed'],
+        ];
+
+        $request = (new ServerRequestBuilder($serverParams, $this->factory))
+            ->addHeaders()
+            ->build();
+
+        $this->assertEquals($expected, $request->getHeaders());
+    }
+
+    public function testInvalidHeadersAreStripped(): void
+    {
+        $serverParams = [
+            'COOKIE' => 'COOKIE',
+            'HTTP_AUTHORIZATION' => 'token',
+            'MD5' => 'CONTENT-MD5',
+            'CONTENT_LENGTH' => 'UNSPECIFIED',
+        ];
+
+        // headers that don't begin with `HTTP_` or `CONTENT_` will not be returned
+        $expected = [
+            'authorization' => ['token'],
+            'content-length' => ['UNSPECIFIED'],
+        ];
+
+        $request = (new ServerRequestBuilder($serverParams, $this->factory))
+            ->addHeaders()
+            ->build();
+
+        $this->assertEquals($expected, $request->getHeaders());
+    }
+
+    public function testMarshalsExpectedHeaders(): void
+    {
+        $serverParams = [
+            'HTTP_COOKIE' => 'COOKIE',
+            'HTTP_AUTHORIZATION' => 'token',
+            'HTTP_CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_X_FOO_BAR' => 'FOOBAR',
+            'CONTENT_MD5' => 'CONTENT-MD5',
+            'CONTENT_LENGTH' => 'UNSPECIFIED',
+        ];
+
+        $expected = [
+            'cookie' => ['COOKIE'],
+            'authorization' => ['token'],
+            'content-type' => ['application/json'],
+            'accept' => ['application/json'],
+            'x-foo-bar' => ['FOOBAR'],
+            'content-md5' => ['CONTENT-MD5'],
+            'content-length' => ['UNSPECIFIED'],
+        ];
+
+        $request = (new ServerRequestBuilder($serverParams, $this->factory))
+            ->addHeaders()
+            ->build();
+
+        $this->assertEquals($expected, $request->getHeaders());
     }
 }
