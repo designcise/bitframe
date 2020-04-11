@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace BitFrame\Test\Unit;
 
 use ReflectionClass;
-use ReflectionObject;
 use PHPUnit\Framework\TestCase;
 use BitFrame\Factory\{HttpFactoryInterface, HttpFactory};
 use BitFrame\Test\Asset\InteropMiddleware;
@@ -21,7 +20,6 @@ use InvalidArgumentException;
 use RuntimeException;
 
 use function get_class;
-use function in_array;
 
 /**
  * @covers \BitFrame\Factory\HttpFactory

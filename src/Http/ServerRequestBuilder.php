@@ -32,7 +32,6 @@ use function rtrim;
 use function strtolower;
 use function substr;
 use function str_replace;
-use function urldecode;
 use function strtr;
 use function count;
 use function sprintf;
@@ -51,7 +50,7 @@ class ServerRequestBuilder
     /** @var array */
     private array $server;
 
-    /** @var callable */
+    /** @var object|\BitFrame\Factory\HttpFactoryInterface */
     private $factory;
 
     /** @var string */
@@ -80,7 +79,7 @@ class ServerRequestBuilder
 
     /**
      * @param array $server
-     * @param object $factory
+     * @param object|\BitFrame\Factory\HttpFactoryInterface $factory
      * @param null|array $parsedBody
      * @param array $cookies
      * @param array $files
@@ -112,7 +111,7 @@ class ServerRequestBuilder
 
     /**
      * @param array $server
-     * @param object $factory
+     * @param object|\BitFrame\Factory\HttpFactoryInterface $factory
      */
     public function __construct(array $server, object $factory)
     {

@@ -12,9 +12,10 @@ declare(strict_types=1);
 
 namespace BitFrame\Test\Integration;
 
+use ReflectionClass;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\{ServerRequestInterface, StreamInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
-use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
 
 use function fopen;
 use function fwrite;
@@ -138,6 +139,61 @@ class HttpFactoryTest extends TestCase
         $this->assertEquals('bitframe-logo.png', $uploadedFiles['logo']->getClientFilename());
         $this->assertInstanceOf(StreamInterface::class, $reqBody);
         $this->assertSame('hello world!', (string) $reqBody);
+    }
+
+    /**
+     * @runInSeparateProcess
+     *
+     * @throws \ReflectionException
+     */
+    public function testInjectAvailableFactoryIntoServerRequestFromGlobals(): void
+    {
+        $request = $this->getMockBuilder(ServerRequestInterface::class)
+            ->onlyMethods(['getParsedBody', 'withParsedBody', 'withHeader', 'withProtocolVersion', 'withCookieParams', 'withBody', 'withUploadedFiles'])
+            ->getMockForAbstractClass();
+
+        $request->method('getParsedBody')->willReturn(['foo' => 'bar']);
+        $request->method('withParsedBody')->willReturn($request);
+        $request->method('withHeader')->willReturn($request);
+        $request->method('withProtocolVersion')->willReturn($request);
+        $request->method('withCookieParams')->willReturn($request);
+        $request->method('withBody')->willReturn($request);
+        $request->method('withUploadedFiles')->willReturn($request);
+
+        $stream = $this->getMockBuilder(StreamInterface::class)
+            ->getMockForAbstractClass();
+
+        $httpFactory = new class($request, $stream) {
+            private ServerRequestInterface $request;
+
+            private StreamInterface $stream;
+
+            public function __construct(ServerRequestInterface $request, StreamInterface $stream)
+            {
+                $this->request = $request;
+                $this->stream = $stream;
+            }
+
+            public function createStream(): StreamInterface
+            {
+                return $this->stream;
+            }
+
+            public function createServerRequest(): ServerRequestInterface
+            {
+                return $this->request;
+            }
+        };
+
+        // add new factory
+        $reflection = new ReflectionClass(HttpFactory::class);
+        $property = $reflection->getProperty('factoriesList');
+        $property->setAccessible(true);
+        $property->setValue([$httpFactory]);
+
+        $request = HttpFactory::createServerRequestFromGlobals();
+
+        $this->assertSame(['foo' => 'bar'], $request->getParsedBody());
     }
 
     public function createStreamArgsProvider(): array

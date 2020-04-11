@@ -56,7 +56,7 @@ class HttpFactory
     {
         if (! is_a($factory, HttpFactoryInterface::class, true)) {
             throw new InvalidArgumentException(
-                'Http factory must either be a string or ' . HttpFactoryInterface::class
+                'Http factory must be of type: ' . HttpFactoryInterface::class
             );
         }
 
