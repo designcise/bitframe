@@ -357,18 +357,6 @@ abstract class AbstractRouter
     }
 
     /**
-     * @param mixed $routeHandler
-     *
-     * @return boolean
-     */
-    protected function isClassName($routeHandler): bool
-    {
-        return is_string($routeHandler)
-            && strpos($routeHandler, '::') === false
-            && class_exists($routeHandler);
-    }
-
-    /**
      * @param string $input
      * @param string $separator
      *
