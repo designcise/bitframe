@@ -121,9 +121,11 @@ class HttpFactory
         array $files = [],
         $body = ''
     ): ServerRequestInterface {
+        $factory = self::getFactory();
+
         return ServerRequestBuilder::fromSapi(
             $server ?: $_SERVER,
-            self::getFactory(),
+            $factory,
             $parsedBody ?: $_POST ?: [],
             $cookies ?: $_COOKIE ?: [],
             $files ?: $_FILES ?: [],
