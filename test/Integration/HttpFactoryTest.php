@@ -12,10 +12,11 @@ declare(strict_types=1);
 
 namespace BitFrame\Test\Integration;
 
-use ReflectionClass;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{ServerRequestInterface, StreamInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
+use BitFrame\Http\ServerRequestBuilder;
 
 use function fopen;
 use function fwrite;
@@ -29,6 +30,11 @@ class HttpFactoryTest extends TestCase
 {
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
+
+    public function tearDown(): void
+    {
+        Mockery::close();
+    }
 
     public function responseArgsProvider(): array
     {
@@ -143,6 +149,7 @@ class HttpFactoryTest extends TestCase
 
     /**
      * @runInSeparateProcess
+     * @preserveGlobalState disabled
      *
      * @throws \ReflectionException
      */
@@ -185,11 +192,13 @@ class HttpFactoryTest extends TestCase
             }
         };
 
-        // add new factory
-        $reflection = new ReflectionClass(HttpFactory::class);
-        $property = $reflection->getProperty('factoriesList');
-        $property->setAccessible(true);
-        $property->setValue([$httpFactory]);
+        $mockedFactory = Mockery::mock('alias:' . HttpFactory::class);
+        $mockedFactory
+            ->shouldReceive('getFactory')
+            ->andReturn($httpFactory);
+        $mockedFactory
+            ->shouldReceive('createServerRequestFromGlobals')
+            ->andReturn(ServerRequestBuilder::fromSapi([], $httpFactory));
 
         $request = HttpFactory::createServerRequestFromGlobals();
 
