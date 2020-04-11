@@ -32,6 +32,12 @@ use function is_string;
 use function ltrim;
 use function method_exists;
 use function strpos;
+use function str_replace;
+use function ucwords;
+use function lcfirst;
+use function parse_url;
+
+use const PHP_URL_PATH;
 
 /**
  * Common router implementation.
@@ -336,7 +342,12 @@ abstract class AbstractRouter
     protected function addControllerActionFromPath(string $routeController, string $path): string
     {
         $pathChunks = explode('/', ltrim($path, '/'));
-        $methodName = "{$pathChunks[1]}Action";
+        if (! isset($pathChunks[1])) {
+            return $routeController;
+        }
+
+        $methodName = $this->createMethodNameFromPath($pathChunks);
+        $methodName = "{$methodName}Action";
 
         if (isset($pathChunks[1]) && method_exists($routeController, $methodName)) {
             $routeController .= "::{$methodName}";
@@ -355,5 +366,50 @@ abstract class AbstractRouter
         return is_string($routeHandler)
             && strpos($routeHandler, '::') === false
             && class_exists($routeHandler);
+    }
+
+    /**
+     * @param string $input
+     * @param string $separator
+     *
+     * @return string
+     */
+    private static function camelize(string $input, string $separator = '-'): string
+    {
+        return lcfirst(self::capitalize($input, $separator));
+    }
+
+    /**
+     * @param string $input
+     * @param string $separator
+     *
+     * @return string
+     */
+    private static function capitalize(string $input, string $separator = '-'): string
+    {
+        return str_replace($separator, '', ucwords($input, $separator));
+    }
+
+    /**
+     * @param array $pathChunks
+     * @return string
+     */
+    protected function createMethodNameFromPath(array $pathChunks): string
+    {
+        $methodName = '';
+        $totalPathChunks = count($pathChunks);
+
+        for ($i = 1; $i < $totalPathChunks; $i++) {
+            $path = parse_url($pathChunks[$i], PHP_URL_PATH);
+
+            if (null === $path) {
+                continue;
+            }
+
+            $methodName .= ($i === 1)
+                ? self::camelize($path)
+                : self::capitalize($path);
+        }
+        return $methodName;
     }
 }
