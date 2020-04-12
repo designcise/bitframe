@@ -88,7 +88,7 @@ abstract class AbstractRouter
             }
         };
 
-        $this->map($methods, $path, $handlerWithMiddleware);
+        $this->map((array) $methods, $path, $handlerWithMiddleware);
     }
 
     /**

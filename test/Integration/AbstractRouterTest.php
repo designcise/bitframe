@@ -14,12 +14,19 @@ namespace BitFrame\Test\Integration;
 
 use Closure;
 use PHPUnit\Framework\TestCase;
-use BitFrame\Router\AbstractRouter;
-use BitFrame\Test\Asset\SingleRouteRouter;
-use Psr\Http\Message\ResponseInterface;
-
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use BitFrame\Router\AbstractRouter;
+use BitFrame\Test\Asset\{SingleRouteRouter, MiddlewareHandler};
+use BitFrame\Factory\HttpFactory;
+use Psr\Http\Message\ResponseInterface;
+use BitFrame\Test\Asset\{
+    CallableClass,
+    HelloWorldMiddlewareTrait,
+    HelloWorldMiddleware,
+    InteropMiddleware
+};
+
 use function mime_content_type;
 
 /**
@@ -27,6 +34,8 @@ use function mime_content_type;
  */
 class AbstractRouterTest extends TestCase
 {
+    use HelloWorldMiddlewareTrait;
+
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
 
@@ -386,6 +395,43 @@ class AbstractRouterTest extends TestCase
         $this->assertSame(307, $response->getStatusCode());
         $this->assertTrue($response->hasHeader('Location'));
         $this->assertSame('/test', $response->getHeaderLine('Location'));
+    }
+
+    public function middlewareProvider(): array
+    {
+        return [
+            'psr15' => [$this->getHelloWorldMiddlewareAsPsr15()],
+            'closure' => [$this->getHelloWorldMiddlewareAsClosure()],
+            'invokable_class' => [new CallableClass()],
+            'string_class' => [HelloWorldMiddleware::class],
+            'string_static_callable' => [InteropMiddleware::class . '::staticRun'],
+            'string_function' => ['BitFrame\Test\Asset\helloWorldCallable'],
+            'callable_array' => [[new InteropMiddleware(), 'run']],
+            'callable_array_uninstantiated' => [[InteropMiddleware::class, 'staticRun']],
+        ];
+    }
+
+    /**
+     * @dataProvider middlewareProvider
+     *
+     * @param array|string|callable|MiddlewareInterface $middleware
+     */
+    public function testUse($middleware): void
+    {
+        $request = HttpFactory::createServerRequest('GET', '/test');
+
+        $this->router->use('GET', $middleware, '/test', static function ($request, $handler) {
+            $response = $handler->handle($request);
+            $response->getBody()->write('foo bar!');
+            return $response;
+        });
+
+        $routeData = $this->router->getRouteDataByMethod('GET');
+        /** @var ResponseInterface $response */
+        $runner = new MiddlewareHandler($routeData['handler']);
+        $response = $runner->handle($request);
+
+        $this->assertSame('Hello World!foo bar!', (string) $response->getBody());
     }
 
     public function controllerActionProvider(): array

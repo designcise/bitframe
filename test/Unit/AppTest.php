@@ -157,19 +157,19 @@ class AppTest extends TestCase
                 // nested 2-level deep
                 $innerResponse = $handler->run(static function($request, $handler) {
                     $handler->write('#3;');
-                    return $handler->handle($request, $handler);
+                    return $handler->handle($request);
                 });
 
-                return $handler->handle($request, $handler);
+                return $handler->handle($request);
             });
 
             // nested 2-level deep
             $innerResponse2 = $handler->run(static function($request, $handler) {
                 $handler->write('#2.2;');
-                return $handler->handle($request, $handler);
+                return $handler->handle($request);
             });
 
-            return $handler->handle($request, $handler);
+            return $handler->handle($request);
         });
 
         $this->assertSame('#1;#2.1;#3;#2.2;', (string) $response->getBody());
