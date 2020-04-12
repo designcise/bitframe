@@ -1,0 +1,3 @@
+parameters:
+  treatPhpDocTypesAsCertain: false
+  reportStaticMethodSignatures: false

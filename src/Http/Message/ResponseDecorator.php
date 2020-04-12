@@ -35,8 +35,9 @@ class ResponseDecorator implements ResponseInterface
      */
     public function withStatus($code, $reasonPhrase = '')
     {
-        $response = $this->response->withStatus($code, $reasonPhrase);
-        return new self($response);
+        $new = clone $this;
+        $new->setResponse($this->response->withStatus($code, $reasonPhrase));
+        return $new;
     }
     
     /**
@@ -44,8 +45,9 @@ class ResponseDecorator implements ResponseInterface
      */
     public function withHeader($name, $value)
     {
-        $response = $this->response->withHeader($name, $value);
-        return new self($response);
+        $new = clone $this;
+        $new->setResponse($this->response->withHeader($name, $value));
+        return $new;
     }
     
     /**
@@ -53,8 +55,9 @@ class ResponseDecorator implements ResponseInterface
      */
     public function withAddedHeader($name, $value)
     {
-        $response = $this->response->withAddedHeader($name, $value);
-        return new self($response);
+        $new = clone $this;
+        $new->setResponse($this->response->withAddedHeader($name, $value));
+        return $new;
     }
     
     /**
@@ -62,8 +65,9 @@ class ResponseDecorator implements ResponseInterface
      */
     public function withoutHeader($name)
     {
-        $response = $this->response->withoutHeader($name);
-        return new self($response);
+        $new = clone $this;
+        $new->setResponse($this->response->withoutHeader($name));
+        return $new;
     }
     
     /**
@@ -71,8 +75,9 @@ class ResponseDecorator implements ResponseInterface
      */
     public function withProtocolVersion($version)
     {
-        $response = $this->response->withProtocolVersion($version);
-        return new self($response);
+        $new = clone $this;
+        $new->setResponse($this->response->withProtocolVersion($version));
+        return $new;
     }
     
     /**
@@ -80,8 +85,9 @@ class ResponseDecorator implements ResponseInterface
      */
     public function withBody(StreamInterface $body)
     {
-        $response = $this->response->withBody($body);
-        return new self($response);
+        $new = clone $this;
+        $new->setResponse($this->response->withBody($body));
+        return $new;
     }
 
     /**
@@ -146,5 +152,16 @@ class ResponseDecorator implements ResponseInterface
     public function getReasonPhrase()
     {
         return $this->response->getReasonPhrase();
+    }
+
+    /**
+     * @param ResponseInterface $response
+     *
+     * @return $this
+     */
+    public function setResponse(ResponseInterface $response): self
+    {
+        $this->response = $response;
+        return $this;
     }
 }

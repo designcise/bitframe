@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace BitFrame\Test\Integration;
 
-use Psr\Http\Message\ResponseInterface;
-use ReflectionObject;
 use Mockery;
 use Psr\Http\Message\StreamInterface;
 use BitFrame\Factory\HttpFactory;

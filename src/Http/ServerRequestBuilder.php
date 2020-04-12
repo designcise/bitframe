@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 namespace BitFrame\Http;
 
+use BitFrame\Factory\HttpFactoryInterface;
 use Psr\Http\Message\{
     ServerRequestInterface,
-    StreamFactoryInterface,
     StreamInterface,
     UploadedFileInterface
 };
@@ -50,7 +50,7 @@ class ServerRequestBuilder
     /** @var array */
     private array $server;
 
-    /** @var object|\BitFrame\Factory\HttpFactoryInterface */
+    /** @var object|HttpFactoryInterface */
     private $factory;
 
     /** @var string */
@@ -79,7 +79,7 @@ class ServerRequestBuilder
 
     /**
      * @param array $server
-     * @param object|\BitFrame\Factory\HttpFactoryInterface $factory
+     * @param object|HttpFactoryInterface $factory
      * @param null|array $parsedBody
      * @param array $cookies
      * @param array $files
@@ -95,7 +95,7 @@ class ServerRequestBuilder
         array $files = [],
         $body = ''
     ): ServerRequestInterface {
-        $builder = new static($server, $factory);
+        $builder = new self($server, $factory);
 
         return $builder
             ->addMethod()
@@ -111,7 +111,7 @@ class ServerRequestBuilder
 
     /**
      * @param array $server
-     * @param object|\BitFrame\Factory\HttpFactoryInterface $factory
+     * @param object|HttpFactoryInterface $factory
      */
     public function __construct(array $server, object $factory)
     {
@@ -181,25 +181,7 @@ class ServerRequestBuilder
         $server = $this->server;
 
         $uriParts = isset($server['REQUEST_URI']) ? parse_url($server['REQUEST_URI']) : [];
-        $path = '';
-
-        if (! empty($server['PATH_INFO'])) {
-            $path = $server['PATH_INFO'];
-        } elseif (! empty($server['ORIG_PATH_INFO'])) {
-            $path = $server['ORIG_PATH_INFO'];
-        } elseif (! empty($uriParts['path'])) {
-            $path = $uriParts['path'];
-        }
-
-        $query = '';
-
-        if (! empty($server['QUERY_STRING'])) {
-            $query = $server['QUERY_STRING'];
-        } elseif (! empty($uriParts['query'])) {
-            $query = $uriParts['query'];
-        }
-
-        $fragment = (! empty($uriParts['fragment'])) ? $uriParts['fragment'] : '';
+        [$path, $query, $fragment] = $this->extractUriComponents($server, $uriParts);
 
         $baseUri = $this->getUriAuthorityWithScheme();
 
@@ -347,14 +329,12 @@ class ServerRequestBuilder
      * instances.
      *
      * @param array $files `$_FILES` struct.
-     * @param StreamFactoryInterface $streamFactory
+     * @param object|HttpFactoryInterface $httpFactory
      *
      * @return UploadedFileInterface[]|UploadedFileInterface
      */
-    private static function createUploadedFileFromSpec(
-        array $files,
-        StreamFactoryInterface $streamFactory
-    ) {
+    private static function createUploadedFileFromSpec(array $files, $httpFactory)
+    {
         if (is_array($files['tmp_name'])) {
             $normalizedFiles = [];
 
@@ -365,7 +345,7 @@ class ServerRequestBuilder
                     'error' => $files['error'][$key],
                     'name' => $files['name'][$key],
                     'type' => $files['type'][$key],
-                ], $streamFactory);
+                ], $httpFactory);
             }
 
             return $normalizedFiles;
@@ -373,10 +353,14 @@ class ServerRequestBuilder
 
         $stream = ($files['tmp_name'] instanceof StreamInterface)
             ? $files['tmp_name']
-            : $streamFactory->createStreamFromFile($files['tmp_name'], 'r+');
+            : $httpFactory->createStreamFromFile($files['tmp_name'], 'r+');
 
-        return $streamFactory->createUploadedFile(
-            $stream, $files['size'], (int) $files['error'], $files['name'], $files['type']
+        return $httpFactory->createUploadedFile(
+            $stream,
+            $files['size'],
+            (int) $files['error'],
+            $files['name'],
+            $files['type']
         );
     }
 
@@ -385,28 +369,30 @@ class ServerRequestBuilder
      * arrays are normalized.
      *
      * @param array $files
-     * @param StreamFactoryInterface $streamFactory
+     * @param object|HttpFactoryInterface $httpFactory
      *
      * @return UploadedFileInterface[]
      *
      * @throws InvalidArgumentException
      */
-    private static function normalizeUploadedFiles(
-        array $files,
-        StreamFactoryInterface $streamFactory
-    ): array {
+    private static function normalizeUploadedFiles(array $files, $httpFactory): array
+    {
         $normalized = [];
 
         foreach ($files as $key => $value) {
             if ($value instanceof UploadedFileInterface) {
                 $normalized[$key] = $value;
-            } elseif (is_array($value)) {
-                $normalized[$key] = (isset($value['tmp_name']))
-                    ? self::createUploadedFileFromSpec($value, $streamFactory)
-                    : self::normalizeUploadedFiles($value, $streamFactory);
-            } else {
-                throw new InvalidArgumentException('Invalid value in files specification');
+                continue;
             }
+
+            if (is_array($value)) {
+                $normalized[$key] = (isset($value['tmp_name']))
+                    ? self::createUploadedFileFromSpec($value, $httpFactory)
+                    : self::normalizeUploadedFiles($value, $httpFactory);
+                continue;
+            }
+
+            throw new InvalidArgumentException('Invalid value in files specification');
         }
 
         return $normalized;
@@ -510,5 +496,35 @@ class ServerRequestBuilder
         }
 
         return $request;
+    }
+
+    /**
+     * @param array $server
+     * @param array $uriParts
+     *
+     * @return array
+     */
+    private function extractUriComponents(array $server, $uriParts): array
+    {
+        $path = '';
+
+        if (! empty($server['PATH_INFO'])) {
+            $path = $server['PATH_INFO'];
+        } elseif (! empty($server['ORIG_PATH_INFO'])) {
+            $path = $server['ORIG_PATH_INFO'];
+        } elseif (! empty($uriParts['path'])) {
+            $path = $uriParts['path'];
+        }
+
+        $query = '';
+
+        if (! empty($server['QUERY_STRING'])) {
+            $query = $server['QUERY_STRING'];
+        } elseif (! empty($uriParts['query'])) {
+            $query = $uriParts['query'];
+        }
+
+        $fragment = (! empty($uriParts['fragment'])) ? $uriParts['fragment'] : '';
+        return [$path, $query, $fragment];
     }
 }

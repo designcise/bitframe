@@ -41,7 +41,7 @@ class JsonpResponse extends ResponseDecorator
      * @param integer $encodingOptions
      * @param integer $maxDepth
      *
-     * @return $this
+     * @return self
      *
      * @throws \JsonException
      */
@@ -51,7 +51,7 @@ class JsonpResponse extends ResponseDecorator
         int $encodingOptions = 0,
         int $maxDepth = 512
     ): self {
-        return new static($data, $callback, $encodingOptions, $maxDepth);
+        return new self($data, $callback, $encodingOptions, $maxDepth);
     }
 
     /**
@@ -63,7 +63,7 @@ class JsonpResponse extends ResponseDecorator
      * @throws InvalidArgumentException
      * @throws \JsonException
      */
-    public function __construct(
+    final public function __construct(
         $data,
         string $callback,
         int $encodingOptions = 0,

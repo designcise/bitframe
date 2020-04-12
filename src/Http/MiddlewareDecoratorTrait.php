@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace BitFrame\Http;
 
-use RecursiveIteratorIterator;
-use RecursiveArrayIterator;
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
 use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
 
@@ -31,7 +29,6 @@ trait MiddlewareDecoratorTrait
      * Push `$middleware` onto the end of middlewares array.
      *
      * @param array|string|callable|MiddlewareInterface $middleware
-     * @param array $collection
      *
      * @return array
      */

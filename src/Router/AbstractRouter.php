@@ -203,7 +203,7 @@ abstract class AbstractRouter
         $this->map(
             (array) $methods,
             $route,
-            static fn () => (new TextResponse($text, $statusCode))->withStatus($statusCode)
+            static fn () => (new TextResponse($text))->withStatus($statusCode)
         );
     }
 

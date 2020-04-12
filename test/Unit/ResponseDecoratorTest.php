@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace BitFrame\Test\Unit;
 
+use ReflectionObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -28,6 +29,21 @@ class ResponseDecoratorTest extends TestCase
     public function setUp(): void
     {
         $this->response = new ResponseDecorator(HttpFactory::createResponse());
+    }
+
+    public function testSetResponse(): void
+    {
+        $originalResponse = HttpFactory::createResponse();
+        $decoratedResponse = new ResponseDecorator($originalResponse);
+
+        $newResponse = HttpFactory::createResponse();
+        $this->response->setResponse($newResponse);
+
+        $decoratedReflection = new ReflectionObject($decoratedResponse);
+        $responseProperty = $decoratedReflection->getProperty('response');
+        $responseProperty->setAccessible(true);
+
+        $this->assertNotSame($newResponse, $responseProperty->getValue($decoratedResponse));
     }
 
     public function testWithStatusReturnsNewInstance(): void

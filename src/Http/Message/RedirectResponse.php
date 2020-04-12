@@ -16,6 +16,12 @@ use Psr\Http\Message\UriInterface;
 use BitFrame\Factory\HttpFactory;
 use InvalidArgumentException;
 
+use function is_string;
+use function is_object;
+use function sprintf;
+use function get_class;
+use function gettype;
+
 /**
  * Http response for redirect.
  */
@@ -25,11 +31,11 @@ class RedirectResponse extends ResponseDecorator
      * @param string|UriInterface $redirectTo
      * @param integer $statusCode
      *
-     * @return $this
+     * @return self
      */
     public static function create($redirectTo, int $statusCode = 302): self
     {
-        return new static($redirectTo, $statusCode);
+        return new self($redirectTo, $statusCode);
     }
 
     /**
@@ -40,11 +46,11 @@ class RedirectResponse extends ResponseDecorator
      */
     public function __construct($redirectTo, int $statusCode = 302)
     {
-        if (! \is_string($redirectTo) && ! $redirectTo instanceof UriInterface) {
-            throw new InvalidArgumentException(\sprintf(
+        if (! is_string($redirectTo) && ! $redirectTo instanceof UriInterface) {
+            throw new InvalidArgumentException(sprintf(
                 'Expecting a string or %s instance; received "%s"',
                 UriInterface::class,
-                (\is_object($redirectTo) ? \get_class($redirectTo) : \gettype($redirectTo))
+                (is_object($redirectTo) ? get_class($redirectTo) : gettype($redirectTo))
             ));
         }
 

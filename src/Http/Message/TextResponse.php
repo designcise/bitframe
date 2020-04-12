@@ -25,11 +25,11 @@ class TextResponse extends ResponseDecorator
     /**
      * @param string $text
      *
-     * @return $this
+     * @return self
      */
     public static function create(string $text): self
     {
-        return new static($text);
+        return new self($text);
     }
 
     /**

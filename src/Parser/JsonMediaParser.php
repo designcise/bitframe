@@ -24,7 +24,7 @@ use const JSON_BIGINT_AS_STRING;
 class JsonMediaParser implements MediaParserInterface
 {
     /** @var int */
-    protected const OPTIONS = JSON_THROW_ON_ERROR|JSON_BIGINT_AS_STRING;
+    protected const OPTIONS = JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING;
 
     /**
      * {@inheritdoc}

@@ -114,7 +114,7 @@ class App implements RequestHandlerInterface
         $request = $this->request;
 
         if (! empty($middlewares)) {
-            $app = new static($this->container, $request, $this->response);
+            $app = new self($this->container, $request, $this->response);
             $app->use($middlewares);
         }
 

@@ -25,11 +25,11 @@ class XmlResponse extends ResponseDecorator
     /**
      * @param string $xml
      *
-     * @return $this
+     * @return self
      */
     public static function create(string $xml): self
     {
-        return new static($xml);
+        return new self($xml);
     }
 
     /**

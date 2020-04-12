@@ -36,7 +36,7 @@ class JsonResponse extends ResponseDecorator
      * @param int $encodingOptions
      * @param int $maxDepth
      *
-     * @return $this
+     * @return self
      *
      * @throws \JsonException
      */
@@ -45,7 +45,7 @@ class JsonResponse extends ResponseDecorator
         int $encodingOptions = 0,
         int $maxDepth = 512
     ): self {
-        return new static($data, $encodingOptions, $maxDepth);
+        return new self($data, $encodingOptions, $maxDepth);
     }
 
     /**

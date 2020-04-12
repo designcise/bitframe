@@ -32,21 +32,21 @@ class DownloadResponse extends AbstractFileResponse
      * @param string $filePath
      * @param string $serveFilenameAs
      *
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public static function fromPath(
         string $filePath,
         string $serveFilenameAs = ''
     ): self {
-        return new static($filePath, $serveFilenameAs);
+        return new self($filePath, $serveFilenameAs);
     }
 
     /**
      * @param resource $resource
      * @param string $serveFilenameAs
      *
-     * @return $this
+     * @return self
      *
      * @throws \Exception
      */
@@ -56,21 +56,21 @@ class DownloadResponse extends AbstractFileResponse
             throw new InvalidArgumentException('Resource is invalid.');
         }
 
-        return new static($resource, $serveFilenameAs);
+        return new self($resource, $serveFilenameAs);
     }
 
     /**
      * @param StreamInterface $stream
      * @param string $serveFilenameAs
      *
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public static function fromStream(
         StreamInterface $stream,
         string $serveFilenameAs = ''
     ): self {
-        return new static($stream, $serveFilenameAs);
+        return new self($stream, $serveFilenameAs);
     }
 
     /**

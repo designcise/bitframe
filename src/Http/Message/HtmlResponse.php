@@ -25,11 +25,11 @@ class HtmlResponse extends ResponseDecorator
     /**
      * @param string $html
      *
-     * @return $this
+     * @return self
      */
     public static function create(string $html): self
     {
-        return new static($html);
+        return new self($html);
     }
 
     /**

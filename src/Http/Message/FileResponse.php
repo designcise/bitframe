@@ -25,17 +25,17 @@ class FileResponse extends AbstractFileResponse
     /**
      * @param string $filePath
      *
-     * @return $this
+     * @return self
      */
     public static function fromPath(string $filePath): self
     {
-        return new static($filePath);
+        return new self($filePath);
     }
 
     /**
      * @param resource $resource
      *
-     * @return $this
+     * @return self
      *
      * @throws InvalidArgumentException
      */
@@ -45,17 +45,17 @@ class FileResponse extends AbstractFileResponse
             throw new InvalidArgumentException('Resource is invalid.');
         }
 
-        return new static($resource);
+        return new self($resource);
     }
 
     /**
      * @param StreamInterface $stream
      *
-     * @return $this
+     * @return self
      */
     public static function fromStream(StreamInterface $stream): self
     {
-        return new static($stream);
+        return new self($stream);
     }
 
     /**
