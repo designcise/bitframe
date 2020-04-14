@@ -45,7 +45,7 @@ use const PHP_URL_PATH;
 abstract class AbstractRouter
 {
     use MiddlewareDecoratorTrait;
-    
+
     /**
      * Add a route to the map.
      *
@@ -101,7 +101,7 @@ abstract class AbstractRouter
     {
         new RouteGroup($prefix, $group, $this);
     }
-    
+
     /**
      * Add a route that responds to GET HTTP method.
      *
@@ -112,7 +112,7 @@ abstract class AbstractRouter
     {
         $this->map(['GET'], $path, $handler);
     }
-    
+
     /**
      * Add a route that responds to POST HTTP method.
      *
@@ -123,7 +123,7 @@ abstract class AbstractRouter
     {
         $this->map(['POST'], $path, $handler);
     }
-    
+
     /**
      * Add a route that responds to PUT HTTP method.
      *
@@ -134,7 +134,7 @@ abstract class AbstractRouter
     {
         $this->map(['PUT'], $path, $handler);
     }
-    
+
     /**
      * Add a route that responds to PATCH HTTP method.
      *
@@ -145,7 +145,7 @@ abstract class AbstractRouter
     {
         $this->map(['PATCH'], $path, $handler);
     }
-    
+
     /**
      * Add a route that responds to DELETE HTTP method.
      *
@@ -156,7 +156,7 @@ abstract class AbstractRouter
     {
         $this->map(['DELETE'], $path, $handler);
     }
-    
+
     /**
      * Add a route that responds to HEAD HTTP method.
      *
@@ -167,7 +167,7 @@ abstract class AbstractRouter
     {
         $this->map(['HEAD'], $path, $handler);
     }
-    
+
     /**
      * Add a route that responds to OPTIONS HTTP method.
      *
@@ -178,7 +178,7 @@ abstract class AbstractRouter
     {
         $this->map(['OPTIONS'], $path, $handler);
     }
-    
+
     /**
      * Add route for any HTTP method.
      *
@@ -263,7 +263,7 @@ abstract class AbstractRouter
             static fn (): ResponseInterface => (new JsonpResponse($data, $callback))->withStatus($statusCode)
         );
     }
-    
+
     /**
      * Add a route that sends XML response.
      *
@@ -314,7 +314,7 @@ abstract class AbstractRouter
             static fn (): ResponseInterface => new DownloadResponse($downloadUrl, $serveFilenameAs)
         );
     }
-    
+
     /**
      * Add a route that sends an HTTP redirect.
      *
@@ -341,12 +341,12 @@ abstract class AbstractRouter
      */
     protected function addControllerActionFromPath(string $routeController, string $path): string
     {
-        $pathChunks = explode('/', ltrim($path, '/'));
+        $pathChunks = explode('/', ltrim($path, '/'), 2);
         if (! isset($pathChunks[1])) {
             return $routeController;
         }
 
-        $methodName = $this->createMethodNameFromPathChunks($pathChunks);
+        $methodName = self::camelize(rtrim($pathChunks[1], '/'));
         $methodName = "{$methodName}Action";
 
         if (isset($pathChunks[1]) && method_exists($routeController, $methodName)) {
@@ -358,46 +358,15 @@ abstract class AbstractRouter
 
     /**
      * @param string $input
-     * @param string $separator
      *
      * @return string
      */
-    private static function camelize(string $input, string $separator = '-'): string
+    private static function camelize(string $input): string
     {
-        return lcfirst(self::capitalize($input, $separator));
-    }
+        $path = parse_url($input, PHP_URL_PATH);
 
-    /**
-     * @param string $input
-     * @param string $separator
-     *
-     * @return string
-     */
-    private static function capitalize(string $input, string $separator = '-'): string
-    {
-        return str_replace($separator, '', ucwords($input, $separator));
-    }
-
-    /**
-     * @param array $pathChunks
-     * @return string
-     */
-    private function createMethodNameFromPathChunks(array $pathChunks): string
-    {
-        $methodName = '';
-        $totalPathChunks = count($pathChunks);
-
-        for ($i = 1; $i < $totalPathChunks; $i++) {
-            $path = parse_url($pathChunks[$i], PHP_URL_PATH);
-
-            if (null === $path) {
-                continue;
-            }
-
-            $methodName .= ($i === 1)
-                ? self::camelize($path)
-                : self::capitalize($path);
-        }
-        return $methodName;
+        return (null === $path)
+            ? $input
+            : lcfirst(str_replace(['-', '/'], '', ucwords($path, '-/')));
     }
 }

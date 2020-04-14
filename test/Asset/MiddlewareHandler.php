@@ -10,7 +10,6 @@
 
 namespace BitFrame\Test\Asset;
 
-use Psr\Http\Server\MiddlewareInterface;
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\MiddlewareDecoratorTrait;
 use Psr\Http\Server\RequestHandlerInterface;
