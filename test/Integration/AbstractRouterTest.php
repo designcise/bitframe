@@ -14,8 +14,6 @@ namespace BitFrame\Test\Integration;
 
 use Closure;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use BitFrame\Router\AbstractRouter;
 use BitFrame\Test\Asset\{SingleRouteRouter, MiddlewareHandler};
 use BitFrame\Factory\HttpFactory;
@@ -434,86 +432,8 @@ class AbstractRouterTest extends TestCase
         $this->assertSame('Hello World!foo bar!', (string) $response->getBody());
     }
 
-    public function controllerActionProvider(): array
-    {
-        return [
-            'empty' => ['/', null],
-            'malformed url (unencoded password)' => [
-                'http://user:!#Password@example.com/some_path',
-                null
-            ],
-            'empty path with query string' => ['/?foo=bar', null],
-            'path with no action' => ['/controller', null],
-            'path with query string and no action' => ['/controller?foo=bar', null],
-            'non-existent endpoint path' => ['/controller/nonexistent', null],
-            'path with no action with trailing slash' => ['/controller/', null],
-            'single word endpoint path' => ['/controller/test', 'testAction'],
-            'single word endpoint path with trailing slash' => ['/controller/test/', 'testAction'],
-            'multi-word endpoint path' => ['/controller/foo-bar', 'fooBarAction'],
-            'multi-word endpoint path with trailing slash' => ['/controller/foo-bar/', 'fooBarAction'],
-            'multiple sub-paths' => ['/controller/foo/bar', 'fooBarAction'],
-            'multiple sub-paths with query string' => ['/controller/foo/bar?baz=qux', 'fooBarAction'],
-            'multiple sub-paths with trailing slash and query string' => ['/controller/foo/bar/?baz=qux', 'fooBarAction'],
-            'multiple sub-paths with query string and fragment' => ['/controller/foo/bar?baz=qux#fragment', 'fooBarAction'],
-            'multiple sub-paths with trailing slash, query string and fragment' => ['/controller/foo/bar/?baz=qux#fragment', 'fooBarAction'],
-            'multiple sub-paths with trailing slash' => ['/controller/foo/bar/', 'fooBarAction'],
-            'long multi-word path' => ['/controller/really-long-random-path', 'reallyLongRandomPathAction'],
-            'long multiple sub-paths' => ['/controller/really/long/random/path', 'reallyLongRandomPathAction'],
-            'long multiple sub-paths with trailing slash' => ['/controller/really/long/random/path/', 'reallyLongRandomPathAction'],
-        ];
-    }
-
-    /**
-     * @dataProvider controllerActionProvider
-     *
-     * @param string $path
-     * @param null|string $action
-     */
-    public function testCanGenerateControllerAction(
-        string $path,
-        ?string $action
-    ): void {
-        $controller = $this->getDummyController();
-
-        $this->router->get($path, $controller);
-        $routeData = $this->router->getRouteDataByMethod('GET');
-
-        $controller = explode('::', $routeData['controllerAction']);
-
-        $this->assertSame($action, $controller[1] ?? null);
-    }
-
     private function getRouteHandler(): Closure
     {
         return fn ($req, $handler) => $handler->handle($req);
-    }
-
-    private function getDummyController(): object
-    {
-        return new class {
-            public function testAction(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $handler
-            ): ResponseInterface {
-                $handler->getResponse()->getBody()->write('test');
-                return $handler->handle($request);
-            }
-
-            public function fooBarAction(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $handler
-            ): ResponseInterface {
-                $handler->getResponse()->getBody()->write('hello world!');
-                return $handler->handle($request);
-            }
-
-            public function reallyLongRandomPathAction(
-                ServerRequestInterface $request,
-                RequestHandlerInterface $handler
-            ): ResponseInterface {
-                $handler->getResponse()->getBody()->write('testing');
-                return $handler->handle($request);
-            }
-        };
     }
 }

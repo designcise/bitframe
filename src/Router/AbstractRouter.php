@@ -328,43 +328,4 @@ abstract class AbstractRouter
             static fn (): ResponseInterface => new RedirectResponse($toUrl, $statusCode)
         );
     }
-
-    /**
-     * Auto-append controller action name from path.
-     *
-     * @param string $routeController
-     * @param string $path
-     *
-     * @return string
-     */
-    protected function addControllerActionFromPath(string $routeController, string $path): string
-    {
-        $pathChunks = explode('/', ltrim($path, '/'), 2);
-        if (! isset($pathChunks[1])) {
-            return $routeController;
-        }
-
-        $methodName = self::camelize(rtrim($pathChunks[1], '/'));
-        $methodName = "{$methodName}Action";
-
-        if (isset($pathChunks[1]) && method_exists($routeController, $methodName)) {
-            $routeController .= "::{$methodName}";
-        }
-
-        return $routeController;
-    }
-
-    /**
-     * @param string $input
-     *
-     * @return string
-     */
-    private static function camelize(string $input): string
-    {
-        $path = parse_url($input, PHP_URL_PATH);
-
-        return ($path === false)
-            ? $input
-            : lcfirst(str_replace(['-', '/'], '', ucwords($path, '-/')));
-    }
 }

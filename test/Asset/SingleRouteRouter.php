@@ -26,9 +26,6 @@ class SingleRouteRouter extends AbstractRouter
                 'method' => $method,
                 'path' => $path,
                 'handler' => $handler,
-                'controllerAction' => (is_object($handler))
-                    ? $this->addControllerActionFromPath(get_class($handler), $path)
-                    : null
             ];
         }
     }
