@@ -26,12 +26,10 @@ use BitFrame\Http\Message\{
     RedirectResponse
 };
 
-use function class_exists;
 use function explode;
-use function is_string;
 use function ltrim;
+use function rtrim;
 use function method_exists;
-use function strpos;
 use function str_replace;
 use function ucwords;
 use function lcfirst;
@@ -365,7 +363,7 @@ abstract class AbstractRouter
     {
         $path = parse_url($input, PHP_URL_PATH);
 
-        return (null === $path)
+        return ($path === false)
             ? $input
             : lcfirst(str_replace(['-', '/'], '', ucwords($path, '-/')));
     }

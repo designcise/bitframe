@@ -21,13 +21,13 @@ class RouteGroup extends AbstractRouter
 {
     /** @var string */
     protected string $prefix;
-    
+
     /** @var callable */
     protected $handler;
-    
+
     /** @var AbstractRouter */
     protected AbstractRouter $routeMapper;
-    
+
     /**
      * @param string $prefix
      * @param callable $handler
@@ -44,7 +44,7 @@ class RouteGroup extends AbstractRouter
 
         ($this->handler)($this);
     }
-    
+
     /**
      * {@inheritdoc}
      */

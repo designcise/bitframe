@@ -438,6 +438,10 @@ class AbstractRouterTest extends TestCase
     {
         return [
             'empty' => ['/', null],
+            'malformed url (unencoded password)' => [
+                'http://user:!#Password@example.com/some_path',
+                null
+            ],
             'empty path with query string' => ['/?foo=bar', null],
             'path with no action' => ['/controller', null],
             'path with query string and no action' => ['/controller?foo=bar', null],
