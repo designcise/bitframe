@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Test\Unit;
+namespace BitFrame\Test\Parser;
 
 use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;

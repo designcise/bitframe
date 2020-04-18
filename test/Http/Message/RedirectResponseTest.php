@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Test\Unit;
+namespace BitFrame\Test\Http\Message;
 
 use PHPUnit\Framework\TestCase;
 use BitFrame\Factory\HttpFactory;

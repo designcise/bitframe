@@ -9,11 +9,8 @@
          processIsolation="false"
 >
     <testsuites>
-        <testsuite name="unit">
-            <directory suffix="Test.php">./test/Unit</directory>
-        </testsuite>
-        <testsuite name="integration">
-            <directory suffix="Test.php">./test/Integration</directory>
+        <testsuite name="bitframe">
+            <directory suffix="Test.php">./test</directory>
         </testsuite>
     </testsuites>
 

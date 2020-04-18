@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Test\Integration;
+namespace BitFrame\Test\Router;
 
 use Closure;
 use PHPUnit\Framework\TestCase;

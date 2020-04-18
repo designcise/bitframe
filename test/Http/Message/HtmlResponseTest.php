@@ -10,49 +10,49 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Test\Unit;
+namespace BitFrame\Test\Http\Message;
 
 use PHPUnit\Framework\TestCase;
-use BitFrame\Http\Message\TextResponse;
+use BitFrame\Http\Message\HtmlResponse;
 use TypeError;
 
 /**
- * @covers \BitFrame\Http\Message\TextResponse
+ * @covers \BitFrame\Http\Message\HtmlResponse
  */
-class TextResponseTest extends TestCase
+class HtmlResponseTest extends TestCase
 {
-    public function testConstructorAcceptsBodyAsString(): void
+    public function testConstructorAcceptsHtmlString(): void
     {
-        $body = 'Lorem ipsum';
-        $response = new TextResponse($body);
+        $body = '<html>Lorem ipsum</html>';
+        $response = new HtmlResponse($body);
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testCanAddStatusAndHeader(): void
     {
-        $body = 'Not found';
+        $body = '<html>Not found</html>';
         $status = 404;
         
-        $response = (new TextResponse($body))
+        $response = (new HtmlResponse($body))
             ->withStatus($status)
             ->withHeader('x-custom', ['foo-bar']);
         
         $this->assertSame(['foo-bar'], $response->getHeader('x-custom'));
-        $this->assertSame('text/plain; charset=utf-8', $response->getHeaderLine('content-type'));
+        $this->assertSame('text/html; charset=utf-8', $response->getHeaderLine('content-type'));
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
     }
 
     public function testStaticCreateWithCustomContentType(): void
     {
-        $response = TextResponse::create('test')
-            ->withHeader('content-type', 'text/richtext');
+        $response = HtmlResponse::create('<html>Test</html>')
+            ->withHeader('content-type', 'multipart/form-data');
         
-        $this->assertSame('text/richtext', $response->getHeaderLine('Content-Type'));
+        $this->assertSame('multipart/form-data', $response->getHeaderLine('Content-Type'));
     }
 
-    public function invalidContentProvider(): array
+    public function invalidHtmlContentProvider(): array
     {
         return [
             'null' => [null],
@@ -68,13 +68,13 @@ class TextResponseTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidContentProvider
+     * @dataProvider invalidHtmlContentProvider
      *
      * @param mixed $body
      */
     public function testRaisesExceptionforNonStringContent($body): void
     {
         $this->expectException(TypeError::class);
-        new TextResponse($body);
+        new HtmlResponse($body);
     }
 }

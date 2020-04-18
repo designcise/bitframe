@@ -8,7 +8,7 @@
  * @license   https://bitframephp.com/about/license MIT License
  */
 
-namespace BitFrame\Test;
+namespace BitFrame\Test\Router;
 
 use PHPUnit\Framework\TestCase;
 use BitFrame\Test\Asset\SingleRouteRouter;

@@ -10,46 +10,46 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Test\Unit;
+namespace BitFrame\Test\Http\Message;
 
 use PHPUnit\Framework\TestCase;
-use BitFrame\Http\Message\XmlResponse;
+use BitFrame\Http\Message\TextResponse;
 use TypeError;
 
 /**
- * @covers \BitFrame\Http\Message\XmlResponse
+ * @covers \BitFrame\Http\Message\TextResponse
  */
-class XmlResponseTest extends TestCase
+class TextResponseTest extends TestCase
 {
     public function testConstructorAcceptsBodyAsString(): void
     {
         $body = 'Lorem ipsum';
-        $response = new XmlResponse($body);
+        $response = new TextResponse($body);
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testCanAddStatusAndHeader(): void
     {
-        $body = '<test>XML</test>';
+        $body = 'Not found';
         $status = 404;
         
-        $response = (new XmlResponse($body))
+        $response = (new TextResponse($body))
             ->withStatus($status)
             ->withHeader('x-custom', ['foo-bar']);
         
         $this->assertSame(['foo-bar'], $response->getHeader('x-custom'));
-        $this->assertSame('application/xml; charset=utf-8', $response->getHeaderLine('content-type'));
+        $this->assertSame('text/plain; charset=utf-8', $response->getHeaderLine('content-type'));
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
     }
 
     public function testStaticCreateWithCustomContentType(): void
     {
-        $response = XmlResponse::create('<test>XML</test>')
-            ->withHeader('content-type', 'application/xml-dtd');
+        $response = TextResponse::create('test')
+            ->withHeader('content-type', 'text/richtext');
         
-        $this->assertSame('application/xml-dtd', $response->getHeaderLine('Content-Type'));
+        $this->assertSame('text/richtext', $response->getHeaderLine('Content-Type'));
     }
 
     public function invalidContentProvider(): array
@@ -75,6 +75,6 @@ class XmlResponseTest extends TestCase
     public function testRaisesExceptionforNonStringContent($body): void
     {
         $this->expectException(TypeError::class);
-        new XmlResponse($body);
+        new TextResponse($body);
     }
 }

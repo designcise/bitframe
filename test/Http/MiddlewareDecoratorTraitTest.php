@@ -8,7 +8,7 @@
  * @license   https://bitframephp.com/about/license MIT License
  */
 
-namespace BitFrame\Test\Unit;
+namespace BitFrame\Test\Http;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};

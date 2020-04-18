@@ -33,9 +33,7 @@
     "style": "vendor/bin/phpcs --standard=PSR12 src",
     "check": "vendor/bin/phpstan analyse src --level=5 -c phpstan.neon",
     "md": "vendor/bin/phpmd src text cleancode,unusedcode,codesize,design,naming",
-    "test": "vendor/bin/phpunit --configuration phpunit.xml",
-    "integration": "vendor/bin/phpunit --configuration phpunit.xml --testsuite integration",
-    "unit": "vendor/bin/phpunit --configuration phpunit.xml --testsuite unit"
+    "test": "vendor/bin/phpunit --configuration phpunit.xml --testsuite bitframe"
   },
   "autoload": {
     "psr-4": {

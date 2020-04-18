@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Test\Integration;
+namespace BitFrame\Test\Http\Message;
 
 use PHPUnit\Framework\TestCase;
 use BitFrame\Factory\HttpFactory;
@@ -29,7 +29,7 @@ use function preg_match;
 class DownloadResponseTest extends TestCase
 {
     /** @var string */
-    private const ASSETS_DIR = __DIR__ . '/../Asset/';
+    private const ASSETS_DIR = __DIR__ . '/../../Asset/';
 
     /**
      * @throws \Exception
