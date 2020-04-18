@@ -23,16 +23,16 @@ class DefaultMediaParserTest extends TestCase
     public function validInputProvider(): array
     {
         return [
-            'empty_str' => ['', []],
-            'single_str_with_no_value' => ['foo', ['foo' => '']],
-            'query_str' => [
+            'empty str' => ['', []],
+            'single str with no value' => ['foo', ['foo' => '']],
+            'query str' => [
                 'first=value&arr[]=foo+bar&arr[]=baz',
                 [
                     'first' => 'value',
                     'arr' => ['foo bar', 'baz']
                 ],
             ],
-            'mangled_name' => [
+            'mangled name' => [
                 'My Value=Something',
                 ['My_Value' => 'Something']
             ],

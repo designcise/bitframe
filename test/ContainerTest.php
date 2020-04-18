@@ -36,7 +36,7 @@ class ContainerTest extends TestCase
     {
         return [
             'parameter' => ['foo', 'bar'],
-            'array_parameter' => ['test', ['deep']],
+            'array parameter' => ['test', ['deep']],
             'null' => ['null', null],
         ];
     }

@@ -55,9 +55,9 @@ class HttpFactoryTest extends TestCase
     public function invalidFactoryProvider(): array
     {
         return [
-            'random_string' => ['randomString'],
-            'invalid_factory_object' => [new InteropMiddleware],
-            'invalid_factory_class' => [InteropMiddleware::class],
+            'random string' => ['randomString'],
+            'invalid factory object' => [new InteropMiddleware],
+            'invalid factory class' => [InteropMiddleware::class],
             'implements some PSR-17 Factories' => [
                 $this->getMockBuilder([
                     RequestFactoryInterface::class,

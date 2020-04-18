@@ -24,23 +24,23 @@ class JsonMediaParserTest extends TestCase
     public function validInputProvider(): array
     {
         return [
-            'empty_json' => ['{}', []],
-            'basic_json' => [
+            'empty json' => ['{}', []],
+            'basic json' => [
                 '{"name":"John", "age":30, "car":null}', [
                     'name' => 'John',
                     'age' => 30,
                     'car' => null,
                 ]
             ],
-            'json_array' => [
+            'json array' => [
                 '{"name":"John", "age":30, "cars":[ "Ford", "BMW", "Fiat" ]}', [
                     'name' => 'John',
                     'age' => 30,
                     'cars' => ['Ford', 'BMW', 'Fiat'],
                 ]
             ],
-            'empty_key' => ['{ "": { "foo": "" } }', ['' => ['foo' => '']]],
-            'empty_key_value' => ['{ "": { "": "" } }', ['' => ['' => '']]],
+            'empty key' => ['{ "": { "foo": "" } }', ['' => ['foo' => '']]],
+            'empty key value' => ['{ "": { "": "" } }', ['' => ['' => '']]],
         ];
     }
 
@@ -61,11 +61,11 @@ class JsonMediaParserTest extends TestCase
     public function invalidInputProvider(): array
     {
         return [
-            'empty_str' => [''],
-            'random_str' => ['foo'],
-            'single_quotes' => ["{ 'bar': 'baz' }"],
-            'missing_double_quotes_for_key' => ['{ bar: "baz" }'],
-            'trailing_comma' => ['{ bar: "baz", }'],
+            'empty str' => [''],
+            'random str' => ['foo'],
+            'single quotes' => ["{ 'bar': 'baz' }"],
+            'missing double_quotes_for_key' => ['{ bar: "baz" }'],
+            'trailing comma' => ['{ bar: "baz", }'],
         ];
     }
 

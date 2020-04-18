@@ -95,20 +95,20 @@ class ContentNegotiatorTest extends TestCase
     public function preferredMediaParserProvider(): array
     {
         return [
-            'text_html' => ['text/html', DefaultMediaParser::class],
-            'app_xhtml_xml' => ['application/xhtml+xml', DefaultMediaParser::class],
+            'text/html' => ['text/html', DefaultMediaParser::class],
+            'app/xhtml+xml' => ['application/xhtml+xml', DefaultMediaParser::class],
 
-            'app_json' => ['application/json', JsonMediaParser::class],
-            'text_json' => ['text/json', JsonMediaParser::class],
-            'app_x_json' => ['application/x-json', JsonMediaParser::class],
+            'app/json' => ['application/json', JsonMediaParser::class],
+            'text/json' => ['text/json', JsonMediaParser::class],
+            'app/x-json' => ['application/x-json', JsonMediaParser::class],
 
-            'text_xml' => ['text/xml', XmlMediaParser::class],
-            'app_xml' => ['application/xml', XmlMediaParser::class],
-            'app_x_xml' => ['application/x-xml', XmlMediaParser::class],
+            'text/xml' => ['text/xml', XmlMediaParser::class],
+            'app/xml' => ['application/xml', XmlMediaParser::class],
+            'app/x-xml' => ['application/x-xml', XmlMediaParser::class],
 
-            'text_plain' => ['text/plain', DefaultMediaParser::class],
-            'form_urlencoded' => ['application/x-www-form-urlencoded', DefaultMediaParser::class],
-            'form_data' => ['multipart/form-data', DefaultMediaParser::class],
+            'text/plain' => ['text/plain', DefaultMediaParser::class],
+            'app/form-urlencoded' => ['application/x-www-form-urlencoded', DefaultMediaParser::class],
+            'app/form-data' => ['multipart/form-data', DefaultMediaParser::class],
         ];
     }
 
@@ -139,18 +139,18 @@ class ContentNegotiatorTest extends TestCase
         $text = ContentNegotiator::CONTENT_TYPE_TEXT;
 
         return [
-            'text_html' => ['text/html', $html],
-            'app_xhtml_xml' => ['application/xhtml+xml', $html],
+            'text/html' => ['text/html', $html],
+            'app/xhtml+xml' => ['application/xhtml+xml', $html],
 
-            'app_json' => ['application/json', $json],
-            'text_json' => ['text/json', $json],
-            'app_x_json' => ['application/x-json', $json],
+            'app/json' => ['application/json', $json],
+            'text/json' => ['text/json', $json],
+            'app/x-json' => ['application/x-json', $json],
 
-            'text_xml' => ['text/xml', $xml],
-            'app_xml' => ['application/xml', $xml],
-            'app_x_xml' => ['application/x-xml', $xml],
+            'text/xml' => ['text/xml', $xml],
+            'app/xml' => ['application/xml', $xml],
+            'app/x-xml' => ['application/x-xml', $xml],
 
-            'text_plain' => ['text/plain', $text],
+            'text/plain' => ['text/plain', $text],
         ];
     }
 

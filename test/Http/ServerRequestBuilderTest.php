@@ -45,7 +45,7 @@ class ServerRequestBuilderTest extends TestCase
     public function invalidFactoryProvider(): array
     {
         return [
-            'invalid_factory_object' => [new InteropMiddleware],
+            'invalid factory object' => [new InteropMiddleware],
             'implements some PSR-17 Factories' => [
                 $this->getMockBuilder([
                     RequestFactoryInterface::class,
@@ -71,8 +71,8 @@ class ServerRequestBuilderTest extends TestCase
     public function uriFromServerParamsProvider(): array
     {
         return [
-            'Empty URI' => [[], '/'],
-            'Only URI path defined with trailing slash' => [['REQUEST_URI' => '/',], '/'],
+            'empty URI' => [[], '/'],
+            'only URI path defined with trailing slash' => [['REQUEST_URI' => '/',], '/'],
             'URI (as delegated from sapi)' => [
                 [
                     'REQUEST_SCHEME' => 'scheme',
@@ -309,32 +309,32 @@ class ServerRequestBuilderTest extends TestCase
                 ['hello' => 'world'],
                 ['hello' => 'world']
             ],
-            'ows-without-fold' => [
+            'ows without fold' => [
                 ['HTTP_COOKIE' => "\tfoo=bar "],
                 [],
                 ['foo' => 'bar'],
             ],
-            'url-encoded-value' => [
+            'url encoded value' => [
                 ['HTTP_COOKIE' => 'foo=bar%3B+'],
                 [],
                 ['foo' => 'bar; '],
             ],
-            'double-quoted-value' => [
+            'double quoted value' => [
                 ['HTTP_COOKIE' => 'foo="bar"'],
                 [],
                 ['foo' => 'bar'],
             ],
-            'multiple-pairs' => [
+            'multiple pairs' => [
                 ['HTTP_COOKIE' => 'foo=bar; baz="bat"; bau=bai'],
                 [],
                 ['foo' => 'bar', 'baz' => 'bat', 'bau' => 'bai'],
             ],
-            'same-name-pairs' => [
+            'same-name pairs' => [
                 ['HTTP_COOKIE' => 'foo=bar; foo="bat"'],
                 [],
                 ['foo' => 'bat'],
             ],
-            'period-in-name' => [
+            'period in name' => [
                 ['HTTP_COOKIE' => 'foo.bar=baz'],
                 [],
                 ['foo.bar' => 'baz'],
@@ -481,8 +481,8 @@ class ServerRequestBuilderTest extends TestCase
                 HttpFactory::createStream('Foo bar=baz qux'),
                 ['Foo_bar' => 'baz qux']
             ],
-            'empty_json' => ['{}', [], 'application/json'],
-            'basic_json' => [
+            'empty json' => ['{}', [], 'application/json'],
+            'basic json' => [
                 '{"name":"John", "age":30, "car":null}', [
                     'name' => 'John',
                     'age' => 30,
@@ -490,7 +490,7 @@ class ServerRequestBuilderTest extends TestCase
                 ],
                 'application/json'
             ],
-            'json_array' => [
+            'json array' => [
                 '{"name":"John", "age":30, "cars":[ "Ford", "BMW", "Fiat" ]}', [
                     'name' => 'John',
                     'age' => 30,
@@ -498,12 +498,12 @@ class ServerRequestBuilderTest extends TestCase
                 ],
                 'application/json'
             ],
-            'empty_key' => [
+            'empty key' => [
                 '{ "": { "foo": "" } }',
                 ['' => ['foo' => '']],
                 'application/json'
             ],
-            'empty_key_value' => [
+            'empty key value' => [
                 '{ "": { "": "" } }',
                 ['' => ['' => '']],
                 'application/json'

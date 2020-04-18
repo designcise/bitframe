@@ -92,11 +92,11 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function invalidMiddlewareProvider(): array
     {
         return [
-            ['null' => null],
-            ['empty_array' => []],
-            ['class_unsupported' => new class {}],
-            ['callable_array_non_existent_class' => ['NonExistent', 'run']],
-            ['callable_array_non_existent_method' => [new InteropMiddleware(), 'nonExistentMethod']],
+            'null' => [null],
+            'empty array' => [[]],
+            'class unsupported' => [new class {}],
+            'callable array non-existent class' => [['NonExistent', 'run']],
+            'callable array non-existent method' => [[new InteropMiddleware(), 'nonExistentMethod']],
         ];
     }
 
@@ -114,8 +114,8 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function nonExistentMiddlewareProvider(): array
     {
         return [
-            ['string_nonexistent_static_callable' => 'NonExistent::run'],
-            ['string_non_existent_class_or_function_name' => 'NonExistentFunction'],
+            'string non-existent static callable' => ['NonExistent::run'],
+            'string non-existent class or function name' => ['NonExistentFunction'],
         ];
     }
 
@@ -133,14 +133,14 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function middlewareProvider(): array
     {
         return [
-            ['psr15' => $this->getHelloWorldMiddlewareAsPsr15()],
-            ['closure' => $this->getHelloWorldMiddlewareAsClosure()],
-            ['invokable_class' => new CallableClass()],
-            ['string_class' => HelloWorldMiddleware::class],
-            ['string_static_callable' => InteropMiddleware::class . '::staticRun'],
-            ['string_function' => 'BitFrame\Test\Asset\helloWorldCallable'],
-            ['callable_array' => [new InteropMiddleware(), 'run']],
-            ['callable_array_uninstantiated' => [InteropMiddleware::class, 'staticRun']]
+            'psr15' => [$this->getHelloWorldMiddlewareAsPsr15()],
+            'closure' => [$this->getHelloWorldMiddlewareAsClosure()],
+            'invokable class' => [new CallableClass()],
+            'string class' => [HelloWorldMiddleware::class],
+            'string static callable' => [InteropMiddleware::class . '::staticRun'],
+            'string function' => ['BitFrame\Test\Asset\helloWorldCallable'],
+            'callable array' => [[new InteropMiddleware(), 'run']],
+            'callable array uninstantiated' => [[InteropMiddleware::class, 'staticRun']]
         ];
     }
 
@@ -160,11 +160,11 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function callablesProvider(): array
     {
         return [
-            ['closure' => $this->getHelloWorldMiddlewareAsClosure()],
-            ['invokable_class' => new CallableClass()],
-            ['string_static_callable' => InteropMiddleware::class . '::staticRun'],
-            ['array_object_callable' => [new InteropMiddleware, 'run']],
-            ['array_string_callable' => [InteropMiddleware::class, 'staticRun']]
+            'closure' => [$this->getHelloWorldMiddlewareAsClosure()],
+            'invokable class' => [new CallableClass()],
+            'string static callable' => [InteropMiddleware::class . '::staticRun'],
+            'array object callable' => [[new InteropMiddleware, 'run']],
+            'array string callable' => [[InteropMiddleware::class, 'staticRun']]
         ];
     }
 

@@ -400,12 +400,12 @@ class AbstractRouterTest extends TestCase
         return [
             'psr15' => [$this->getHelloWorldMiddlewareAsPsr15()],
             'closure' => [$this->getHelloWorldMiddlewareAsClosure()],
-            'invokable_class' => [new CallableClass()],
-            'string_class' => [HelloWorldMiddleware::class],
-            'string_static_callable' => [InteropMiddleware::class . '::staticRun'],
-            'string_function' => ['BitFrame\Test\Asset\helloWorldCallable'],
-            'callable_array' => [[new InteropMiddleware(), 'run']],
-            'callable_array_uninstantiated' => [[InteropMiddleware::class, 'staticRun']],
+            'invokable class' => [new CallableClass()],
+            'string class' => [HelloWorldMiddleware::class],
+            'string static callable' => [InteropMiddleware::class . '::staticRun'],
+            'string function' => ['BitFrame\Test\Asset\helloWorldCallable'],
+            'callable array' => [[new InteropMiddleware(), 'run']],
+            'callable array uninstantiated' => [[InteropMiddleware::class, 'staticRun']],
         ];
     }
 
