@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace BitFrame\Http\Message;
 
-use Psr\Http\Message\{ResponseInterface, StreamInterface};
+use Psr\Http\Message\{ResponseInterface, StreamFactoryInterface, StreamInterface};
 use BitFrame\Factory\HttpFactory;
 use InvalidArgumentException;
 
@@ -51,11 +51,11 @@ class AbstractFileResponse extends ResponseDecorator
 
     /**
      * @param string|resource|StreamInterface $file
-     * @param \BitFrame\Factory\HttpFactoryInterface|object|null $factory
+     * @param object|StreamFactoryInterface|null $factory
      *
      * @return StreamInterface
      */
-    protected function getFileAsStream($file, $factory): StreamInterface
+    protected function getFileAsStream($file, StreamFactoryInterface $factory): StreamInterface
     {
         if (is_string($file)) {
             $file = $factory->createStreamFromFile($file, 'r');

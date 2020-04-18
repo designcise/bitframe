@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Factory;
+namespace BitFrame\Test\Asset;
 
 use Psr\Http\Message\{
     RequestFactoryInterface,

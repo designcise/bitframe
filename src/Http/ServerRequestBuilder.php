@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace BitFrame\Http;
 
-use BitFrame\Factory\HttpFactoryInterface;
+use BitFrame\Factory\HttpFactory;
 use Psr\Http\Message\{
     ServerRequestInterface,
     StreamInterface,
@@ -50,7 +50,7 @@ class ServerRequestBuilder
     /** @var array */
     private array $server;
 
-    /** @var object|HttpFactoryInterface */
+    /** @var object */
     private $factory;
 
     /** @var string */
@@ -79,7 +79,7 @@ class ServerRequestBuilder
 
     /**
      * @param array $server
-     * @param object|HttpFactoryInterface $factory
+     * @param object $factory
      * @param null|array $parsedBody
      * @param array $cookies
      * @param array $files
@@ -111,10 +111,16 @@ class ServerRequestBuilder
 
     /**
      * @param array $server
-     * @param object|HttpFactoryInterface $factory
+     * @param object $factory
      */
     public function __construct(array $server, object $factory)
     {
+        if (! HttpFactory::isPsr17Factory($factory)) {
+            throw new InvalidArgumentException(
+                'Http factory must implement all PSR-17 factories'
+            );
+        }
+
         $this->server = $server;
         $this->factory = $factory;
     }
@@ -329,7 +335,7 @@ class ServerRequestBuilder
      * instances.
      *
      * @param array $files `$_FILES` struct.
-     * @param object|HttpFactoryInterface $httpFactory
+     * @param object $httpFactory
      *
      * @return UploadedFileInterface[]|UploadedFileInterface
      */
@@ -369,7 +375,7 @@ class ServerRequestBuilder
      * arrays are normalized.
      *
      * @param array $files
-     * @param object|HttpFactoryInterface $httpFactory
+     * @param object $httpFactory
      *
      * @return UploadedFileInterface[]
      *

@@ -14,6 +14,12 @@ namespace BitFrame\Factory;
 
 use RuntimeException;
 use Psr\Http\Message\{
+    RequestFactoryInterface,
+    ResponseFactoryInterface,
+    ServerRequestFactoryInterface,
+    StreamFactoryInterface,
+    UploadedFileFactoryInterface,
+    UriFactoryInterface,
     ServerRequestInterface,
     RequestInterface,
     ResponseInterface,
@@ -21,14 +27,16 @@ use Psr\Http\Message\{
     UriInterface,
     UploadedFileInterface
 };
+
 use BitFrame\Http\ServerRequestBuilder;
 use InvalidArgumentException;
 
+use function array_diff;
 use function array_shift;
 use function array_unshift;
 use function class_exists;
+use function class_implements;
 use function file_get_contents;
-use function is_a;
 use function is_object;
 use function is_string;
 
@@ -39,7 +47,6 @@ use const UPLOAD_ERR_OK;
  */
 class HttpFactory
 {
-    /** @var array */
     private static array $factoriesList = [
         'Nyholm\Psr7\Factory\Psr17Factory',
         'GuzzleHttp\Psr7\HttpFactory',
@@ -48,27 +55,19 @@ class HttpFactory
     /**
      * Add PSR-17 factory creator class.
      *
-     * @param string|HttpFactoryInterface $factory
-     *
-     * @return void
+     * @param string|object $factory
      */
     public static function addFactory($factory): void
     {
-        if (! is_a($factory, HttpFactoryInterface::class, true)) {
+        if (! self::isPsr17Factory($factory)) {
             throw new InvalidArgumentException(
-                'Http factory must be of type: ' . HttpFactoryInterface::class
+                'Http factory must implement all PSR-17 factories'
             );
         }
 
         array_unshift(self::$factoriesList, $factory);
     }
 
-    /**
-     * @param int $statusCode
-     * @param string $reasonPhrase
-     *
-     * @return ResponseInterface
-     */
     public static function createResponse(
         int $statusCode = 200,
         string $reasonPhrase = ''
@@ -104,8 +103,6 @@ class HttpFactory
     }
 
     /**
-     * Create a request from the superglobal values.
-     *
      * @param array $server
      * @param array $parsedBody
      * @param array $cookies
@@ -133,22 +130,11 @@ class HttpFactory
         );
     }
 
-    /**
-     * @param string $content
-     *
-     * @return StreamInterface
-     */
     public static function createStream(string $content = ''): StreamInterface
     {
         return self::getFactory()->createStream($content);
     }
 
-    /**
-     * @param string $filename
-     * @param string $mode
-     *
-     * @return StreamInterface
-     */
     public static function createStreamFromFile(
         string $filename,
         string $mode = 'r'
@@ -157,8 +143,6 @@ class HttpFactory
     }
 
     /**
-     * Creates a Stream instance from resource returned by `fopen`.
-     *
      * @param resource $resource
      *
      * @return StreamInterface
@@ -168,25 +152,11 @@ class HttpFactory
         return self::getFactory()->createStreamFromResource($resource);
     }
 
-    /**
-     * @param string $uri
-     *
-     * @return UriInterface
-     */
     public static function createUri(string $uri = ''): UriInterface
     {
         return self::getFactory()->createUri($uri);
     }
-    
-    /**
-     * @param StreamInterface $stream
-     * @param null|int $size
-     * @param int $error
-     * @param null|string $clientFilename
-     * @param null|string $clientMediaType
-     *
-     * @return UploadedFileInterface
-     */
+
     public static function createUploadedFile(
         StreamInterface $stream,
         ?int $size = null,
@@ -201,6 +171,29 @@ class HttpFactory
             $clientFilename,
             $clientMediaType
         );
+    }
+
+    /**
+     * @param string|object $factory
+     *
+     * @return bool
+     */
+    public static function isPsr17Factory($factory): bool
+    {
+        if (is_string($factory) && ! class_exists($factory)) {
+            return false;
+        }
+
+        $requiredFactories = [
+            RequestFactoryInterface::class,
+            ResponseFactoryInterface::class,
+            ServerRequestFactoryInterface::class,
+            StreamFactoryInterface::class,
+            UploadedFileFactoryInterface::class,
+            UriFactoryInterface::class,
+        ];
+
+        return empty(array_diff($requiredFactories, class_implements($factory)));
     }
 
     /**
@@ -219,7 +212,7 @@ class HttpFactory
         if (is_object($factory)) {
             return $factory;
         }
-        
+
         if (is_string($factory) && class_exists($factory)) {
             return self::$factoriesList[0] = new $factory();
         }

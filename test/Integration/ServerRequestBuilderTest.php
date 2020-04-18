@@ -14,7 +14,14 @@ namespace BitFrame\Test\Integration;
 
 use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
+use Psr\Http\Message\{
+    RequestFactoryInterface,
+    ResponseFactoryInterface,
+    ServerRequestFactoryInterface,
+    StreamInterface,
+    UploadedFileInterface
+};
+use BitFrame\Test\Asset\InteropMiddleware;
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\ServerRequestBuilder;
 use UnexpectedValueException;
@@ -28,12 +35,39 @@ class ServerRequestBuilderTest extends TestCase
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
 
-    /** @var object|\BitFrame\Factory\HttpFactoryInterface */
-    private $factory;
+    private object $factory;
 
     public function setUp(): void
     {
         $this->factory = HttpFactory::getFactory();
+    }
+
+    public function invalidFactoryProvider(): array
+    {
+        return [
+            'random_string' => ['randomString'],
+            'invalid_factory_object' => [new InteropMiddleware],
+            'invalid_factory_class' => [InteropMiddleware::class],
+            'implements some PSR-17 Factories' => [
+                $this->getMockBuilder([
+                    RequestFactoryInterface::class,
+                    ResponseFactoryInterface::class,
+                    ServerRequestFactoryInterface::class,
+                ])->getMock()
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidFactoryProvider
+     *
+     * @param object|string $factory
+     */
+    public function testShouldThrowExceptionWhenFactoryIsInvalid($factory): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        HttpFactory::addFactory($factory);
     }
 
     public function uriFromServerParamsProvider(): array
