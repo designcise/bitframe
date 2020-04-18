@@ -3,9 +3,10 @@
 [![codecov](https://codecov.io/gh/designcise/bitframe/branch/2.x/graph/badge.svg)](https://codecov.io/gh/designcise/bitframe)
 [![Build Status](https://travis-ci.org/designcise/bitframe.svg?branch=2.x)](https://travis-ci.org/designcise/bitframe)
 
-## About
+## At-a-glance
 
 * Highly customizable PSR-15 and PSR-7 compatible middleware-based microframework for PHP;
+* Simple PSR-11 based dependency injection container;
 * Simple to learn, use and implement;
 * Follows the [PSR standards](http://www.php-fig.org/) and integrates the best of existing opensource frameworks wherever possible.
 
@@ -16,9 +17,9 @@ BitFrame's approach of making the middleware dispatcher the core component of th
 At the core of our development, we've tried very hard to abide by some simple rules that we've mostly found missing in other microframeworks:
 
 1. Be well-documented and intuitive;
-1. Facilitate the developer and be nonintrusive;
+1. Facilitate the developer and be non-intrusive;
 1. Be free of unnecessary bloat;
-1. Promote modularity to allow any component of the framework to be easily replaced;
+1. Promote modularity and customizability to allow any component of the framework to be easily replaced;
 1. Provide the flexibility of using existing PSR-15 / PSR-7 middlewares that plug right in easily;
 1. Provide the ability to share variables and application data seamlessly across all the middlewares.
 
@@ -32,26 +33,60 @@ $ composer require "designcise/bitframe:2.x-dev"
 
 Please note that BitFrame v2+ requires PHP 7.4.0 or newer.
 
-## Boilerplate
-
-Available at: https://github.com/designcise/bitframe-boilerplate.
-
 ## Quickstart
+
+Get started quickly by using the boilerplate code at https://github.com/designcise/bitframe-boilerplate.
 
 ### Apache
 
 After you have installed the required dependencies specific to your project, create an `.htaccess` file with at least the following code:
 
-```
+```apacheconfig
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 ```
 
-This sets the directive in apache to redirect all Http Requests to `index.php` in which we can write our application code. For example:
+This sets the directive in apache to redirect all Http Requests to `index.php` in which we can write our application code.
+
+### Nginx
+
+A configuration like the following in nginx will help you set the directive to rewrite path to our application front controller (i.e. `index.php`):
 
 ```
+server {
+  listen 80;
+  server_name 127.0.0.1;
+
+  root /var/www/html/public;
+  index index.php;
+
+  location / {
+    try_files $uri $uri/ /index.php$is_args$args;
+  }
+
+  location ~ \.php$ {
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_pass app:9000;
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+  }
+
+  access_log /var/log/nginx/access.log;
+  error_log  /var/log/nginx/error.log;
+}
+```
+
+Remember to make changes according to your project setup. For example, ensure that `listen`, `root`, `fastcgi_pass`, `*_log`, etc. are setup correctly according to your project.
+
+### Example
+
+For a full application example, please [check out the boilerplate](https://github.com/designcise/bitframe-boilerplate).
+
+```php
 <?php
 
 require 'vendor/autoload.php';
@@ -63,15 +98,14 @@ use BitFrame\Emitter\SapiEmitter;
 
 $app = new App();
 
+$middleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+    $handler->write('Hello World!');
+    return $handler->handle($request);
+};
+
 $app->use([
     SapiEmitter::class,
-    function (
-        ServerRequestInterface $request,
-        RequestHandlerInterface $handler
-    ) {
-        $handler->write('Hello World!');
-        return $handler->handle($request);
-    }
+    $middleware,
 ]);
 
 $app->run();
@@ -86,11 +120,9 @@ This is of course a very basic example. You could extend the functionality by us
 
 ### Tests
 
-To execute the test suite, you will need [PHPUnit](https://phpunit.de/). To run the tests simply use one of the following composer commands:
+To execute the test suite, you will need [PHPUnit](https://phpunit.de/). To run the tests simply use the following composer command:
 
 ```
-composer unit
-composer integration
 composer test
 ```
 
