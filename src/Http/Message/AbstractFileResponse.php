@@ -51,7 +51,7 @@ class AbstractFileResponse extends ResponseDecorator
 
     /**
      * @param string|resource|StreamInterface $file
-     * @param object|StreamFactoryInterface|null $factory
+     * @param StreamFactoryInterface $factory
      *
      * @return StreamInterface
      */

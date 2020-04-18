@@ -59,9 +59,9 @@ class ServerRequestBuilderTest extends TestCase
     /**
      * @dataProvider invalidFactoryProvider
      *
-     * @param object|string $factory
+     * @param object $factory
      */
-    public function testShouldThrowExceptionWhenFactoryIsInvalid($factory): void
+    public function testShouldThrowExceptionWhenFactoryIsInvalid(object $factory): void
     {
         $this->expectException(InvalidArgumentException::class);
 
