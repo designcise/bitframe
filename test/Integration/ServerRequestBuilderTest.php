@@ -45,9 +45,7 @@ class ServerRequestBuilderTest extends TestCase
     public function invalidFactoryProvider(): array
     {
         return [
-            'random_string' => ['randomString'],
             'invalid_factory_object' => [new InteropMiddleware],
-            'invalid_factory_class' => [InteropMiddleware::class],
             'implements some PSR-17 Factories' => [
                 $this->getMockBuilder([
                     RequestFactoryInterface::class,
@@ -67,7 +65,7 @@ class ServerRequestBuilderTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        HttpFactory::addFactory($factory);
+        new ServerRequestBuilder([], $factory);
     }
 
     public function uriFromServerParamsProvider(): array
