@@ -13,8 +13,6 @@
   "require": {
     "php": ">=7.4",
     "ext-json": "*",
-    "ext-libxml": "*",
-    "ext-simplexml": "*",
     "psr/container": "^1.0",
     "psr/http-server-middleware": "~1.0"
   },
@@ -26,6 +24,8 @@
     "phpstan/phpstan": "*"
   },
   "suggest": {
+    "ext-libxml": "For out-of-the-box XML support, please install libxml extension",
+    "ext-simplexml": "For out-of-the-box XML support, please install simplexml extension",
     "nyholm/psr7": "Add PSR-7 / PSR-17 based HTTP Messaging support for your App",
     "designcise/bitframe-fastroute": "Add routing support to your App"
   },
