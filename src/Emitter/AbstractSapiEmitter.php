@@ -44,9 +44,9 @@ abstract class AbstractSapiEmitter implements MiddlewareInterface
     /**
      * Emit response headers, including the status line header.
      *
-     * If the header value is an array with multiple values, ensure that
-     * each is sent in such a way as to create aggregate headers (instead
-     * of overwriting the previous).
+     * If the header value is an array with multiple values, each is sent
+     * in such a way as to create aggregate headers (instead of overwriting
+     * the previous).
      *
      * @param ResponseInterface $response
      */
