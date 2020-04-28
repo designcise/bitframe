@@ -47,25 +47,18 @@ class ServerRequestBuilder
     /** @var callable */
     private static $preferredMediaParser = [ContentNegotiator::class, 'getPreferredMediaParserFromRequest'];
 
-    /** @var array */
     private array $server;
 
-    /** @var object */
-    private $factory;
+    private object $factory;
 
-    /** @var string */
     private string $method = 'GET';
 
-    /** @var string */
     private string $uri = '/';
 
-    /** @var string */
     private string $protocolVer = '1.1';
 
-    /** @var array */
     private array $headers = [];
 
-    /** @var array */
     private array $cookieParams = [];
 
     /** @var null|array|object */
@@ -186,7 +179,7 @@ class ServerRequestBuilder
     {
         $server = $this->server;
 
-        $uriParts = isset($server['REQUEST_URI']) ? parse_url($server['REQUEST_URI']) : [];
+        $uriParts = parse_url($server['REQUEST_URI'] ?? '');
         [$path, $query, $fragment] = $this->extractUriComponents($server, $uriParts);
 
         $baseUri = $this->getUriAuthorityWithScheme();
@@ -262,9 +255,7 @@ class ServerRequestBuilder
             $cookies = $this->parseCookieHeader($this->server['HTTP_COOKIE']);
         }
 
-        if (! empty($cookies)) {
-            $this->cookieParams = $cookies;
-        }
+        $this->cookieParams = $cookies ?: $this->cookieParams;
 
         return $this;
     }
@@ -320,9 +311,7 @@ class ServerRequestBuilder
      */
     public function addUploadedFiles(array $files): self
     {
-        if (! empty($files)) {
-            $this->uploadedFiles = self::normalizeUploadedFiles($files, $this->factory);
-        }
+        $this->uploadedFiles = self::normalizeUploadedFiles($files, $this->factory);
 
         return $this;
     }
@@ -410,14 +399,13 @@ class ServerRequestBuilder
     private function getUriAuthorityWithScheme(): string
     {
         $server = $this->server;
-
         $authority = $server['HTTP_HOST'] ?? $server['SERVER_NAME'] ?? $server['SERVER_ADDR'] ?? '';
 
         if ($authority) {
             $scheme = (
-                    $server['REQUEST_SCHEME']
-                    ?? ('http' . ((isset($server['HTTPS']) && $server['HTTPS'] === 'on') ? 's' : ''))
-                ) . ':';
+                $server['REQUEST_SCHEME']
+                ?? ('http' . ((isset($server['HTTPS']) && $server['HTTPS'] === 'on') ? 's' : ''))
+            ) . ':';
 
             $authority = "{$scheme}//{$authority}";
         }
@@ -431,9 +419,9 @@ class ServerRequestBuilder
         }
 
         return (
-        (substr($authority, -1) === '/')
-            ? rtrim($authority, '/') . ":{$server['SERVER_PORT']}/"
-            : "{$authority}:{$server['SERVER_PORT']}"
+            (substr($authority, -1) === '/')
+                ? rtrim($authority, '/') . ":{$server['SERVER_PORT']}/"
+                : "{$authority}:{$server['SERVER_PORT']}"
         );
     }
 

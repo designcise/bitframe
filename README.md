@@ -118,13 +118,16 @@ From the code above you can see that we're using two middlewares:
 
 This is of course a very basic example. You could extend the functionality by using additional middleware such as a [router](https://github.com/designcise/bitframe-fastroute/tree/2.x), error handler, etc.
 
-### Tests
+## Tests
 
-To execute the test suite, you will need [PHPUnit](https://phpunit.de/). To run the tests simply use the following composer command:
+To run the tests you can use the following commands:
 
-```
-composer test
-```
+| Command          | Type            |
+| ---------------- |:---------------:|
+| `composer test`  | PHPUnit tests   |
+| `composer style` | CodeSniffer     |
+| `composer md`    | MessDetector    |
+| `composer check` | PHPStan         |
 
 ### Contributing
 
