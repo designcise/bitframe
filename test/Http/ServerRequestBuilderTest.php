@@ -289,7 +289,9 @@ class ServerRequestBuilderTest extends TestCase
     {
         return [
             'no cookies' => [[], [], []],
+            'empty HTTP_COOKIE' => [['HTTP_COOKIE' => ''], [], []],
             'HTTP_COOKIE array' => [['HTTP_COOKIE' => 'foo_bar=baz'], [], ['foo_bar' => 'baz']],
+            'url encoded HTTP_COOKIE string' => [['HTTP_COOKIE' => 'Set-Cookie%3A%20test%3D1234;'], [], []],
             'HTTP_COOKIE string' => [
                 [
                     'HTTP_COOKIE' => 'Set-Cookie: foo=bar; domain=test.com; path=/; expires=Wed, 30 Aug 2019 00:00:00 GMT',
@@ -719,6 +721,17 @@ class ServerRequestBuilderTest extends TestCase
         (new ServerRequestBuilder([], $this->factory))
             ->addUploadedFiles($files)
             ->build();
+    }
+
+    public function testEmptyFileSpec(): void
+    {
+        $files = [];
+
+        $request = (new ServerRequestBuilder([], $this->factory))
+            ->addUploadedFiles($files)
+            ->build();
+
+        $this->assertSame([], $request->getUploadedFiles());
     }
 
     public function testCanAddAlreadyNormalizedUploadedFileSpec(): void
