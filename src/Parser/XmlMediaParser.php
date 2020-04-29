@@ -24,6 +24,9 @@ use const LIBXML_NOCDATA;
  */
 class XmlMediaParser implements MediaParserInterface
 {
+    /** @var string[] */
+    public const MIMES = ['text/xml', 'application/xml', 'application/x-xml'];
+
     /** @var int */
     private const OPTIONS = LIBXML_NOCDATA;
 

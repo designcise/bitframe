@@ -45,7 +45,7 @@ use const PREG_SET_ORDER;
 class ServerRequestBuilder
 {
     /** @var callable */
-    private static $preferredMediaParser = [ContentNegotiator::class, 'getPreferredMediaParserFromRequest'];
+    private static $preferredMediaParser = [MediaParserNegotiator::class, 'fromRequest'];
 
     private array $server;
 

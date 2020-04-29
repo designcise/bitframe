@@ -19,6 +19,9 @@ use function parse_str;
  */
 class DefaultMediaParser implements MediaParserInterface
 {
+    /** @var string[] */
+    public const MIMES = ['text/html', 'application/xhtml+xml', 'text/plain'];
+
     /**
      * {@inheritdoc}
      */
