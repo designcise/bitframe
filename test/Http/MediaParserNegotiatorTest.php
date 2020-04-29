@@ -15,6 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use BitFrame\Http\MediaParserNegotiator;
 use BitFrame\Parser\MediaParserInterface;
 use BitFrame\Parser\{DefaultMediaParser, JsonMediaParser, XmlMediaParser};
+use InvalidArgumentException;
 
 use function get_class;
 
@@ -66,6 +67,15 @@ class MediaParserNegotiatorTest extends TestCase
         $this->assertSame('foo(bar)', $parser->parse('bar'));
     }
 
+    public function testAddNewInvalidParserShouldThrowException(): void
+    {
+        $invalidParser = new class {};
+
+        $this->expectException(InvalidArgumentException::class);
+
+        MediaParserNegotiator::add('whatever', get_class($invalidParser));
+    }
+
     public function preferredMediaParserProvider(): array
     {
         return [
@@ -102,5 +112,20 @@ class MediaParserNegotiatorTest extends TestCase
             ->willReturn([$mime]);
 
         $this->assertInstanceOf($expectedParser, MediaParserNegotiator::fromRequest($request));
+    }
+
+    public function testGetsDefaultParserWhenAcceptHeaderNotPresent(): void
+    {
+        /** @var \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)
+            ->onlyMethods(['getHeader'])
+            ->getMockForAbstractClass();
+
+        $request
+            ->method('getHeader')
+            ->with('accept')
+            ->willReturn([]);
+
+        $this->assertInstanceOf(DefaultMediaParser::class, MediaParserNegotiator::fromRequest($request));
     }
 }
