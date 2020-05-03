@@ -426,7 +426,7 @@ class AbstractRouterTest extends TestCase
 
         $routeData = $this->router->getRouteDataByMethod('GET');
         /** @var ResponseInterface $response */
-        $runner = new MiddlewareHandler($routeData['handler']);
+        $runner = new MiddlewareHandler($routeData['handler'], HttpFactory::getFactory());
         $response = $runner->handle($request);
 
         $this->assertSame('Hello World!foo bar!', (string) $response->getBody());

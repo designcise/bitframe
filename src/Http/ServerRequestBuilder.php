@@ -35,6 +35,7 @@ use function str_replace;
 use function strtr;
 use function count;
 use function sprintf;
+use function parse_str;
 
 use const PHP_URL_PORT;
 use const PREG_SET_ORDER;
@@ -125,6 +126,13 @@ class ServerRequestBuilder
     {
         $request = $this->factory->createServerRequest($this->method, $this->uri, $this->server)
             ->withProtocolVersion($this->protocolVer);
+
+        $queryParams = $request->getUri()->getQuery();
+
+        if (! empty($queryParams)) {
+            parse_str($queryParams, $queryStr);
+            $request = $request->withQueryParams($queryStr);
+        }
 
         if (! empty($this->headers)) {
             $request = $this->addHeadersToServerRequest($request);

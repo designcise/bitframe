@@ -208,7 +208,7 @@ class ServerRequestBuilderTest extends TestCase
      * @param array $serverParams
      * @param string $expectedUri
      */
-    public function testCanUriFromServerParams(
+    public function testCanAddAndGetUriFromServerParams(
         array $serverParams,
         string $expectedUri
     ): void {
@@ -217,6 +217,42 @@ class ServerRequestBuilderTest extends TestCase
             ->build();
 
         $this->assertSame($expectedUri, (string) $serverRequest->getUri());
+    }
+
+    public function queryParamsProvider(): array
+    {
+        return [
+            'empty' => [['/path?#fragment'], []],
+            'from REQUEST_URI' => [
+                [
+                    'REQUEST_URI' => '/path?foo=bar&baz=qux#fragment',
+                ],
+                ['foo' => 'bar', 'baz' => 'qux'],
+            ],
+            'from QUERY_STRING' => [
+                [
+                    'QUERY_STRING' => 'foo=bar&callback=hello',
+                ],
+                ['foo' => 'bar', 'callback' => 'hello']
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider queryParamsProvider
+     *
+     * @param array $serverParams
+     * @param array $expected
+     */
+    public function testCanGetQueryParamsFromServerParams(
+        array $serverParams,
+        array $expected
+    ): void {
+        $serverRequest = (new ServerRequestBuilder($serverParams, $this->factory))
+            ->addUri()
+            ->build();
+
+        $this->assertSame($expected, $serverRequest->getQueryParams());
     }
 
     public function testDefaultBuildValues(): void

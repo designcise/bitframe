@@ -10,23 +10,24 @@
 
 namespace BitFrame\Test\Asset;
 
-use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\MiddlewareDecoratorTrait;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
+use Psr\Http\Message\{ResponseFactoryInterface, ServerRequestInterface, ResponseInterface};
+
+use function array_shift;
 
 class MiddlewareHandler implements RequestHandlerInterface
 {
     use MiddlewareDecoratorTrait;
 
-    private $middlewares;
+    private array $middlewares;
 
     private ResponseInterface $response;
 
-    public function __construct($middleware)
+    public function __construct($middleware, ResponseFactoryInterface $factory)
     {
         $this->middlewares = [...$this->getUnpackedMiddleware($middleware)];
-        $this->response = HttpFactory::createResponse();
+        $this->response = $factory->createResponse();
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
