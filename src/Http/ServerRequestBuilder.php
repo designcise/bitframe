@@ -56,6 +56,8 @@ class ServerRequestBuilder
 
     private string $uri = '/';
 
+    private array $queryParams = [];
+
     private string $protocolVer = '1.1';
 
     private array $headers = [];
@@ -127,12 +129,7 @@ class ServerRequestBuilder
         $request = $this->factory->createServerRequest($this->method, $this->uri, $this->server)
             ->withProtocolVersion($this->protocolVer);
 
-        $queryParams = $request->getUri()->getQuery();
-
-        if (! empty($queryParams)) {
-            parse_str($queryParams, $queryStr);
-            $request = $request->withQueryParams($queryStr);
-        }
+        $request = $request->withQueryParams($this->queryParams);
 
         if (! empty($this->headers)) {
             $request = $this->addHeadersToServerRequest($request);
@@ -525,6 +522,8 @@ class ServerRequestBuilder
         } elseif (! empty($uriParts['query'])) {
             $query = $uriParts['query'];
         }
+
+        parse_str($query, $this->queryParams);
 
         $fragment = (! empty($uriParts['fragment'])) ? $uriParts['fragment'] : '';
         return [$path, $query, $fragment];

@@ -222,7 +222,18 @@ class ServerRequestBuilderTest extends TestCase
     public function queryParamsProvider(): array
     {
         return [
-            'empty' => [['/path?#fragment'], []],
+            'empty' => [
+                [
+                    'REQUEST_URI' => '/path?#fragment'
+                ],
+                []
+            ],
+            'empty value' => [
+                [
+                    'REQUEST_URI' => '/path?key=#fragment',
+                ],
+                ['key' => '']
+            ],
             'from REQUEST_URI' => [
                 [
                     'REQUEST_URI' => '/path?foo=bar&baz=qux#fragment',
@@ -234,6 +245,18 @@ class ServerRequestBuilderTest extends TestCase
                     'QUERY_STRING' => 'foo=bar&callback=hello',
                 ],
                 ['foo' => 'bar', 'callback' => 'hello']
+            ],
+            'encoded query string in REQUEST_URI' => [
+                [
+                    'REQUEST_URI' => '/path?url=https%3A%2F%2Fbitframephp.com%2F',
+                ],
+                ['url' => 'https://bitframephp.com/']
+            ],
+            'encoded query string in QUERY_STRING' => [
+                [
+                    'QUERY_STRING' => 'url=https%3A%2F%2Fbitframephp.com%2F',
+                ],
+                ['url' => 'https://bitframephp.com/']
             ],
         ];
     }
