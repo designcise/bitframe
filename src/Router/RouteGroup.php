@@ -13,26 +13,20 @@ declare(strict_types=1);
 namespace BitFrame\Router;
 
 use function ltrim;
+use function substr;
 
 /**
  * Group multiple routes together under the same prefix.
  */
 class RouteGroup extends AbstractRouter
 {
-    /** @var string */
     protected string $prefix;
 
     /** @var callable */
     protected $handler;
 
-    /** @var AbstractRouter */
     protected AbstractRouter $routeMapper;
 
-    /**
-     * @param string $prefix
-     * @param callable $handler
-     * @param AbstractRouter $routeMapper
-     */
     public function __construct(
         string $prefix,
         callable $handler,

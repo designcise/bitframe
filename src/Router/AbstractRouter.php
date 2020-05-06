@@ -26,17 +26,6 @@ use BitFrame\Http\Message\{
     RedirectResponse
 };
 
-use function explode;
-use function ltrim;
-use function rtrim;
-use function method_exists;
-use function str_replace;
-use function ucwords;
-use function lcfirst;
-use function parse_url;
-
-use const PHP_URL_PATH;
-
 /**
  * Common router implementation.
  */
@@ -89,12 +78,6 @@ abstract class AbstractRouter
         $this->map((array) $methods, $path, $handlerWithMiddleware);
     }
 
-    /**
-     * Add a group of routes to the collection.
-     *
-     * @param string $prefix
-     * @param callable $group
-     */
     public function group(string $prefix, callable $group): void
     {
         new RouteGroup($prefix, $group, $this);

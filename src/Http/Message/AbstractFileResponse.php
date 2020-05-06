@@ -26,6 +26,9 @@ use function mime_content_type;
  */
 class AbstractFileResponse extends ResponseDecorator
 {
+    /** @var string */
+    private const DEFAULT_MIME_TYPE = 'application/octet-stream';
+
     /**
      * @param string|resource|StreamInterface $file
      *
@@ -41,7 +44,7 @@ class AbstractFileResponse extends ResponseDecorator
             throw new InvalidArgumentException("File \"{$file}\" does not exist.");
         }
 
-        $mimeType = ($isFilePath) ? mime_content_type($file) : 'application/octet-stream';
+        $mimeType = ($isFilePath) ? mime_content_type($file) : self::DEFAULT_MIME_TYPE;
         $stream = $this->getFileAsStream($file, HttpFactory::getFactory());
 
         return HttpFactory::createResponse()

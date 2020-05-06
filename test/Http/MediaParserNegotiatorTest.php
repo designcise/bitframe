@@ -98,6 +98,9 @@ class MediaParserNegotiatorTest extends TestCase
 
     /**
      * @dataProvider preferredMediaParserProvider
+     *
+     * @param string $mime
+     * @param string $expectedParser
      */
     public function testFromRequest(string $mime, string $expectedParser): void
     {

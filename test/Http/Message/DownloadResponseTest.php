@@ -22,6 +22,8 @@ use function mime_content_type;
 use function rawurlencode;
 use function ctype_xdigit;
 use function preg_match;
+use function fopen;
+use function fwrite;
 
 /**
  * @covers \BitFrame\Http\Message\DownloadResponse
@@ -53,7 +55,7 @@ class DownloadResponseTest extends TestCase
     public function testConstructorAcceptsResource(): void
     {
         $stream = fopen('php://temp/maxmemory:1024', 'r+');
-        fputs($stream, 'test');
+        fwrite($stream, 'test');
         $body = 'test';
 
         $response = new DownloadResponse($stream);

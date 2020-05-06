@@ -18,6 +18,8 @@ use Psr\Http\Message\{
     RequestFactoryInterface,
     ResponseFactoryInterface,
     ServerRequestFactoryInterface,
+    StreamFactoryInterface,
+    UploadedFileFactoryInterface,
     StreamInterface,
     UploadedFileInterface
 };
@@ -27,6 +29,9 @@ use BitFrame\Http\ServerRequestBuilder;
 use UnexpectedValueException;
 use InvalidArgumentException;
 
+use function fopen;
+use function fwrite;
+
 /**
  * @covers \BitFrame\Http\ServerRequestBuilder
  */
@@ -35,7 +40,8 @@ class ServerRequestBuilderTest extends TestCase
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
 
-    private object $factory;
+    /** @var ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface */
+    private $factory;
 
     public function setUp(): void
     {
@@ -59,9 +65,9 @@ class ServerRequestBuilderTest extends TestCase
     /**
      * @dataProvider invalidFactoryProvider
      *
-     * @param object $factory
+     * @param ServerRequestFactoryInterface|\Psr\Http\Message\StreamFactoryInterface $factory
      */
-    public function testShouldThrowExceptionWhenFactoryIsInvalid(object $factory): void
+    public function testShouldThrowExceptionWhenFactoryIsInvalid($factory): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -640,7 +646,8 @@ class ServerRequestBuilderTest extends TestCase
      *
      * @param string $protocol
      */
-    public function testInvalidProtocolVersionShouldThrowException(string $protocol): void {
+    public function testInvalidProtocolVersionShouldThrowException(string $protocol): void
+    {
         $this->expectException(UnexpectedValueException::class);
 
         (new ServerRequestBuilder(['SERVER_PROTOCOL' => $protocol], $this->factory))

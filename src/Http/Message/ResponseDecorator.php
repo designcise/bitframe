@@ -19,12 +19,8 @@ use Psr\Http\Message\{ResponseInterface, StreamInterface};
  */
 class ResponseDecorator implements ResponseInterface
 {
-    /** @var ResponseInterface */
     private ResponseInterface $response;
 
-    /**
-     * @param ResponseInterface $response
-     */
     public function __construct(ResponseInterface $response)
     {
         $this->response = $response;
@@ -93,7 +89,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function hasHeader($name)
+    public function hasHeader($name): bool
     {
         return $this->response->hasHeader($name);
     }
@@ -101,7 +97,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         return $this->response->getProtocolVersion();
     }
@@ -109,7 +105,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->response->getHeaders();
     }
@@ -117,7 +113,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getHeader($name)
+    public function getHeader($name): array
     {
         return $this->response->getHeader($name);
     }
@@ -125,7 +121,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine($name): string
     {
         return $this->response->getHeaderLine($name);
     }
@@ -133,7 +129,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         return $this->response->getBody();
     }
@@ -141,7 +137,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->response->getStatusCode();
     }
@@ -149,16 +145,11 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         return $this->response->getReasonPhrase();
     }
 
-    /**
-     * @param ResponseInterface $response
-     *
-     * @return $this
-     */
     public function setResponse(ResponseInterface $response): self
     {
         $this->response = $response;

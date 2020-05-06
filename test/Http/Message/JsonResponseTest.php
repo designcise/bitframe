@@ -16,6 +16,14 @@ use PHPUnit\Framework\TestCase;
 use BitFrame\Http\Message\JsonResponse;
 use JsonException;
 
+use function json_encode;
+
+use const JSON_HEX_TAG;
+use const JSON_HEX_APOS;
+use const JSON_HEX_QUOT;
+use const JSON_HEX_AMP;
+use const JSON_UNESCAPED_SLASHES;
+
 /**
  * @covers \BitFrame\Http\Message\JsonResponse
  */
@@ -70,9 +78,6 @@ class JsonResponseTest extends TestCase
         $this->assertSame(json_encode($value, 15), (string) $response->getBody());
     }
 
-    /**
-     * @throws JsonException
-     */
     public function testCanAddStatusAndHeader(): void
     {
         $response = (new JsonResponse())
@@ -97,9 +102,6 @@ class JsonResponseTest extends TestCase
         );
     }
 
-    /**
-     * @throws JsonException
-     */
     public function testThrowsJsonExceptionForResources(): void
     {
         $resource = fopen('php://memory', 'r');
@@ -107,9 +109,6 @@ class JsonResponseTest extends TestCase
         new JsonResponse($resource);
     }
 
-    /**
-     * @throws JsonException
-     */
     public function testThrowsExceptionForNonSerializableData(): void
     {
         $data = [

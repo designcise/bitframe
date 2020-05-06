@@ -17,6 +17,9 @@ use BitFrame\Http\Message\JsonpResponse;
 use JsonException;
 use InvalidArgumentException;
 
+use function json_encode;
+use function fopen;
+
 /**
  * @covers \BitFrame\Http\Message\JsonpResponse
  */
@@ -59,6 +62,7 @@ class JsonpResponseTest extends TestCase
      * @dataProvider scalarValuesForJsonProvider
      *
      * @param mixed $value
+     *
      * @throws JsonException
      */
     public function testScalarValuePassedToConstructorJsonEncodesDirectly($value): void
@@ -110,9 +114,6 @@ class JsonpResponseTest extends TestCase
         new JsonpResponse($resource, 'test');
     }
 
-    /**
-     * @throws JsonException
-     */
     public function testThrowsExceptionForNonSerializableData(): void
     {
         $data = [
@@ -153,6 +154,7 @@ class JsonpResponseTest extends TestCase
      * @dataProvider invalidCallbackProvider
      *
      * @param mixed $callbackName
+     *
      * @throws JsonException
      */
     public function testThrowsExceptionWhenCallbackIsInvalid($callbackName): void
@@ -188,9 +190,6 @@ class JsonpResponseTest extends TestCase
         $this->assertStringContainsString($expected, $contents);
     }
 
-    /**
-     * @throws JsonException
-     */
     public function testJsonEncodeFlags(): void
     {
         $response = new JsonpResponse('<>\'&"', 'test');

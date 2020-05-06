@@ -30,11 +30,6 @@ class SingleRouteRouter extends AbstractRouter
         }
     }
 
-    /**
-     * @param string $method
-     *
-     * @return array
-     */
     public function getRouteDataByMethod(string $method): array
     {
         return $this->route[$method] ?? [];

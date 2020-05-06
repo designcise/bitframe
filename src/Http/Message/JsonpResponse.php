@@ -57,8 +57,8 @@ class JsonpResponse extends ResponseDecorator
     /**
      * @param mixed $data Anything but a resource.
      * @param string $callback
-     * @param integer $encodingOptions
-     * @param integer $maxDepth
+     * @param int $encodingOptions
+     * @param int $maxDepth
      *
      * @throws InvalidArgumentException
      * @throws \JsonException

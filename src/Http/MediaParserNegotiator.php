@@ -49,7 +49,9 @@ class MediaParserNegotiator
     public static function add(string $type, string $parser): void
     {
         if (! is_a($parser, MediaParserInterface::class, true)) {
-            throw new InvalidArgumentException('Parser must implement ' . MediaParserInterface::class);
+            throw new InvalidArgumentException(
+                'Parser must implement ' . MediaParserInterface::class
+            );
         }
 
         self::$contentParsers[$type] = $parser;
@@ -75,10 +77,6 @@ class MediaParserNegotiator
             : new $parser();
     }
 
-    /**
-     * @param string $acceptType
-     * @return array
-     */
     private static function calculateRelevance(string $acceptType): array
     {
         $score = [];

@@ -50,8 +50,8 @@ class JsonResponse extends ResponseDecorator
 
     /**
      * @param mixed $data Anything but a resource.
-     * @param integer $encodingOptions
-     * @param integer $maxDepth
+     * @param int $encodingOptions
+     * @param int $maxDepth
      *
      * @throws \JsonException
      */

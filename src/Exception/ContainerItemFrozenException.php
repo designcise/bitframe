@@ -15,16 +15,15 @@ namespace BitFrame\Exception;
 use Psr\Container\ContainerExceptionInterface;
 use RuntimeException;
 
+use function sprintf;
+
 /**
  * Represents a container item frozen error.
  */
 class ContainerItemFrozenException extends RuntimeException implements ContainerExceptionInterface
 {
-    /**
-     * @param string $id
-     */
     public function __construct(string $id)
     {
-        parent::__construct(\sprintf('"%s" is frozen and cannot be modified', $id));
+        parent::__construct(sprintf('"%s" is frozen and cannot be modified', $id));
     }
 }

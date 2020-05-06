@@ -14,6 +14,9 @@ namespace BitFrame\Http;
 
 use BitFrame\Factory\HttpFactory;
 use Psr\Http\Message\{
+    ServerRequestFactoryInterface,
+    StreamFactoryInterface,
+    UploadedFileFactoryInterface,
     ServerRequestInterface,
     StreamInterface,
     UploadedFileInterface
@@ -26,16 +29,18 @@ use function is_array;
 use function is_resource;
 use function is_object;
 use function ltrim;
-use function parse_url;
-use function preg_match_all;
 use function rtrim;
-use function strtolower;
-use function substr;
-use function str_replace;
 use function strtr;
+use function substr;
+use function parse_str;
+use function parse_url;
+use function strtolower;
+use function str_replace;
+use function preg_match_all;
 use function count;
 use function sprintf;
-use function parse_str;
+use function implode;
+use function urldecode;
 
 use const PHP_URL_PORT;
 use const PREG_SET_ORDER;
@@ -50,7 +55,8 @@ class ServerRequestBuilder
 
     private array $server;
 
-    private object $factory;
+    /** @var ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface */
+    private $factory;
 
     private string $method = 'GET';
 
@@ -67,22 +73,11 @@ class ServerRequestBuilder
     /** @var null|array|object */
     private $parsedBody;
 
-    /** @var null|StreamInterface */
     private ?StreamInterface $body = null;
 
     /** @var UploadedFileInterface[] */
     private array $uploadedFiles = [];
 
-    /**
-     * @param array $server
-     * @param object $factory
-     * @param null|array $parsedBody
-     * @param array $cookies
-     * @param array $files
-     * @param string $body
-     *
-     * @return ServerRequestInterface
-     */
     public static function fromSapi(
         array $server,
         object $factory,
@@ -105,10 +100,6 @@ class ServerRequestBuilder
             ->build();
     }
 
-    /**
-     * @param array $server
-     * @param object $factory
-     */
     public function __construct(array $server, object $factory)
     {
         if (! HttpFactory::isPsr17Factory($factory)) {
@@ -121,15 +112,14 @@ class ServerRequestBuilder
         $this->factory = $factory;
     }
 
-    /**
-     * @return ServerRequestInterface
-     */
     public function build(): ServerRequestInterface
     {
         $request = $this->factory->createServerRequest($this->method, $this->uri, $this->server)
             ->withProtocolVersion($this->protocolVer);
 
-        $request = $request->withQueryParams($this->queryParams);
+        if (! empty($this->queryParams)) {
+            $request = $request->withQueryParams($this->queryParams);
+        }
 
         if (! empty($this->headers)) {
             $request = $this->addHeadersToServerRequest($request);
@@ -165,9 +155,6 @@ class ServerRequestBuilder
         return $request;
     }
 
-    /**
-     * @return $this
-     */
     public function addMethod(): self
     {
         $this->method = (empty($this->server['REQUEST_METHOD']))
@@ -177,9 +164,6 @@ class ServerRequestBuilder
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function addUri(): self
     {
         $server = $this->server;
@@ -228,9 +212,6 @@ class ServerRequestBuilder
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function addHeaders(): self
     {
         $pattern = '/(REDIRECT_)?(HTTP_|CONTENT_)([^ ]*)/i';
@@ -249,11 +230,6 @@ class ServerRequestBuilder
         return $this;
     }
 
-    /**
-     * @param array $cookies
-     *
-     * @return $this
-     */
     public function addCookieParams(array $cookies): self
     {
         if ($cookies === [] && isset($this->server['HTTP_COOKIE'])) {
@@ -329,7 +305,7 @@ class ServerRequestBuilder
      * instances.
      *
      * @param array $files `$_FILES` struct.
-     * @param object $httpFactory
+     * @param UploadedFileFactoryInterface|StreamFactoryInterface $httpFactory
      *
      * @return UploadedFileInterface[]|UploadedFileInterface
      */
@@ -369,7 +345,7 @@ class ServerRequestBuilder
      * arrays are normalized.
      *
      * @param array $files
-     * @param object $httpFactory
+     * @param UploadedFileFactoryInterface|StreamFactoryInterface $httpFactory
      *
      * @return UploadedFileInterface[]
      *
@@ -398,9 +374,6 @@ class ServerRequestBuilder
         return $normalized;
     }
 
-    /**
-     * @return string
-     */
     private function getUriAuthorityWithScheme(): string
     {
         $server = $this->server;
@@ -457,17 +430,12 @@ class ServerRequestBuilder
         $cookies = [];
 
         foreach ($matches as $match) {
-            $cookies[$match['name']] = \urldecode($match['value']);
+            $cookies[$match['name']] = urldecode($match['value']);
         }
 
         return $cookies;
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return ServerRequestInterface
-     */
     private function addHeadersToServerRequest(
         ServerRequestInterface $request
     ): ServerRequestInterface {
@@ -497,13 +465,7 @@ class ServerRequestBuilder
         return $request;
     }
 
-    /**
-     * @param array $server
-     * @param array $uriParts
-     *
-     * @return array
-     */
-    private function extractUriComponents(array $server, $uriParts): array
+    private function extractUriComponents(array $server, array $uriParts): array
     {
         $path = '';
 

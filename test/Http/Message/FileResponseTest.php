@@ -21,6 +21,8 @@ use InvalidArgumentException;
 use function mime_content_type;
 use function ctype_xdigit;
 use function preg_match;
+use function fopen;
+use function fwrite;
 
 /**
  * @covers \BitFrame\Http\Message\FileResponse
@@ -46,7 +48,7 @@ class FileResponseTest extends TestCase
     public function testConstructorAcceptsResource(): void
     {
         $stream = fopen('php://temp/maxmemory:1024', 'r+');
-        fputs($stream, 'test');
+        fwrite($stream, 'test');
         $body = 'test';
 
         $response = new FileResponse($stream);
@@ -156,11 +158,6 @@ class FileResponseTest extends TestCase
         new FileResponse('foo');
     }
 
-    /**
-     * @param string $str
-     *
-     * @return bool
-     */
     private function isRandomlyGeneratedFileName(string $str): bool
     {
         // is sha1 hash?

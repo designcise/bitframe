@@ -22,19 +22,11 @@ class HtmlResponse extends ResponseDecorator
     /** @var string */
     private const MIME_TYPE = 'text/html';
 
-    /**
-     * @param string $html
-     *
-     * @return self
-     */
     public static function create(string $html): self
     {
         return new self($html);
     }
 
-    /**
-     * @param string $html
-     */
     public function __construct(string $html)
     {
         $factory = HttpFactory::getFactory();

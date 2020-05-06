@@ -225,7 +225,7 @@ class AppTest extends TestCase
 
         $this->assertSame('Immediately Run;', (string) $immediatelyInvoked->getBody());
 
-        $normalInvoke = $app->run();
+        $app->run();
 
         $this->assertSame('Immediately Run;Normally Run;', (string) $immediatelyInvoked->getBody());
     }

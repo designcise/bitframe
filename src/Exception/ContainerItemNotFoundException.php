@@ -12,8 +12,10 @@ declare(strict_types=1);
 
 namespace BitFrame\Exception;
 
-use RuntimeException;
 use Psr\Container\NotFoundExceptionInterface;
+use RuntimeException;
+
+use function sprintf;
 
 /**
  * Represents a container item not found error.
@@ -25,6 +27,6 @@ class ContainerItemNotFoundException extends RuntimeException implements NotFoun
      */
     public function __construct(string $id)
     {
-        parent::__construct(\sprintf('"%s" not found in container', $id));
+        parent::__construct(sprintf('"%s" not found in container', $id));
     }
 }

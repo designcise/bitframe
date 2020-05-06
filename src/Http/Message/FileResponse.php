@@ -22,11 +22,6 @@ use function is_resource;
  */
 class FileResponse extends AbstractFileResponse
 {
-    /**
-     * @param string $filePath
-     *
-     * @return self
-     */
     public static function fromPath(string $filePath): self
     {
         return new self($filePath);
@@ -48,11 +43,6 @@ class FileResponse extends AbstractFileResponse
         return new self($resource);
     }
 
-    /**
-     * @param StreamInterface $stream
-     *
-     * @return self
-     */
     public static function fromStream(StreamInterface $stream): self
     {
         return new self($stream);

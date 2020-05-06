@@ -29,7 +29,7 @@ class RedirectResponse extends ResponseDecorator
 {
     /**
      * @param string|UriInterface $redirectTo
-     * @param integer $statusCode
+     * @param int $statusCode
      *
      * @return self
      */

@@ -38,11 +38,6 @@ class App implements RequestHandlerInterface
 
     private ResponseInterface $response;
 
-    /**
-     * @param ServerRequestInterface|null $request
-     * @param ResponseInterface|null $response
-     * @param ContainerInterface|null $container
-     */
     public function __construct(
         ?ContainerInterface $container = null,
         ?ServerRequestInterface $request = null,
@@ -53,18 +48,13 @@ class App implements RequestHandlerInterface
         $this->response = $response ?? HttpFactory::createResponse();
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     *
-     * @return ResponseInterface
-     */
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {
         return $this->handle($request);
     }
 
     /**
-     * Push `$middleware` onto the end of middlewares array.
+     * Push `$middleware` to the end of middlewares array.
      *
      * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
      *
@@ -85,7 +75,9 @@ class App implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if ($middleware = array_shift($this->middlewares)) {
+        $middleware = array_shift($this->middlewares);
+
+        if ($middleware) {
             $this->response = $middleware->process($request, $this);
         }
 
@@ -133,41 +125,26 @@ class App implements RequestHandlerInterface
         $this->response->getBody()->write($data);
     }
 
-    /**
-     * @return bool
-     */
     public function isXhrRequest(): bool
     {
         return ($this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest');
     }
 
-    /**
-     * @return ServerRequestInterface
-     */
     public function getRequest(): ServerRequestInterface
     {
         return $this->request;
     }
 
-    /**
-     * @return ResponseInterface
-     */
     public function getResponse(): ResponseInterface
     {
         return $this->response;
     }
 
-    /**
-     * @return array
-     */
     public function getMiddlewares(): array
     {
         return $this->middlewares;
     }
 
-    /**
-     * @return ContainerInterface
-     */
     public function getContainer(): ContainerInterface
     {
         return $this->container;

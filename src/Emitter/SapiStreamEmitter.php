@@ -21,12 +21,8 @@ use function headers_sent;
  */
 class SapiStreamEmitter extends AbstractSapiEmitter
 {
-    /** @var int */
     private int $maxBufferLength;
-    
-    /**
-     * @param int $maxBufferLength
-     */
+
     public function __construct(int $maxBufferLength = 8192)
     {
         $this->maxBufferLength = $maxBufferLength;
@@ -44,9 +40,6 @@ class SapiStreamEmitter extends AbstractSapiEmitter
         $this->emitBody($response->getBody());
     }
 
-    /**
-     * @param StreamInterface $body
-     */
     private function emitBody(StreamInterface $body): void
     {
         if ($body->isSeekable()) {

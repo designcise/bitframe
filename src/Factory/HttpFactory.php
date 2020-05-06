@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace BitFrame\Factory;
 
-use RuntimeException;
 use Psr\Http\Message\{
     RequestFactoryInterface,
     ResponseFactoryInterface,
@@ -28,6 +27,7 @@ use Psr\Http\Message\{
     UploadedFileInterface
 };
 use BitFrame\Http\ServerRequestBuilder;
+use RuntimeException;
 use InvalidArgumentException;
 
 use function array_diff;
@@ -195,12 +195,7 @@ class HttpFactory
         return empty(array_diff($requiredFactories, class_implements($factory)));
     }
 
-    /**
-     * Returns PSR-17 factory creator class.
-     *
-     * @return object
-     */
-    public static function getFactory(): object
+    public static function getFactory()
     {
         if (! isset(self::$factoriesList[0])) {
             throw new RuntimeException('No supported PSR-17 library found');

@@ -22,19 +22,11 @@ class XmlResponse extends ResponseDecorator
     /** @var string */
     private const MIME_TYPE = 'application/xml';
 
-    /**
-     * @param string $xml
-     *
-     * @return self
-     */
     public static function create(string $xml): self
     {
         return new self($xml);
     }
 
-    /**
-     * @param string $xml
-     */
     public function __construct(string $xml)
     {
         $factory = HttpFactory::getFactory();

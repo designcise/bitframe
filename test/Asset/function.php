@@ -13,14 +13,6 @@ namespace BitFrame\Test\Asset;
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
 use Psr\Http\Server\RequestHandlerInterface;
 
-/**
- * Named function.
- *
- * @param ServerRequestInterface $request
- * @param ResponseInterface $handler
- * 
- * @return ResponseInterface
- */
 function helloWorldCallable(
     ServerRequestInterface $request,
     RequestHandlerInterface $handler

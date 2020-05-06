@@ -95,10 +95,11 @@ class RedirectResponseTest extends TestCase
             'object' => [(object) ['/foo/bar']],
         ];
     }
+
     /**
      * @dataProvider invalidUriProvider
      */
-    public function testConstructorRaisesExceptionOnInvalidUri($uri)
+    public function testConstructorRaisesExceptionOnInvalidUri($uri): void
     {
         $this->expectException(InvalidArgumentException::class);
         new RedirectResponse($uri);

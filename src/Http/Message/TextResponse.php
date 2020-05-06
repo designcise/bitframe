@@ -22,19 +22,11 @@ class TextResponse extends ResponseDecorator
     /** @var string */
     private const MIME_TYPE = 'text/plain';
 
-    /**
-     * @param string $text
-     *
-     * @return self
-     */
     public static function create(string $text): self
     {
         return new self($text);
     }
 
-    /**
-     * @param string $text
-     */
     public function __construct(string $text)
     {
         $factory = HttpFactory::getFactory();

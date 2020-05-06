@@ -22,6 +22,7 @@ use BitFrame\Test\Asset\{
     HelloWorldMiddlewareTrait
 };
 use TypeError;
+use Error;
 
 /**
  * @covers \BitFrame\Http\MiddlewareDecoratorTrait
@@ -32,12 +33,10 @@ class MiddlewareDecoratorTraitTest extends TestCase
 
     /** @var MiddlewareDecoratorTrait */
     private $middlewareDecorator;
-    
-    /** @var ServerRequestInterface */
-    private $request;
 
-    /** @var ResponseInterface */
-    private $response;
+    private ServerRequestInterface $request;
+
+    private ResponseInterface $response;
 
     public function setUp(): void
     {
@@ -126,7 +125,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
      */
     public function testGetDecoratedMiddlewareWithNonExistentMiddlewareType($middleware): void
     {
-        $this->expectException(\Error::class);
+        $this->expectException(Error::class);
         $this->middlewareDecorator->getDecoratedMiddleware($middleware);
     }
 
