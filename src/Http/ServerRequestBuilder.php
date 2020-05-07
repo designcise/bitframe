@@ -19,7 +19,8 @@ use Psr\Http\Message\{
     UploadedFileFactoryInterface,
     ServerRequestInterface,
     StreamInterface,
-    UploadedFileInterface
+    UploadedFileInterface,
+    UriFactoryInterface
 };
 use InvalidArgumentException;
 use UnexpectedValueException;
@@ -55,28 +56,15 @@ class ServerRequestBuilder
 
     private array $server;
 
-    /** @var ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface */
+    private ServerRequestInterface $request;
+
+    /** @var ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface|UriFactoryInterface */
     private $factory;
-
-    private string $method = 'GET';
-
-    private string $uri = '/';
-
-    private array $queryParams = [];
-
-    private string $protocolVer = '1.1';
-
-    private array $headers = [];
-
-    private array $cookieParams = [];
-
-    /** @var null|array|object */
-    private $parsedBody;
 
     private ?StreamInterface $body = null;
 
-    /** @var UploadedFileInterface[] */
-    private array $uploadedFiles = [];
+    /** @var null|array|object */
+    private $parsedBody;
 
     public static function fromSapi(
         array $server,
@@ -110,66 +98,34 @@ class ServerRequestBuilder
 
         $this->server = $server;
         $this->factory = $factory;
+        $this->request = $factory->createServerRequest('GET', '/', $server);
     }
 
     public function build(): ServerRequestInterface
     {
-        $request = $this->factory->createServerRequest($this->method, $this->uri, $this->server)
-            ->withProtocolVersion($this->protocolVer);
+        if (empty($this->parsedBody) && ! empty((string) $this->body)) {
+            $parser = (self::$preferredMediaParser)($this->request);
 
-        if (! empty($this->queryParams)) {
-            $request = $request->withQueryParams($this->queryParams);
+            $this->request = $this->request
+                ->withParsedBody($parser->parse((string) $this->body));
         }
 
-        if (! empty($this->headers)) {
-            $request = $this->addHeadersToServerRequest($request);
-        }
-
-        if (! empty($this->cookieParams)) {
-            $request = $request->withCookieParams($this->cookieParams);
-        }
-
-        $isBodyEmpty = (null === $this->body);
-
-        if (empty($this->parsedBody) && ! $isBodyEmpty) {
-            $parser = (self::$preferredMediaParser)($request);
-            $this->parsedBody = $parser->parse((string) $this->body);
-        }
-
-        if (
-            null === $this->parsedBody
-            || is_array($this->parsedBody)
-            || is_object($this->parsedBody)
-        ) {
-            $request = $request->withParsedBody($this->parsedBody);
-        }
-
-        if (! $isBodyEmpty) {
-            $request = $request->withBody($this->body);
-        }
-
-        if (! empty($this->uploadedFiles)) {
-            $request = $request->withUploadedFiles($this->uploadedFiles);
-        }
-
-        return $request;
+        return $this->request;
     }
 
     public function addMethod(): self
     {
-        $this->method = (empty($this->server['REQUEST_METHOD']))
-            ? 'GET'
-            : $this->server['REQUEST_METHOD'];
+        if (! empty($this->server['REQUEST_METHOD'])) {
+            $this->request = $this->request->withMethod($this->server['REQUEST_METHOD']);
+        }
 
         return $this;
     }
 
     public function addUri(): self
     {
-        $server = $this->server;
-
-        $uriParts = parse_url($server['REQUEST_URI'] ?? '');
-        [$path, $query, $fragment] = $this->extractUriComponents($server, $uriParts);
+        $uriParts = parse_url($this->server['REQUEST_URI'] ?? '');
+        [$path, $query, $fragment] = $this->extractUriComponents($this->server, $uriParts);
 
         $baseUri = $this->getUriAuthorityWithScheme();
 
@@ -177,11 +133,17 @@ class ServerRequestBuilder
             $baseUri = rtrim($baseUri, '/') . '/' . ltrim($path, '/');
         }
 
-        $this->uri = (
+        $uri = (
             ($baseUri ?: '/')
             . ($query ? ('?' . ltrim($query, '?')) : '')
             . ($fragment ? "#{$fragment}" : '')
         );
+
+        parse_str($query, $queryParams);
+
+        $this->request = $this->request
+            ->withUri($this->factory->createUri($uri))
+            ->withQueryParams($queryParams);
 
         return $this;
     }
@@ -193,21 +155,25 @@ class ServerRequestBuilder
      */
     public function addProtocolVersion(): self
     {
+        $protocolVer = '1.1';
+
         if (
             isset($this->server['SERVER_PROTOCOL'])
-            && $this->server['SERVER_PROTOCOL'] !== "HTTP/{$this->protocolVer}"
+            && $this->server['SERVER_PROTOCOL'] !== "HTTP/{$protocolVer}"
         ) {
-            $this->protocolVer = strtr((string) $this->server['SERVER_PROTOCOL'], ['HTTP/' => '']);
+            $protocolVer = strtr((string) $this->server['SERVER_PROTOCOL'], ['HTTP/' => '']);
 
-            $isNumeric = (int) $this->protocolVer;
+            $isNumeric = (int) $protocolVer;
 
             if (! $isNumeric) {
                 throw new UnexpectedValueException(sprintf(
                     'Unrecognized protocol version "%s"',
-                    $this->protocolVer
+                    $protocolVer
                 ));
             }
         }
+
+        $this->request = $this->request->withProtocolVersion($protocolVer);
 
         return $this;
     }
@@ -222,10 +188,27 @@ class ServerRequestBuilder
         $str = strtolower(str_replace('_', '-', $str));
         preg_match_all($pattern, $str, $normalizedHeaders, PREG_SET_ORDER);
 
-        $this->headers = [
-            'original' => $originalHeaders,
-            'normalized' => $normalizedHeaders,
-        ];
+        $totalMatches = count($normalizedHeaders);
+
+        for ($i = 0; $i < $totalMatches; $i++) {
+            $isRedirect = ! (empty($normalizedHeaders[$i][1]));
+            $originalKey = $originalHeaders[$i][2] . $originalHeaders[$i][3];
+
+            // apache prefixes environment variables with `REDIRECT_` if they are
+            // added by rewrite rules
+            if ($isRedirect) {
+                if (isset($this->server[$originalKey])) {
+                    continue;
+                }
+
+                $originalKey = 'REDIRECT_' . $originalKey;
+            }
+
+            $newKey = $normalizedHeaders[$i][2] . $normalizedHeaders[$i][3];
+
+            $this->request = $this->request
+                ->withHeader($newKey, $this->server[$originalKey]);
+        }
 
         return $this;
     }
@@ -236,7 +219,8 @@ class ServerRequestBuilder
             $cookies = $this->parseCookieHeader($this->server['HTTP_COOKIE']);
         }
 
-        $this->cookieParams = $cookies ?: $this->cookieParams;
+        $this->request = $this->request
+            ->withCookieParams($cookies ?: []);
 
         return $this;
     }
@@ -254,7 +238,11 @@ class ServerRequestBuilder
             );
         }
 
+        $this->request = $this->request
+            ->withParsedBody($parsedBody);
+
         $this->parsedBody = $parsedBody;
+
         return $this;
     }
 
@@ -274,6 +262,7 @@ class ServerRequestBuilder
         }
 
         if ($body instanceof StreamInterface && (string) $body !== '') {
+            $this->request = $this->request->withBody($body);
             $this->body = $body;
         }
 
@@ -292,7 +281,8 @@ class ServerRequestBuilder
      */
     public function addUploadedFiles(array $files): self
     {
-        $this->uploadedFiles = self::normalizeUploadedFiles($files, $this->factory);
+        $this->request = $this->request
+            ->withUploadedFiles($this->normalizeUploadedFiles($files));
 
         return $this;
     }
@@ -305,23 +295,22 @@ class ServerRequestBuilder
      * instances.
      *
      * @param array $files `$_FILES` struct.
-     * @param UploadedFileFactoryInterface|StreamFactoryInterface $httpFactory
      *
      * @return UploadedFileInterface[]|UploadedFileInterface
      */
-    private static function createUploadedFileFromSpec(array $files, $httpFactory)
+    private function createUploadedFileFromSpec(array $files)
     {
         if (is_array($files['tmp_name'])) {
             $normalizedFiles = [];
 
             foreach ($files['tmp_name'] as $key => $file) {
-                $normalizedFiles[$key] = self::createUploadedFileFromSpec([
+                $normalizedFiles[$key] = $this->createUploadedFileFromSpec([
                     'tmp_name' => $files['tmp_name'][$key],
                     'size' => $files['size'][$key],
                     'error' => $files['error'][$key],
                     'name' => $files['name'][$key],
                     'type' => $files['type'][$key],
-                ], $httpFactory);
+                ]);
             }
 
             return $normalizedFiles;
@@ -329,9 +318,9 @@ class ServerRequestBuilder
 
         $stream = ($files['tmp_name'] instanceof StreamInterface)
             ? $files['tmp_name']
-            : $httpFactory->createStreamFromFile($files['tmp_name'], 'r+');
+            : $this->factory->createStreamFromFile($files['tmp_name'], 'r+');
 
-        return $httpFactory->createUploadedFile(
+        return $this->factory->createUploadedFile(
             $stream,
             $files['size'],
             (int) $files['error'],
@@ -345,13 +334,12 @@ class ServerRequestBuilder
      * arrays are normalized.
      *
      * @param array $files
-     * @param UploadedFileFactoryInterface|StreamFactoryInterface $httpFactory
      *
      * @return UploadedFileInterface[]
      *
      * @throws InvalidArgumentException
      */
-    private static function normalizeUploadedFiles(array $files, $httpFactory): array
+    private function normalizeUploadedFiles(array $files): array
     {
         $normalized = [];
 
@@ -363,8 +351,8 @@ class ServerRequestBuilder
 
             if (is_array($value)) {
                 $normalized[$key] = (isset($value['tmp_name']))
-                    ? self::createUploadedFileFromSpec($value, $httpFactory)
-                    : self::normalizeUploadedFiles($value, $httpFactory);
+                    ? $this->createUploadedFileFromSpec($value)
+                    : $this->normalizeUploadedFiles($value);
                 continue;
             }
 
@@ -436,35 +424,6 @@ class ServerRequestBuilder
         return $cookies;
     }
 
-    private function addHeadersToServerRequest(
-        ServerRequestInterface $request
-    ): ServerRequestInterface {
-        $originalHeaders = $this->headers['original'];
-        $normalizedHeaders = $this->headers['normalized'];
-        $totalMatches = count($normalizedHeaders);
-
-        for ($i = 0; $i < $totalMatches; $i++) {
-            $isRedirect = ! (empty($normalizedHeaders[$i][1]));
-            $originalKey = $originalHeaders[$i][2] . $originalHeaders[$i][3];
-
-            // apache prefixes environment variables with `REDIRECT_` if they are
-            // added by rewrite rules
-            if ($isRedirect) {
-                if (isset($this->server[$originalKey])) {
-                    continue;
-                }
-
-                $originalKey = 'REDIRECT_' . $originalKey;
-            }
-
-            $newKey = $normalizedHeaders[$i][2] . $normalizedHeaders[$i][3];
-
-            $request = $request->withHeader($newKey, $this->server[$originalKey]);
-        }
-
-        return $request;
-    }
-
     private function extractUriComponents(array $server, array $uriParts): array
     {
         $path = '';
@@ -484,8 +443,6 @@ class ServerRequestBuilder
         } elseif (! empty($uriParts['query'])) {
             $query = $uriParts['query'];
         }
-
-        parse_str($query, $this->queryParams);
 
         $fragment = (! empty($uriParts['fragment'])) ? $uriParts['fragment'] : '';
         return [$path, $query, $fragment];
