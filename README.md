@@ -16,19 +16,19 @@ BitFrame's approach of making the middleware dispatcher the core component of th
 
 At the core of our development, we've tried very hard to abide by some simple rules that we've mostly found missing in other microframeworks:
 
-1. Be well-documented and intuitive;
-1. Facilitate the developer and be non-intrusive;
-1. Be free of unnecessary bloat;
-1. Promote modularity and customizability to allow any component of the framework to be easily replaced;
-1. Provide the flexibility of using existing PSR-15 / PSR-7 middlewares that plug right in easily;
-1. Provide the ability to share variables and application data seamlessly across all the middlewares.
+1. **Easy-to-learn:** Be well-documented and intuitive;
+1. **Non-intrusive:** Facilitate the developer and not be a nuisance;
+1. **Simple by design:** Encourage flow of development to be simple and easy to read;
+1. **Customizable:** Promote modularity and high customizability;
+1. **Fat-free:** Be free of unnecessary bloat;
+1. **Standards-based:** Be standards-based wherever possible.
 
 ## Installation
 
 Install BitFrame and its required dependencies using composer:
 
 ```
-$ composer require "designcise/bitframe:2.x-dev"
+$ composer require "designcise/bitframe"
 ```
 
 Please note that BitFrame v2+ requires PHP 7.4.0 or newer.
@@ -99,8 +99,9 @@ use BitFrame\Emitter\SapiEmitter;
 $app = new App();
 
 $middleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
-    $handler->write('Hello World!');
-    return $handler->handle($request);
+    $response = $handler->handle($request);
+    $response->getBody()->write('Hello World!');
+    return $response;
 };
 
 $app->use([
