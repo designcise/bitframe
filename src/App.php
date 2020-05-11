@@ -23,7 +23,7 @@ use function array_shift;
 
 /**
  * The central point of a BitFrame application which:
- *   1. Stores shared data in a container;
+ *   1. Provides shared data via a container;
  *   2. Stores & Runs middlewares.
  */
 class App implements RequestHandlerInterface
