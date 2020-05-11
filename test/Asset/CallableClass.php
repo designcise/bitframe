@@ -11,14 +11,17 @@
 namespace BitFrame\Test\Asset;
 
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
-use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\{RequestHandlerInterface};
 
-function helloWorldCallable(
-    ServerRequestInterface $request,
-    RequestHandlerInterface $handler
-): ResponseInterface {
-    $response = $handler->handle($request);
-    $response->getBody()->write('Hello World!');
+class CallableClass
+{
+    public function __invoke(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $handler
+    ): ResponseInterface {
+        $response = $handler->handle($request);
+        $response->getBody()->write('Hello World!');
 
-    return $response;
+        return $response;
+    }
 }

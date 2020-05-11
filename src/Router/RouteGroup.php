@@ -4,73 +4,54 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2018 Daniyal Hamid (https://designcise.com)
- *
- * @author    Phil Bennett <philipobenito@gmail.com>
- * @copyright Copyright (c) 2017 Phil Bennett <philipobenito@gmail.com>
- *
- * @license   https://github.com/designcise/bitframe/blob/master/LICENSE.md MIT License
+ * @copyright Copyright (c) 2017-2020 Daniyal Hamid (https://designcise.com)
+ * @license   https://bitframephp.com/about/license MIT License
  */
+
+declare(strict_types=1);
 
 namespace BitFrame\Router;
 
-use BitFrame\Router\{Route, RouteCollectionInterface};
+use function ltrim;
+use function substr;
 
 /**
  * Group multiple routes together under the same prefix.
  */
-class RouteGroup implements RouteCollectionInterface
+class RouteGroup extends AbstractRouter
 {
-    use RouteCollectionMapTrait;
-    use RouteConditionTrait;
-    
+    protected string $prefix;
+
     /** @var callable */
-    protected $callback;
-    
-    /** @var RouteCollectionInterface */
-    protected $collection;
-    
-    /** @var string */
-    protected $prefix;
-    
-    /**
-     * @param string $prefix
-     * @param callable $callback
-     * @param RouteCollectionInterface $collection
-     */
+    protected $handler;
+
+    protected AbstractRouter $routeMapper;
+
     public function __construct(
-        string $prefix, 
-        callable $callback, 
-        RouteCollectionInterface $collection
+        string $prefix,
+        callable $handler,
+        AbstractRouter $routeMapper
     ) {
-        $this->callback   = $callback;
-        $this->collection = $collection;
-        $this->prefix     = sprintf('/%s', ltrim($prefix, '/'));
+        $this->prefix = '/' . ltrim($prefix, '/');
+        $this->handler = $handler;
+        $this->routeMapper = $routeMapper;
+
+        ($this->handler)($this);
     }
-    
-    /**
-     * Process the group and ensure routes are added to the collection.
-     */
-    public function __invoke()
-    {
-        call_user_func_array($this->callback->bindTo($this), [$this]);
-    }
-    
+
     /**
      * {@inheritdoc}
      */
-    public function map($method, string $path, $handler): Route
+    public function map($methods, string $path, $handler)
     {
-        $path  = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
-        $route = $this->collection->map($method, $path, $handler);
-        $route->setParentGroup($this);
-        if ($host = $this->getHost()) {
-            $route->setHost($host);
+        if ($path === '' || $path === '/') {
+            $path = '';
+        } else {
+            $path = ((substr($this->prefix, -1) === '/') ? '' : '/')
+                . ltrim($path, '/');
         }
-        if ($scheme = $this->getScheme()) {
-            $route->setScheme($scheme);
-        }
-        
-        return $route;
+
+        $this->routeMapper
+            ->map($methods, $this->prefix . $path, $handler);
     }
 }

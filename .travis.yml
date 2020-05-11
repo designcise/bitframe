@@ -1,0 +1,23 @@
+cache:
+  apt: true
+  directories:
+    - $HOME/.composer/cache/files
+
+language: php
+
+php:
+  - 7.4.0
+
+before_script:
+  - travis_retry composer install --no-interaction --no-suggest --prefer-source
+  - travis_retry composer require nyholm/psr7:^1.2
+
+script:
+  - vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage.xml
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+branches:
+  only:
+    - 2.x
