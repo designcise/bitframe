@@ -1,6 +1,5 @@
 {
   "name": "designcise/bitframe",
-  "version": "2.0.0",
   "type": "library",
   "description": "BitFrame PHP microframework",
   "license": "MIT",
