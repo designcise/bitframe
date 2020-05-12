@@ -1,7 +1,7 @@
 # BitFrame PHP Microframework
 
-[![codecov](https://codecov.io/gh/designcise/bitframe/branch/2.x/graph/badge.svg)](https://codecov.io/gh/designcise/bitframe)
-[![Build Status](https://travis-ci.org/designcise/bitframe.svg?branch=2.x)](https://travis-ci.org/designcise/bitframe)
+[![codecov](https://codecov.io/gh/designcise/bitframe/branch/master/graph/badge.svg)](https://codecov.io/gh/designcise/bitframe)
+[![Build Status](https://travis-ci.org/designcise/bitframe.svg?branch=master)](https://travis-ci.org/designcise/bitframe)
 
 ## At-a-glance
 
@@ -117,7 +117,7 @@ From the code above you can see that we're using two middlewares:
 1. A PSR-15 middleware `\BitFrame\Emitter\SapiEmitter` that allows us to emit the HTTP Response to the requesting user-agent (such as a web browser);
 1. A closure middleware used to write `Hello World!` to the HTTP Response.
 
-This is of course a very basic example. You could extend the functionality by using additional middleware such as a [router](https://github.com/designcise/bitframe-fastroute/tree/2.x), error handler, etc.
+This is of course a very basic example. You could extend the functionality by using additional middleware such as a [router](https://github.com/designcise/bitframe-fastroute), error handler, etc.
 
 ## Tests
 
