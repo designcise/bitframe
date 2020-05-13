@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace BitFrame\Http;
 
 use BitFrame\Factory\HttpFactory;
+use BitFrame\Parser\MediaParserNegotiator;
 use Psr\Http\Message\{
     ServerRequestFactoryInterface,
     StreamFactoryInterface,
@@ -52,7 +53,7 @@ use const PREG_SET_ORDER;
 class ServerRequestBuilder
 {
     /** @var callable */
-    private static $preferredMediaParser = [MediaParserNegotiator::class, 'fromRequest'];
+    private static $preferredMediaParser = MediaParserNegotiator::class;
 
     private array $server;
 
@@ -104,7 +105,7 @@ class ServerRequestBuilder
     public function build(): ServerRequestInterface
     {
         if (empty($this->parsedBody) && ! empty((string) $this->body)) {
-            $parser = (self::$preferredMediaParser)($this->request);
+            $parser = new self::$preferredMediaParser($this->request);
 
             $this->request = $this->request
                 ->withParsedBody($parser->parse((string) $this->body));

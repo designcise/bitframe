@@ -8,19 +8,23 @@
  * @license   https://bitframephp.com/about/license MIT License
  */
 
-namespace BitFrame\Test\Http;
+namespace BitFrame\Test\Parser;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
-use BitFrame\Http\MediaParserNegotiator;
-use BitFrame\Parser\MediaParserInterface;
-use BitFrame\Parser\{DefaultMediaParser, JsonMediaParser, XmlMediaParser};
+use BitFrame\Parser\{
+    MediaParserInterface,
+    MediaParserNegotiator,
+    DefaultMediaParser,
+    JsonMediaParser,
+    XmlMediaParser
+};
 use InvalidArgumentException;
 
 use function get_class;
 
 /**
- * @covers \BitFrame\Http\MediaParserNegotiator
+ * @covers \BitFrame\Parser\MediaParserNegotiator
  */
 class MediaParserNegotiatorTest extends TestCase
 {
@@ -35,13 +39,22 @@ class MediaParserNegotiatorTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess
      * @dataProvider parserNameProvider
      *
      * @param string $parserName
      */
     public function testAddNewOrUpdateExistingParser(string $parserName): void
     {
+        /** @var \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)
+            ->onlyMethods(['getHeader'])
+            ->getMockForAbstractClass();
+
+        $request
+            ->method('getHeader')
+            ->with('accept')
+            ->willReturn(['text/made-up']);
+
         $parser = new class implements MediaParserInterface {
             public const MIMES = ['text/made-up'];
             public function parse(string $input)
@@ -50,7 +63,8 @@ class MediaParserNegotiatorTest extends TestCase
             }
         };
 
-        MediaParserNegotiator::add($parserName, get_class($parser));
+        $negotiator = new MediaParserNegotiator($request);
+        $negotiator->add($parserName, get_class($parser));
 
         /** @var \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)
@@ -62,8 +76,6 @@ class MediaParserNegotiatorTest extends TestCase
             ->with('accept')
             ->willReturn(['text/made-up']);
 
-        $parser = MediaParserNegotiator::fromRequest($request);
-
         $this->assertSame('foo(bar)', $parser->parse('bar'));
     }
 
@@ -71,9 +83,14 @@ class MediaParserNegotiatorTest extends TestCase
     {
         $invalidParser = new class {};
 
+        /** @var ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)
+            ->getMockForAbstractClass();
+        $negotiator = new MediaParserNegotiator($request);
+
         $this->expectException(InvalidArgumentException::class);
 
-        MediaParserNegotiator::add('whatever', get_class($invalidParser));
+        $negotiator->add('whatever', get_class($invalidParser));
     }
 
     public function preferredMediaParserProvider(): array
@@ -102,7 +119,7 @@ class MediaParserNegotiatorTest extends TestCase
      * @param string $mime
      * @param string $expectedParser
      */
-    public function testFromRequest(string $mime, string $expectedParser): void
+    public function testGetPreferredMediaParser(string $mime, string $expectedParser): void
     {
         /** @var \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)
@@ -114,7 +131,9 @@ class MediaParserNegotiatorTest extends TestCase
             ->with('accept')
             ->willReturn([$mime]);
 
-        $this->assertInstanceOf($expectedParser, MediaParserNegotiator::fromRequest($request));
+        $negotiator = new MediaParserNegotiator($request);
+
+        $this->assertInstanceOf($expectedParser, $negotiator->getPreferredMediaParser());
     }
 
     public function testGetsDefaultParserWhenAcceptHeaderNotPresent(): void
@@ -129,6 +148,30 @@ class MediaParserNegotiatorTest extends TestCase
             ->with('accept')
             ->willReturn([]);
 
-        $this->assertInstanceOf(DefaultMediaParser::class, MediaParserNegotiator::fromRequest($request));
+        $negotiator = new MediaParserNegotiator($request);
+
+        $this->assertInstanceOf(
+            DefaultMediaParser::class,
+            $negotiator->getPreferredMediaParser()
+        );
+    }
+
+    public function testGetsCachedParserOnRepeatCalls(): void
+    {
+        /** @var \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface $request */
+        $request = $this->getMockBuilder(ServerRequestInterface::class)
+            ->onlyMethods(['getHeader'])
+            ->getMockForAbstractClass();
+
+        $request
+            ->method('getHeader')
+            ->with('accept')
+            ->willReturn([]);
+
+        $negotiator = new MediaParserNegotiator($request);
+
+        $preferredProvider = $negotiator->getPreferredMediaParser();
+
+        $this->assertSame($preferredProvider, $negotiator->getPreferredMediaParser());
     }
 }
