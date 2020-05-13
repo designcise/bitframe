@@ -22,6 +22,7 @@ use BitFrame\Parser\{
 use InvalidArgumentException;
 
 use function get_class;
+use function json_decode;
 
 /**
  * @covers \BitFrame\Parser\MediaParserNegotiator
@@ -66,6 +67,11 @@ class MediaParserNegotiatorTest extends TestCase
         $negotiator = new MediaParserNegotiator($request);
         $negotiator->add($parserName, get_class($parser));
 
+        $this->assertSame('foo(bar)', $negotiator->parse('bar'));
+    }
+
+    public function testParse(): void
+    {
         /** @var \PHPUnit\Framework\MockObject\MockObject|ServerRequestInterface $request */
         $request = $this->getMockBuilder(ServerRequestInterface::class)
             ->onlyMethods(['getHeader'])
@@ -74,9 +80,20 @@ class MediaParserNegotiatorTest extends TestCase
         $request
             ->method('getHeader')
             ->with('accept')
-            ->willReturn(['text/made-up']);
+            ->willReturn(['application/json']);
 
-        $this->assertSame('foo(bar)', $negotiator->parse('bar'));
+        $parser = new class implements MediaParserInterface {
+            public const MIMES = ['application/json'];
+            public function parse(string $input)
+            {
+                return json_decode('{"arg":"' . $input . '"}', true);
+            }
+        };
+
+        $negotiator = new MediaParserNegotiator($request);
+        $negotiator->add(MediaParserNegotiator::CONTENT_TYPE_JSON, get_class($parser));
+
+        $this->assertSame(['arg' => 'bar'], $negotiator->parse('bar'));
     }
 
     public function testAddNewInvalidParserShouldThrowException(): void
