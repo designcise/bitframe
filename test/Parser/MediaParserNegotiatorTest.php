@@ -76,7 +76,7 @@ class MediaParserNegotiatorTest extends TestCase
             ->with('accept')
             ->willReturn(['text/made-up']);
 
-        $this->assertSame('foo(bar)', $parser->parse('bar'));
+        $this->assertSame('foo(bar)', $negotiator->parse('bar'));
     }
 
     public function testAddNewInvalidParserShouldThrowException(): void
