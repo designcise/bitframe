@@ -15,10 +15,11 @@ namespace BitFrame\Test\Router;
 use Closure;
 use PHPUnit\Framework\TestCase;
 use BitFrame\Router\AbstractRouter;
-use BitFrame\Test\Asset\{SingleRouteRouter, MiddlewareHandler};
 use BitFrame\Factory\HttpFactory;
 use Psr\Http\Message\ResponseInterface;
 use BitFrame\Test\Asset\{
+    SingleRouteRouter,
+    MiddlewareHandler,
     CallableClass,
     HelloWorldMiddlewareTrait,
     HelloWorldMiddleware,

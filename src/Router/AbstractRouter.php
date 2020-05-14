@@ -38,7 +38,7 @@ abstract class AbstractRouter
      *
      * @param string|string[] $methods
      * @param string $path
-     * @param callable|string|array $handler
+     * @param callable|string|array|MiddlewareInterface $handler
      */
     abstract public function map($methods, string $path, $handler);
 
