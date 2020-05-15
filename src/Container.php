@@ -30,6 +30,9 @@ use function sprintf;
 use function is_callable;
 use function array_key_exists;
 
+/**
+ * Simple PHP dependency injection container.
+ */
 class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
 {
     private array $bag = [];
@@ -181,8 +184,8 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
      */
     public function getIterator(): iterable
     {
-        foreach ($this->bag as $key => $val) {
-            yield $key => $val;
+        foreach ($this->bag as $key => $value) {
+            yield $key => $value;
         }
     }
 }
