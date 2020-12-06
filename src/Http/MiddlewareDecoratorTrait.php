@@ -28,11 +28,11 @@ trait MiddlewareDecoratorTrait
     /**
      * Push `$middleware` onto the end of middlewares array.
      *
-     * @param array|string|callable|MiddlewareInterface $middleware
+     * @param null|array|string|callable|MiddlewareInterface $middleware
      *
      * @return array
      */
-    public function getUnpackedMiddleware($middleware): array
+    public function getUnpackedMiddleware(null|array|string|callable|MiddlewareInterface $middleware): array
     {
         if (empty($middleware)) {
             return [];
@@ -58,7 +58,7 @@ trait MiddlewareDecoratorTrait
      *
      * @return MiddlewareInterface
      */
-    public function getDecoratedMiddleware($middleware): MiddlewareInterface
+    public function getDecoratedMiddleware(array|string|callable|MiddlewareInterface $middleware): MiddlewareInterface
     {
         if (! $middleware instanceof MiddlewareInterface) {
             if (is_callable($middleware)) {

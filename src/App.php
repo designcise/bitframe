@@ -14,7 +14,7 @@ namespace BitFrame;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\{ServerRequestInterface, ResponseInterface};
-use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\{RequestHandlerInterface, MiddlewareInterface};
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\MiddlewareDecoratorTrait;
 use InvalidArgumentException;
@@ -30,18 +30,12 @@ class App implements RequestHandlerInterface
 {
     use MiddlewareDecoratorTrait;
 
-    private ContainerInterface $container;
-
     private array $middlewares = [];
 
-    private ServerRequestInterface $request;
-
-    private ResponseInterface $response;
-
     public function __construct(
-        ?ContainerInterface $container = null,
-        ?ServerRequestInterface $request = null,
-        ?ResponseInterface $response = null
+        private ?ContainerInterface $container = null,
+        private ?ServerRequestInterface $request = null,
+        private ?ResponseInterface $response = null
     ) {
         $this->container = $container ?? new Container();
         $this->request = $request ?? HttpFactory::createServerRequestFromGlobals();
@@ -56,11 +50,11 @@ class App implements RequestHandlerInterface
     /**
      * Push `$middleware` to the end of middlewares array.
      *
-     * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
+     * @param array|string|callable|MiddlewareInterface $middleware
      *
      * @return $this
      */
-    public function use($middleware): self
+    public function use(array|string|callable|MiddlewareInterface $middleware): self
     {
         $this->middlewares = [
             ...$this->middlewares,
@@ -94,13 +88,13 @@ class App implements RequestHandlerInterface
      * Run middleware with shared request/response from any previously run
      * middlewares.
      *
-     * @param null|array|string|callable|\Psr\Http\Server\MiddlewareInterface $middlewares
+     * @param null|array|string|callable|MiddlewareInterface $middlewares
      *
      * @return ResponseInterface
      *
      * @throws InvalidArgumentException
      */
-    public function run($middlewares = null): ResponseInterface
+    public function run(null|array|string|callable|MiddlewareInterface $middlewares = null): ResponseInterface
     {
         $app = $this;
         $request = $this->request;
@@ -117,10 +111,7 @@ class App implements RequestHandlerInterface
         return $app->handle($request);
     }
 
-    /**
-     * @param mixed $data
-     */
-    public function write($data): void
+    public function write(mixed $data): void
     {
         $this->response->getBody()->write($data);
     }

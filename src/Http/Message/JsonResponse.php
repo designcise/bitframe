@@ -32,7 +32,7 @@ class JsonResponse extends ResponseDecorator
     private const MIME_TYPE = 'application/json';
 
     /**
-     * @param array $data
+     * @param mixed $data
      * @param int $encodingOptions
      * @param int $maxDepth
      *
@@ -41,7 +41,7 @@ class JsonResponse extends ResponseDecorator
      * @throws \JsonException
      */
     public static function create(
-        $data = [],
+        mixed $data = [],
         int $encodingOptions = 0,
         int $maxDepth = 512
     ): self {
@@ -56,7 +56,7 @@ class JsonResponse extends ResponseDecorator
      * @throws \JsonException
      */
     public function __construct(
-        $data = [],
+        mixed $data = [],
         int $encodingOptions = 0,
         int $maxDepth = 512
     ) {
@@ -66,7 +66,7 @@ class JsonResponse extends ResponseDecorator
             | JSON_HEX_AMP
             | JSON_HEX_APOS
             | JSON_UNESCAPED_SLASHES;
-        
+
         $json = json_encode($data, $encodingOptions, $maxDepth);
 
         $factory = HttpFactory::getFactory();

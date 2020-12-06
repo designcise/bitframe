@@ -19,7 +19,7 @@ class SingleRouteRouter extends AbstractRouter
     /**
      * {@inheritDoc}
      */
-    public function map($methods, string $path, $handler)
+    public function map(array|string $methods, string $path, $handler)
     {
         foreach ($methods as $method) {
             $this->route[$method] = [

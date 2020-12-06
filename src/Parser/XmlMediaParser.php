@@ -33,7 +33,7 @@ class XmlMediaParser implements MediaParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse(string $input)
+    public function parse(string $input): mixed
     {
         $backup = libxml_disable_entity_loader(true);
         $backupErrors = libxml_use_internal_errors(true);

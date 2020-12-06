@@ -56,7 +56,7 @@ class HttpFactory
      *
      * @param string|object $factory
      */
-    public static function addFactory($factory): void
+    public static function addFactory(object|string $factory): void
     {
         if (! self::isPsr17Factory($factory)) {
             throw new InvalidArgumentException(
@@ -75,27 +75,14 @@ class HttpFactory
         return $factory->createResponse($statusCode, $reasonPhrase);
     }
 
-    /**
-     * @param string $method
-     * @param string|UriInterface $uri
-     *
-     * @return RequestInterface
-     */
-    public static function createRequest(string $method, $uri): RequestInterface
+    public static function createRequest(string $method, UriInterface|string $uri): RequestInterface
     {
         return self::getFactory()->createRequest($method, $uri);
     }
 
-    /**
-     * @param string $method
-     * @param string|UriInterface $uri
-     * @param array $serverParams
-     *
-     * @return ServerRequestInterface
-     */
     public static function createServerRequest(
         string $method,
-        $uri,
+        UriInterface|string $uri,
         array $serverParams = []
     ): ServerRequestInterface {
         return self::getFactory()->createServerRequest($method, $uri, $serverParams);
@@ -172,12 +159,7 @@ class HttpFactory
         );
     }
 
-    /**
-     * @param string|object $factory
-     *
-     * @return bool
-     */
-    public static function isPsr17Factory($factory): bool
+    public static function isPsr17Factory(object|string $factory): bool
     {
         if (is_string($factory) && ! class_exists($factory)) {
             return false;
@@ -195,13 +177,9 @@ class HttpFactory
         return empty(array_diff($requiredFactories, class_implements($factory)));
     }
 
-    public static function getFactory()
+    public static function getFactory(): object
     {
-        if (! isset(self::$factoriesList[0])) {
-            throw new RuntimeException('No supported PSR-17 library found');
-        }
-
-        $factory = self::$factoriesList[0];
+        $factory = self::$factoriesList[0] ?? throw new RuntimeException('No supported PSR-17 library found');
 
         if (is_object($factory)) {
             return $factory;

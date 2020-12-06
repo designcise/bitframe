@@ -24,7 +24,6 @@ use TypeError;
 use OutOfBoundsException;
 
 use function is_object;
-use function get_class;
 use function gettype;
 use function sprintf;
 use function is_callable;
@@ -141,7 +140,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
         if (! is_string($id)) {
             throw new TypeError(sprintf(
                 'The name parameter must be of type string, %s given',
-                is_object($id) ? get_class($id) : gettype($id)
+                is_object($id) ? $id::class : gettype($id)
             ));
         }
 

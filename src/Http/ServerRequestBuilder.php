@@ -55,21 +55,17 @@ class ServerRequestBuilder
     /** @var callable */
     private static $preferredMediaParser = MediaParserNegotiator::class;
 
-    private array $server;
-
     private ServerRequestInterface $request;
 
-    /** @var ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface|UriFactoryInterface */
-    private $factory;
+    private ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface|UriFactoryInterface $factory;
 
     private ?StreamInterface $body = null;
 
-    /** @var null|array|object */
-    private $parsedBody;
+    private object|null|array $parsedBody;
 
     public static function fromSapi(
         array $server,
-        object $factory,
+        ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface|UriFactoryInterface $factory,
         ?array $parsedBody = null,
         array $cookies = [],
         array $files = [],
@@ -226,12 +222,7 @@ class ServerRequestBuilder
         return $this;
     }
 
-    /**
-     * @param null|array|object $parsedBody
-     *
-     * @return $this
-     */
-    public function addParsedBody($parsedBody): self
+    public function addParsedBody(object|array|null $parsedBody): self
     {
         if (null !== $parsedBody && ! is_array($parsedBody) && ! is_object($parsedBody)) {
             throw new InvalidArgumentException(
@@ -299,7 +290,7 @@ class ServerRequestBuilder
      *
      * @return UploadedFileInterface[]|UploadedFileInterface
      */
-    private function createUploadedFileFromSpec(array $files)
+    private function createUploadedFileFromSpec(array $files): array|UploadedFileInterface
     {
         if (is_array($files['tmp_name'])) {
             $normalizedFiles = [];

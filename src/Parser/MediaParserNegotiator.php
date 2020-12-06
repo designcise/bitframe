@@ -18,7 +18,7 @@ use InvalidArgumentException;
 use function array_key_last;
 use function asort;
 use function is_a;
-use function strpos;
+use function str_contains;
 
 /**
  * Determine media parser to use for an incoming Http request.
@@ -40,14 +40,10 @@ class MediaParserNegotiator implements MediaParserInterface
         self::CONTENT_TYPE_XML => XmlMediaParser::class,
     ];
 
-    private ServerRequestInterface $request;
-
     private ?MediaParserInterface $activeParser = null;
 
-    public function __construct(ServerRequestInterface $request)
-    {
-        $this->request = $request;
-    }
+    public function __construct(private ServerRequestInterface $request)
+    {}
 
     public function add(string $type, string $parser): void
     {
@@ -63,7 +59,7 @@ class MediaParserNegotiator implements MediaParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse(string $input)
+    public function parse(string $input): mixed
     {
         return $this->getPreferredMediaParser()->parse($input);
     }
@@ -101,7 +97,7 @@ class MediaParserNegotiator implements MediaParserInterface
         foreach ($this->contentParsers as $parser) {
             foreach ($parser::MIMES as $value) {
                 $score[$parser] = $score[$parser] ?? 0;
-                $score[$parser] += (int) (strpos($acceptType, $value) !== false);
+                $score[$parser] += (int) (str_contains($acceptType, $value));
             }
         }
         return $score;

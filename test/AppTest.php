@@ -141,7 +141,7 @@ class AppTest extends TestCase
      *
      * @param mixed $middleware
      */
-    public function testRunWithoutMiddleware($middleware): void
+    public function testRunWithoutMiddleware(mixed $middleware): void
     {
         $this->expectException(InvalidArgumentException::class);
 

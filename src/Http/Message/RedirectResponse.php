@@ -19,7 +19,6 @@ use InvalidArgumentException;
 use function is_string;
 use function is_object;
 use function sprintf;
-use function get_class;
 use function gettype;
 
 /**
@@ -50,7 +49,7 @@ class RedirectResponse extends ResponseDecorator
             throw new InvalidArgumentException(sprintf(
                 'Expecting a string or %s instance; received "%s"',
                 UriInterface::class,
-                (is_object($redirectTo) ? get_class($redirectTo) : gettype($redirectTo))
+                (is_object($redirectTo) ? $redirectTo::class : gettype($redirectTo))
             ));
         }
 

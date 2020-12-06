@@ -25,7 +25,7 @@ class DefaultMediaParser implements MediaParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse(string $input)
+    public function parse(string $input): mixed
     {
         parse_str($input, $data);
         return $data;
