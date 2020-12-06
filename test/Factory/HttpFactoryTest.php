@@ -56,7 +56,7 @@ class HttpFactoryTest extends TestCase
     {
         return [
             'random string' => ['randomString'],
-            'invalid factory object' => [new InteropMiddleware],
+            'invalid factory object' => [new InteropMiddleware()],
             'invalid factory class' => [InteropMiddleware::class],
             'implements some PSR-17 Factories' => [
                 $this->getMockBuilder([
@@ -73,7 +73,7 @@ class HttpFactoryTest extends TestCase
      *
      * @param object|string $factory
      */
-    public function testShouldNotAddInvalidFactory($factory): void
+    public function testShouldNotAddInvalidFactory(object|string $factory): void
     {
         $this->expectException(InvalidArgumentException::class);
 
