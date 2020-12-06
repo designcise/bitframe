@@ -22,7 +22,7 @@ use Psr\Http\Message\{
 use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Test\Asset\{HttpFactoryInterface, InteropMiddleware};
-use InvalidArgumentException;
+use TypeError;
 use RuntimeException;
 
 use function get_class;
@@ -73,9 +73,9 @@ class HttpFactoryTest extends TestCase
      *
      * @param object|string $factory
      */
-    public function testShouldNotAddInvalidFactory(object|string $factory): void
+    public function testShouldNotAddInvalidFactory($factory): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         HttpFactory::addFactory($factory);
     }

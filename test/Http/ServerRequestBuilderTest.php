@@ -26,6 +26,7 @@ use Psr\Http\Message\{
 use BitFrame\Test\Asset\InteropMiddleware;
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\ServerRequestBuilder;
+use TypeError;
 use UnexpectedValueException;
 use InvalidArgumentException;
 
@@ -51,7 +52,7 @@ class ServerRequestBuilderTest extends TestCase
     public function invalidFactoryProvider(): array
     {
         return [
-            'invalid factory object' => [new InteropMiddleware],
+            'invalid factory object' => [new InteropMiddleware()],
             'implements some PSR-17 Factories' => [
                 $this->getMockBuilder([
                     RequestFactoryInterface::class,
@@ -65,11 +66,10 @@ class ServerRequestBuilderTest extends TestCase
     /**
      * @dataProvider invalidFactoryProvider
      *
-     * @param ServerRequestFactoryInterface|\Psr\Http\Message\StreamFactoryInterface $factory
+     * @param ServerRequestFactoryInterface|StreamFactoryInterface $factory
      */
-    public function testShouldThrowExceptionWhenFactoryIsInvalid($factory): void
-    {
-        $this->expectException(InvalidArgumentException::class);
+    public function testShouldThrowExceptionWhenFactoryIsInvalid($factory): void {
+        $this->expectException(TypeError::class);
 
         new ServerRequestBuilder([], $factory);
     }
@@ -491,9 +491,9 @@ class ServerRequestBuilderTest extends TestCase
      *
      * @param mixed $parsedBody
      */
-    public function testCantAddInvalidParsedBody($parsedBody): void
+    public function testCantAddInvalidParsedBody(mixed $parsedBody): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         (new ServerRequestBuilder([], $this->factory))
             ->addParsedBody($parsedBody)
