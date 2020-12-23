@@ -57,8 +57,6 @@ class ServerRequestBuilder
 
     private ServerRequestInterface $request;
 
-    private ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface|UriFactoryInterface $factory;
-
     private ?StreamInterface $body = null;
 
     private object|null|array $parsedBody;
@@ -85,16 +83,16 @@ class ServerRequestBuilder
             ->build();
     }
 
-    public function __construct(array $server, object $factory)
-    {
+    public function __construct(
+        private array $server,
+        private object $factory
+    ) {
         if (! HttpFactory::isPsr17Factory($factory)) {
             throw new InvalidArgumentException(
                 'Http factory must implement all PSR-17 factories'
             );
         }
 
-        $this->server = $server;
-        $this->factory = $factory;
         $this->request = $factory->createServerRequest('GET', '/', $server);
     }
 
