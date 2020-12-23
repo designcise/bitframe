@@ -36,11 +36,9 @@ class FileResponse extends AbstractFileResponse
      */
     public static function fromResource($resource): self
     {
-        if (! is_resource($resource)) {
-            throw new InvalidArgumentException('Resource is invalid.');
-        }
-
-        return new self($resource);
+        return (is_resource($resource))
+            ? new self($resource)
+            : throw new InvalidArgumentException('Resource is invalid.');
     }
 
     public static function fromStream(StreamInterface $stream): self

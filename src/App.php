@@ -104,11 +104,9 @@ class App implements RequestHandlerInterface
             $app->use($middlewares);
         }
 
-        if (empty($app->getMiddlewares())) {
-            throw new InvalidArgumentException('Can\'t run, no middleware found');
-        }
-
-        return $app->handle($request);
+        return (empty($app->getMiddlewares()))
+            ? throw new InvalidArgumentException('Can\'t run, no middleware found')
+            : $app->handle($request);
     }
 
     public function write(mixed $data): void

@@ -87,13 +87,9 @@ class ServerRequestBuilder
         private array $server,
         private object $factory
     ) {
-        if (! HttpFactory::isPsr17Factory($factory)) {
-            throw new InvalidArgumentException(
-                'Http factory must implement all PSR-17 factories'
-            );
-        }
-
-        $this->request = $factory->createServerRequest('GET', '/', $server);
+        $this->request = (HttpFactory::isPsr17Factory($factory))
+            ? $factory->createServerRequest('GET', '/', $server)
+            : throw new InvalidArgumentException('Http factory must implement all PSR-17 factories');
     }
 
     public function build(): ServerRequestInterface
@@ -158,7 +154,7 @@ class ServerRequestBuilder
         ) {
             $protocolVer = strtr((string) $this->server['SERVER_PROTOCOL'], ['HTTP/' => '']);
 
-            $isNumeric = (int) $protocolVer;
+            $isNumeric = ((int) $protocolVer);
 
             if (! $isNumeric) {
                 throw new UnexpectedValueException(sprintf(

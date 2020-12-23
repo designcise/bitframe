@@ -59,9 +59,7 @@ class HttpFactory
     public static function addFactory(object|string $factory): void
     {
         if (! self::isPsr17Factory($factory)) {
-            throw new InvalidArgumentException(
-                'Http factory must implement all PSR-17 factories'
-            );
+            throw new InvalidArgumentException('Http factory must implement all PSR-17 factories');
         }
 
         array_unshift(self::$factoriesList, $factory);
@@ -177,7 +175,13 @@ class HttpFactory
         return empty(array_diff($requiredFactories, class_implements($factory)));
     }
 
-    public static function getFactory(): object
+    public static function getFactory():
+        RequestFactoryInterface
+        |ResponseFactoryInterface
+        |ServerRequestFactoryInterface
+        |StreamFactoryInterface
+        |UploadedFileFactoryInterface
+        |UriFactoryInterface
     {
         $factory = self::$factoriesList[0] ?? throw new RuntimeException('No supported PSR-17 library found');
 
