@@ -14,15 +14,10 @@ namespace BitFrame\Test\Factory;
 
 use ReflectionClass;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\{
-    RequestFactoryInterface,
-    ResponseFactoryInterface,
-    ServerRequestFactoryInterface
-};
 use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
-use BitFrame\Test\Asset\{HttpFactoryInterface, InteropMiddleware};
-use TypeError;
+use BitFrame\Test\Asset\{HttpFactoryInterface, InteropMiddleware, PartialPsr17Factory};
+use InvalidArgumentException;
 use RuntimeException;
 
 use function get_class;
@@ -49,7 +44,7 @@ class HttpFactoryTest extends TestCase
 
         HttpFactory::addFactory($factory);
 
-        $this->assertSame($factory, HttpFactory::getFactory());
+        self::assertSame($factory, HttpFactory::getFactory());
     }
 
     public function invalidFactoryProvider(): array
@@ -59,23 +54,19 @@ class HttpFactoryTest extends TestCase
             'invalid factory object' => [new InteropMiddleware()],
             'invalid factory class' => [InteropMiddleware::class],
             'implements some PSR-17 Factories' => [
-                $this->getMockBuilder([
-                    RequestFactoryInterface::class,
-                    ResponseFactoryInterface::class,
-                    ServerRequestFactoryInterface::class,
-                ])->getMock()
+                $this->getMockBuilder(PartialPsr17Factory::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
             ],
         ];
     }
 
     /**
      * @dataProvider invalidFactoryProvider
-     *
-     * @param object|string $factory
      */
     public function testShouldNotAddInvalidFactory($factory): void
     {
-        $this->expectException(TypeError::class);
+        $this->expectException(InvalidArgumentException::class);
 
         HttpFactory::addFactory($factory);
     }
@@ -83,7 +74,7 @@ class HttpFactoryTest extends TestCase
     /**
      * @runInSeparateProcess
      *
-     * @throws \ReflectionException
+     * @throws RuntimeException
      */
     public function testNoFactoriesFound(): void
     {
@@ -107,13 +98,13 @@ class HttpFactoryTest extends TestCase
 
         HttpFactory::addFactory($customFactory);
 
-        $this->assertInstanceOf(get_class($customFactory), HttpFactory::getFactory());
+        self::assertInstanceOf(get_class($customFactory), HttpFactory::getFactory());
     }
 
     /**
      * @runInSeparateProcess
      *
-     * @throws \ReflectionException
+     * @throws RuntimeException
      */
     public function testSkipsAndRemovesNonExistingFactory(): void
     {
@@ -122,16 +113,16 @@ class HttpFactoryTest extends TestCase
         $property->setAccessible(true);
         $property->setValue([
             '\Non\Existent\Factory',
-            ...$property->getValue('factoriesList'),
+            ...$property->getValue($reflection),
         ]);
 
         HttpFactory::getFactory();
 
         $propertyAfter = $reflection->getProperty('factoriesList');
         $propertyAfter->setAccessible(true);
-        $activeFactoriesList = $propertyAfter->getValue('factoriesList');
+        $activeFactoriesList = $propertyAfter->getValue($reflection);
 
-        $this->assertNotContains('\Non\Existent\Factory', $activeFactoriesList);
+        self::assertNotContains('\Non\Existent\Factory', $activeFactoriesList);
     }
 
     public function responseArgsProvider(): array
@@ -149,16 +140,16 @@ class HttpFactoryTest extends TestCase
     {
         $response = HttpFactory::createResponse($status, $phrase);
 
-        $this->assertSame($status, $response->getStatusCode());
-        $this->assertSame($phrase, $response->getReasonPhrase());
+        self::assertSame($status, $response->getStatusCode());
+        self::assertSame($phrase, $response->getReasonPhrase());
     }
 
     public function testCreateRequest(): void
     {
         $request = HttpFactory::createRequest('GET', '/');
 
-        $this->assertSame('GET', $request->getMethod());
-        $this->assertSame('/', (string) $request->getUri());
+        self::assertSame('GET', $request->getMethod());
+        self::assertSame('/', (string) $request->getUri());
     }
 
     public function serverRequestArgsProvder(): array
@@ -193,9 +184,9 @@ class HttpFactoryTest extends TestCase
     ): void {
         $request = HttpFactory::createServerRequest($method, $uri, $serverParams);
 
-        $this->assertSame($method, $request->getMethod());
-        $this->assertSame((string) $uri, (string) $request->getUri());
-        $this->assertSame($serverParams, $request->getServerParams());
+        self::assertSame($method, $request->getMethod());
+        self::assertSame((string) $uri, (string) $request->getUri());
+        self::assertSame($serverParams, $request->getServerParams());
     }
 
     public function testCreateServerRequestFromGlobals(): void {
@@ -229,20 +220,20 @@ class HttpFactoryTest extends TestCase
         $uploadedFiles = $request->getUploadedFiles();
         $reqBody = $request->getBody();
 
-        $this->assertSame('POST', $request->getMethod());
-        $this->assertSame(
+        self::assertSame('POST', $request->getMethod());
+        self::assertSame(
             'scheme://host:81/path?query#fragment',
             (string) $request->getUri()
         );
-        $this->assertSame($parsedBody, $request->getParsedBody());
-        $this->assertSame($cookie, $request->getCookieParams());
-        $this->assertSame($serverParams, $request->getServerParams());
-        $this->assertSame(['foo' => 'bar'], $request->getParsedBody());
-        $this->assertSame($cookie, $request->getCookieParams());
-        $this->assertInstanceOf(UploadedFileInterface::class, $uploadedFiles['logo']);
-        $this->assertEquals('bitframe-logo.png', $uploadedFiles['logo']->getClientFilename());
-        $this->assertInstanceOf(StreamInterface::class, $reqBody);
-        $this->assertSame('hello world!', (string) $reqBody);
+        self::assertSame($parsedBody, $request->getParsedBody());
+        self::assertSame($cookie, $request->getCookieParams());
+        self::assertSame($serverParams, $request->getServerParams());
+        self::assertSame(['foo' => 'bar'], $request->getParsedBody());
+        self::assertSame($cookie, $request->getCookieParams());
+        self::assertInstanceOf(UploadedFileInterface::class, $uploadedFiles['logo']);
+        self::assertEquals('bitframe-logo.png', $uploadedFiles['logo']->getClientFilename());
+        self::assertInstanceOf(StreamInterface::class, $reqBody);
+        self::assertSame('hello world!', (string) $reqBody);
     }
 
     public function createStreamArgsProvider(): array
@@ -262,7 +253,7 @@ class HttpFactoryTest extends TestCase
     {
         $stream = HttpFactory::createStream($content);
 
-        $this->assertSame($content, (string) $stream);
+        self::assertSame($content, (string) $stream);
     }
 
     public function testCreateStreamFromFile(): void
@@ -270,7 +261,7 @@ class HttpFactoryTest extends TestCase
         $stream = HttpFactory::createStreamFromFile('php://temp', 'wb+');
         $stream->write('Foo bar!');
 
-        $this->assertSame('Foo bar!', (string) $stream);
+        self::assertSame('Foo bar!', (string) $stream);
     }
 
     public function testCreateStreamFromResource(): void
@@ -279,20 +270,20 @@ class HttpFactoryTest extends TestCase
         fwrite($resource, 'Hello world');
         $stream = HttpFactory::createStreamFromResource($resource);
 
-        $this->assertInstanceOf(StreamInterface::class, $stream);
-        $this->assertTrue($stream->isWritable());
-        $this->assertTrue($stream->isSeekable());
-        $this->assertEquals('Hello world', (string) $stream);
+        self::assertInstanceOf(StreamInterface::class, $stream);
+        self::assertTrue($stream->isWritable());
+        self::assertTrue($stream->isSeekable());
+        self::assertEquals('Hello world', (string) $stream);
     }
 
     public function testCreateUri(): void
     {
         $uri = HttpFactory::createUri('https://www.bitframe.com:8000/some/path');
 
-        $this->assertSame('www.bitframe.com', $uri->getHost());
-        $this->assertSame(8000, $uri->getPort());
-        $this->assertSame('/some/path', $uri->getPath());
-        $this->assertSame('https://www.bitframe.com:8000/some/path', (string) $uri);
+        self::assertSame('www.bitframe.com', $uri->getHost());
+        self::assertSame(8000, $uri->getPort());
+        self::assertSame('/some/path', $uri->getPath());
+        self::assertSame('https://www.bitframe.com:8000/some/path', (string) $uri);
     }
 
     public function testUploadedFile(): void
