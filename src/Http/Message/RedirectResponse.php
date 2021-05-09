@@ -45,14 +45,6 @@ class RedirectResponse extends ResponseDecorator
      */
     public function __construct(string|UriInterface $redirectTo, int $statusCode = 302)
     {
-        if (! is_string($redirectTo) && ! $redirectTo instanceof UriInterface) {
-            throw new InvalidArgumentException(sprintf(
-                'Expecting a string or %s instance; received "%s"',
-                UriInterface::class,
-                (is_object($redirectTo) ? $redirectTo::class : gettype($redirectTo))
-            ));
-        }
-
         $response = HttpFactory::createResponse()
             ->withStatus($statusCode)
             ->withHeader('Location', (string) $redirectTo);

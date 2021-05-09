@@ -15,7 +15,7 @@ namespace BitFrame\Test\Http\Message;
 use PHPUnit\Framework\TestCase;
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\Message\RedirectResponse;
-use InvalidArgumentException;
+use TypeError;
 
 /**
  * @covers \BitFrame\Http\Message\RedirectResponse
@@ -101,7 +101,7 @@ class RedirectResponseTest extends TestCase
      */
     public function testConstructorRaisesExceptionOnInvalidUri($uri): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
         new RedirectResponse($uri);
     }
 }
