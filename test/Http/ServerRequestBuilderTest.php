@@ -16,8 +16,6 @@ use BitFrame\Test\Asset\PartialPsr17Factory;
 use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{
-    RequestFactoryInterface,
-    ResponseFactoryInterface,
     ServerRequestFactoryInterface,
     StreamFactoryInterface,
     UploadedFileFactoryInterface,
@@ -68,7 +66,7 @@ class ServerRequestBuilderTest extends TestCase
      * @param ServerRequestFactoryInterface|StreamFactoryInterface $factory
      */
     public function testShouldThrowExceptionWhenFactoryIsInvalid($factory): void {
-        $this->expectException(TypeError::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new ServerRequestBuilder([], $factory);
     }
