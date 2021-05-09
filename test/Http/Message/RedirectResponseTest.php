@@ -25,26 +25,26 @@ class RedirectResponseTest extends TestCase
     public function testConstructorAcceptsStringUriAndProduces302ResponseWithLocationHeader(): void
     {
         $response = new RedirectResponse('/foo/bar');
-        $this->assertSame(302, $response->getStatusCode());
-        $this->assertTrue($response->hasHeader('Location'));
-        $this->assertSame('/foo/bar', $response->getHeaderLine('Location'));
+        self::assertSame(302, $response->getStatusCode());
+        self::assertTrue($response->hasHeader('Location'));
+        self::assertSame('/foo/bar', $response->getHeaderLine('Location'));
     }
 
     public function testConstructorAcceptsUriInstanceAndProduces302ResponseWithLocationHeader(): void
     {
         $uri = HttpFactory::createUri('https://example.com:10082/foo/bar');
         $response = new RedirectResponse($uri);
-        $this->assertSame(302, $response->getStatusCode());
-        $this->assertTrue($response->hasHeader('Location'));
-        $this->assertSame((string) $uri, $response->getHeaderLine('Location'));
+        self::assertSame(302, $response->getStatusCode());
+        self::assertTrue($response->hasHeader('Location'));
+        self::assertSame((string) $uri, $response->getHeaderLine('Location'));
     }
 
     public function testConstructorAllowsSpecifyingAlternateStatusCode(): void
     {
         $response = new RedirectResponse('/foo/bar', 301);
-        $this->assertSame(301, $response->getStatusCode());
-        $this->assertTrue($response->hasHeader('Location'));
-        $this->assertSame('/foo/bar', $response->getHeaderLine('Location'));
+        self::assertSame(301, $response->getStatusCode());
+        self::assertTrue($response->hasHeader('Location'));
+        self::assertSame('/foo/bar', $response->getHeaderLine('Location'));
     }
 
     public function testCanAddStatusAndHeaders(): void
@@ -52,11 +52,11 @@ class RedirectResponseTest extends TestCase
         $response = (new RedirectResponse('/foo/bar', 302))
             ->withHeader('X-Foo', ['Bar']);
         
-        $this->assertSame(302, $response->getStatusCode());
-        $this->assertTrue($response->hasHeader('Location'));
-        $this->assertSame('/foo/bar', $response->getHeaderLine('Location'));
-        $this->assertTrue($response->hasHeader('X-Foo'));
-        $this->assertSame('Bar', $response->getHeaderLine('X-Foo'));
+        self::assertSame(302, $response->getStatusCode());
+        self::assertTrue($response->hasHeader('Location'));
+        self::assertSame('/foo/bar', $response->getHeaderLine('Location'));
+        self::assertTrue($response->hasHeader('X-Foo'));
+        self::assertSame('Bar', $response->getHeaderLine('X-Foo'));
     }
 
     public function testStaticCreate(): void
@@ -64,11 +64,11 @@ class RedirectResponseTest extends TestCase
         $response = RedirectResponse::create('/foo/bar', 307)
             ->withHeader('X-Foo', ['Bar']);
         
-        $this->assertSame(307, $response->getStatusCode());
-        $this->assertTrue($response->hasHeader('Location'));
-        $this->assertSame('/foo/bar', $response->getHeaderLine('Location'));
-        $this->assertTrue($response->hasHeader('X-Foo'));
-        $this->assertSame('Bar', $response->getHeaderLine('X-Foo'));
+        self::assertSame(307, $response->getStatusCode());
+        self::assertTrue($response->hasHeader('Location'));
+        self::assertSame('/foo/bar', $response->getHeaderLine('Location'));
+        self::assertTrue($response->hasHeader('X-Foo'));
+        self::assertSame('Bar', $response->getHeaderLine('X-Foo'));
     }
 
     public function testWithStatusOverwritesOnePassedInThroughConstructor(): void
@@ -76,9 +76,9 @@ class RedirectResponseTest extends TestCase
         $response = (new RedirectResponse('/foo/bar', 302))
             ->withStatus(307);
         
-        $this->assertSame(307, $response->getStatusCode());
-        $this->assertTrue($response->hasHeader('Location'));
-        $this->assertSame('/foo/bar', $response->getHeaderLine('Location'));
+        self::assertSame(307, $response->getStatusCode());
+        self::assertTrue($response->hasHeader('Location'));
+        self::assertSame('/foo/bar', $response->getHeaderLine('Location'));
     }
 
     public function invalidUriProvider(): array
