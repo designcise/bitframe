@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace BitFrame\Test\Http;
 
+use BitFrame\Test\Asset\PartialPsr17Factory;
 use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{
@@ -54,11 +55,9 @@ class ServerRequestBuilderTest extends TestCase
         return [
             'invalid factory object' => [new InteropMiddleware()],
             'implements some PSR-17 Factories' => [
-                $this->getMockBuilder([
-                    RequestFactoryInterface::class,
-                    ResponseFactoryInterface::class,
-                    ServerRequestFactoryInterface::class,
-                ])->getMock()
+                $this->getMockBuilder(PartialPsr17Factory::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
             ],
         ];
     }
