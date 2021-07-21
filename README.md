@@ -31,7 +31,7 @@ Install BitFrame and its required dependencies using composer:
 $ composer require "designcise/bitframe"
 ```
 
-Please note that BitFrame v2+ requires PHP 7.4.0 or newer.
+Please note that BitFrame v3+ requires PHP 8.0.0 or newer.
 
 ## Quickstart
 
@@ -139,7 +139,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ### Documentation
 
-Complete documentation for v2.0 will be released soon.
+Complete documentation for v3 will be released soon.
 
 ### License
 
