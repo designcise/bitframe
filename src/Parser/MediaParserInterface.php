@@ -24,5 +24,5 @@ interface MediaParserInterface
      *
      * @return mixed
      */
-    public function parse(string $input);
+    public function parse(string $input): mixed;
 }

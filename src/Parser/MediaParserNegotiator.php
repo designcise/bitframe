@@ -63,7 +63,7 @@ class MediaParserNegotiator implements MediaParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse(string $input)
+    public function parse(string $input): mixed
     {
         return $this->getPreferredMediaParser()->parse($input);
     }
