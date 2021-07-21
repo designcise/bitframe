@@ -58,7 +58,7 @@ class MediaParserNegotiatorTest extends TestCase
 
         $parser = new class implements MediaParserInterface {
             public const MIMES = ['text/made-up'];
-            public function parse(string $input)
+            public function parse(string $input): string
             {
                 return "foo({$input})";
             }
@@ -84,7 +84,7 @@ class MediaParserNegotiatorTest extends TestCase
 
         $parser = new class implements MediaParserInterface {
             public const MIMES = ['application/json'];
-            public function parse(string $input)
+            public function parse(string $input): mixed
             {
                 return json_decode('{"arg":"' . $input . '"}', true);
             }
