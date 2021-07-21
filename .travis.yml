@@ -6,7 +6,7 @@ cache:
 language: php
 
 php:
-  - 7.4.0
+  - 8.0.0
 
 before_script:
   - travis_retry composer install --no-interaction --no-suggest --prefer-source
