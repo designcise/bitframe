@@ -122,14 +122,14 @@ class HttpFactoryTest extends TestCase
         $property->setAccessible(true);
         $property->setValue([
             '\Non\Existent\Factory',
-            ...$property->getValue('factoriesList'),
+            ...$property->getValue(),
         ]);
 
         HttpFactory::getFactory();
 
         $propertyAfter = $reflection->getProperty('factoriesList');
         $propertyAfter->setAccessible(true);
-        $activeFactoriesList = $propertyAfter->getValue('factoriesList');
+        $activeFactoriesList = $propertyAfter->getValue();
 
         $this->assertNotContains('\Non\Existent\Factory', $activeFactoriesList);
     }

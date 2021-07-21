@@ -49,7 +49,7 @@ class SapiStreamEmitterTest extends AbstractSapiEmitterTest
     public function testReturnsBodyWhenNotReadableButIsSeekable(): void
     {
         $stream = HttpFactory::createStream('Hello world!');
-        $mockedStream = Mockery::mock($stream, StreamInterface::class)->makePartial();
+        $mockedStream = Mockery::mock($stream, $stream::class)->makePartial();
         $mockedStream->shouldReceive('isSeekable')->andReturn(true);
         $mockedStream->shouldReceive('isReadable')->andReturn(false);
 
