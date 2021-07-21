@@ -1,7 +1,7 @@
 # BitFrame PHP Microframework
 
 [![codecov](https://codecov.io/gh/designcise/bitframe/branch/master/graph/badge.svg)](https://codecov.io/gh/designcise/bitframe)
-[![Build Status](https://travis-ci.org/designcise/bitframe.svg?branch=master)](https://travis-ci.org/designcise/bitframe)
+[![Build Status](https://travis-ci.com/designcise/bitframe.svg?branch=master)](https://travis-ci.org/designcise/bitframe)
 
 ## At-a-glance
 
