@@ -54,14 +54,12 @@ class HttpFactory
     /**
      * Add PSR-17 factory creator class.
      *
-     * @param string|object $factory
+     * @param object|string $factory
      */
-    public static function addFactory($factory): void
+    public static function addFactory(object|string $factory): void
     {
         if (! self::isPsr17Factory($factory)) {
-            throw new InvalidArgumentException(
-                'Http factory must implement all PSR-17 factories'
-            );
+            throw new InvalidArgumentException('Http factory must implement all PSR-17 factories');
         }
 
         array_unshift(self::$factoriesList, $factory);
@@ -173,11 +171,11 @@ class HttpFactory
     }
 
     /**
-     * @param string|object $factory
+     * @param object|string $factory
      *
      * @return bool
      */
-    public static function isPsr17Factory($factory): bool
+    public static function isPsr17Factory(object|string $factory): bool
     {
         if (is_string($factory) && ! class_exists($factory)) {
             return false;
@@ -195,13 +193,15 @@ class HttpFactory
         return empty(array_diff($requiredFactories, class_implements($factory)));
     }
 
-    public static function getFactory()
+    public static function getFactory():
+        RequestFactoryInterface
+        |ResponseFactoryInterface
+        |ServerRequestFactoryInterface
+        |StreamFactoryInterface
+        |UploadedFileFactoryInterface
+        |UriFactoryInterface
     {
-        if (! isset(self::$factoriesList[0])) {
-            throw new RuntimeException('No supported PSR-17 library found');
-        }
-
-        $factory = self::$factoriesList[0];
+        $factory = self::$factoriesList[0] ?? throw new RuntimeException('No supported PSR-17 library found');
 
         if (is_object($factory)) {
             return $factory;

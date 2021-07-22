@@ -19,12 +19,8 @@ use Psr\Http\Message\{ResponseInterface, StreamInterface};
  */
 class ResponseDecorator implements ResponseInterface
 {
-    private ResponseInterface $response;
-
-    public function __construct(ResponseInterface $response)
-    {
-        $this->response = $response;
-    }
+    public function __construct(private ResponseInterface $response)
+    {}
 
     /**
      * {@inheritdoc}

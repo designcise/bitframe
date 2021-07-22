@@ -22,9 +22,6 @@ use function sprintf;
  */
 class ContainerItemNotFoundException extends RuntimeException implements NotFoundExceptionInterface
 {
-    /**
-     * @param string $id
-     */
     public function __construct(string $id)
     {
         parent::__construct(sprintf('"%s" not found in container', $id));

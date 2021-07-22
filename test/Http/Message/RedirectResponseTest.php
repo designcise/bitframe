@@ -80,28 +80,4 @@ class RedirectResponseTest extends TestCase
         $this->assertTrue($response->hasHeader('Location'));
         $this->assertSame('/foo/bar', $response->getHeaderLine('Location'));
     }
-
-    public function invalidUriProvider(): array
-    {
-        return [
-            'null' => [null],
-            'false' => [false],
-            'true' => [true],
-            'zero' => [0],
-            'int' => [1],
-            'zero-float' => [0.0],
-            'float' => [1.1],
-            'array' => [['/foo/bar']],
-            'object' => [(object) ['/foo/bar']],
-        ];
-    }
-
-    /**
-     * @dataProvider invalidUriProvider
-     */
-    public function testConstructorRaisesExceptionOnInvalidUri($uri): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        new RedirectResponse($uri);
-    }
 }

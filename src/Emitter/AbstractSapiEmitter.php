@@ -24,9 +24,6 @@ use function header;
  */
 abstract class AbstractSapiEmitter implements MiddlewareInterface
 {
-    /**
-     * @param ResponseInterface $response
-     */
     abstract public function emit(ResponseInterface $response): void;
 
     /**

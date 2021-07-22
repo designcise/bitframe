@@ -24,6 +24,6 @@ class ContainerItemFrozenException extends RuntimeException implements Container
 {
     public function __construct(string $id)
     {
-        parent::__construct(sprintf('"%s" is frozen and cannot be modified', $id));
+        parent::__construct(sprintf('"%s" cannot be modified because it is frozen', $id));
     }
 }

@@ -52,11 +52,9 @@ class DownloadResponse extends AbstractFileResponse
      */
     public static function fromResource($resource, string $serveFilenameAs = ''): self
     {
-        if (! is_resource($resource)) {
-            throw new InvalidArgumentException('Resource is invalid.');
-        }
-
-        return new self($resource, $serveFilenameAs);
+        return (is_resource($resource))
+            ? new self($resource, $serveFilenameAs)
+            : throw new InvalidArgumentException('Resource is invalid.');
     }
 
     /**

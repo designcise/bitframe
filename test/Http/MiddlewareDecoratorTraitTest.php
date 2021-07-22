@@ -47,15 +47,32 @@ class MiddlewareDecoratorTraitTest extends TestCase
         $this->middlewareDecorator = $this->getMockForTrait(MiddlewareDecoratorTrait::class);
     }
 
+    public function invalidArgsProvider(): array
+    {
+        return [
+            'boolean' => [false],
+            'number 0' => [0],
+            'float 0.0' => [0.0],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidArgsProvider
+     *
+     * @param mixed $value
+     */
+    public function testUnpackingInvalidValues(mixed $value): void
+    {
+        $this->expectException(TypeError::class);
+        $this->middlewareDecorator->getUnpackedMiddleware($value);
+    }
+
     public function emptyValuesProvider(): array
     {
         return [
             'null' => [null],
             'empty string' => [''],
             'empty array' => [[]],
-            'boolean' => [false],
-            'number 0' => [0],
-            'float 0.0' => [0.0],
             'string 0' => ['0'],
         ];
     }
@@ -65,7 +82,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
      *
      * @param mixed $value
      */
-    public function testUnpackingEmptyValues($value): void
+    public function testUnpackingEmptyValues(mixed $value): void
     {
         $this->assertEmpty($this->middlewareDecorator->getUnpackedMiddleware($value));
     }
