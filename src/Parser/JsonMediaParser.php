@@ -39,6 +39,6 @@ class JsonMediaParser implements MediaParserInterface
     public function parse(string $input): mixed
     {
         $result = json_decode($input, true, 512, self::OPTIONS);
-        return ((is_array($result)) ? $result : null);
+        return (is_array($result)) ? $result : null;
     }
 }

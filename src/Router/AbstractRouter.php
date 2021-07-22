@@ -40,23 +40,31 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array|MiddlewareInterface $handler
      */
-    abstract public function map($methods, string $path, $handler);
+    abstract public function map(
+        array|string $methods,
+        string $path,
+        callable|string|array|MiddlewareInterface $handler
+    );
 
     /**
      * Add a route to the map using $middleware.
      *
      * @param string|string[] $methods
-     * @param array|string|callable|\Psr\Http\Server\MiddlewareInterface $middleware
+     * @param array|string|callable|MiddlewareInterface $middleware
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function use($methods, $middleware, string $path, $handler): void
-    {
+    public function use(
+        array|string $methods,
+        array|string|callable|MiddlewareInterface $middleware,
+        string $path,
+        callable|string|array $handler
+    ): void {
         $middlewares = $this->getUnpackedMiddleware($middleware);
         $middlewares[] = $this->getDecoratedMiddleware($handler);
 
         $handlerWithMiddleware = new class ($middlewares) implements MiddlewareInterface {
-            private $middlewares;
+            private array $middlewares;
 
             public function __construct(array $middlewares)
             {
@@ -89,7 +97,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function get(string $path, $handler): void
+    public function get(string $path, callable|string|array $handler): void
     {
         $this->map(['GET'], $path, $handler);
     }
@@ -100,7 +108,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function post(string $path, $handler): void
+    public function post(string $path, callable|string|array $handler): void
     {
         $this->map(['POST'], $path, $handler);
     }
@@ -111,7 +119,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function put(string $path, $handler): void
+    public function put(string $path, callable|string|array $handler): void
     {
         $this->map(['PUT'], $path, $handler);
     }
@@ -122,7 +130,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function patch(string $path, $handler): void
+    public function patch(string $path, callable|string|array $handler): void
     {
         $this->map(['PATCH'], $path, $handler);
     }
@@ -133,7 +141,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function delete(string $path, $handler): void
+    public function delete(string $path, callable|string|array $handler): void
     {
         $this->map(['DELETE'], $path, $handler);
     }
@@ -144,7 +152,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function head(string $path, $handler): void
+    public function head(string $path, callable|string|array $handler): void
     {
         $this->map(['HEAD'], $path, $handler);
     }
@@ -155,7 +163,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function options(string $path, $handler): void
+    public function options(string $path, callable|string|array $handler): void
     {
         $this->map(['OPTIONS'], $path, $handler);
     }
@@ -166,7 +174,7 @@ abstract class AbstractRouter
      * @param string $path
      * @param callable|string|array $handler
      */
-    public function any(string $path, $handler): void
+    public function any(string $path, callable|string|array $handler): void
     {
         $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $path, $handler);
     }
@@ -179,7 +187,7 @@ abstract class AbstractRouter
      * @param string $text
      * @param int $statusCode
      */
-    public function text($methods, string $route, string $text, int $statusCode = 200): void
+    public function text(array|string $methods, string $route, string $text, int $statusCode = 200): void
     {
         $this->map(
             (array) $methods,
@@ -196,7 +204,7 @@ abstract class AbstractRouter
      * @param string $html
      * @param int $statusCode
      */
-    public function html($methods, string $route, string $html, int $statusCode = 200): void
+    public function html(array|string $methods, string $route, string $html, int $statusCode = 200): void
     {
         $this->map(
             (array) $methods,
@@ -213,7 +221,7 @@ abstract class AbstractRouter
      * @param array $data
      * @param int $statusCode
      */
-    public function json($methods, string $route, array $data, int $statusCode = 200): void
+    public function json(array|string $methods, string $route, array $data, int $statusCode = 200): void
     {
         $this->map(
             (array) $methods,
@@ -232,7 +240,7 @@ abstract class AbstractRouter
      * @param int $statusCode
      */
     public function jsonp(
-        $methods,
+        array|string $methods,
         string $route,
         array $data,
         string $callback,
@@ -253,7 +261,7 @@ abstract class AbstractRouter
      * @param string $xml
      * @param int $statusCode
      */
-    public function xml($methods, string $route, string $xml, int $statusCode = 200): void
+    public function xml(array|string $methods, string $route, string $xml, int $statusCode = 200): void
     {
         $this->map(
             (array) $methods,

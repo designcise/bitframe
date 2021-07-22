@@ -40,21 +40,15 @@ class MediaParserNegotiator implements MediaParserInterface
         self::CONTENT_TYPE_XML => XmlMediaParser::class,
     ];
 
-    private ServerRequestInterface $request;
-
     private ?MediaParserInterface $activeParser = null;
 
-    public function __construct(ServerRequestInterface $request)
-    {
-        $this->request = $request;
-    }
+    public function __construct(private ServerRequestInterface $request)
+    {}
 
     public function add(string $type, string $parser): void
     {
         if (! is_a($parser, MediaParserInterface::class, true)) {
-            throw new InvalidArgumentException(
-                'Parser must implement ' . MediaParserInterface::class
-            );
+            throw new InvalidArgumentException('Parser must implement ' . MediaParserInterface::class);
         }
 
         $this->contentParsers[$type] = $parser;
@@ -88,9 +82,7 @@ class MediaParserNegotiator implements MediaParserInterface
         asort($score);
         $parser = array_key_last($score);
 
-        $this->activeParser = ($score[$parser] === 0)
-            ? new $default()
-            : new $parser();
+        $this->activeParser = ($score[$parser] === 0) ? new $default() : new $parser();
 
         return $this->activeParser;
     }
@@ -101,7 +93,7 @@ class MediaParserNegotiator implements MediaParserInterface
         foreach ($this->contentParsers as $parser) {
             foreach ($parser::MIMES as $value) {
                 $score[$parser] = $score[$parser] ?? 0;
-                $score[$parser] += (int) (strpos($acceptType, $value) !== false);
+                $score[$parser] += (int) (str_contains($acceptType, $value));
             }
         }
         return $score;
