@@ -16,10 +16,7 @@ use ArrayAccess;
 use IteratorAggregate;
 use SplObjectStorage;
 use Psr\Container\ContainerInterface;
-use BitFrame\Exception\{
-    ContainerItemNotFoundException,
-    ContainerItemFrozenException
-};
+use BitFrame\Exception\{ContainerItemNotFoundException, ContainerItemFrozenException};
 use TypeError;
 use OutOfBoundsException;
 
@@ -49,63 +46,65 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
     }
 
     /**
-     * @param string $id
+     * @param mixed $offset
      *
      * @return bool
      *
      * @see Container::has()
      */
-    public function offsetExists($id): bool
+    public function offsetExists($offset): bool
     {
-        return $this->has($id);
+        return $this->has($offset);
     }
 
     /**
-     * @param string $id
+     * @param mixed $offset
      *
      * @return mixed
      *
      * @see Container::get()
      */
-    public function offsetGet($id)
+    public function offsetGet($offset): mixed
     {
-        return $this->get($id);
+        return $this->get($offset);
     }
 
     /**
-     * @param string $id
+     * @param mixed $offset
      * @param mixed $value
      */
-    public function offsetSet($id, $value): void
+    public function offsetSet($offset, $value): void
     {
-        if (isset($this->frozen[$id])) {
-            throw new ContainerItemFrozenException($id);
+        if (isset($this->frozen[$offset])) {
+            throw new ContainerItemFrozenException($offset);
         }
 
-        $this->bag[$id] = $value;
+        $this->bag[$offset] = $value;
     }
 
     /**
-     * @param string $id
+     * @param string $offset
      *
      * @throws TypeError
      * @throws OutOfBoundsException
      */
-    public function offsetUnset($id): void
+    public function offsetUnset($offset): void
     {
-        if (! $this->has($id)) {
-            throw new OutOfBoundsException(sprintf('Offset "%s" does not exist', $id));
+        if (! $this->has($offset)) {
+            throw new OutOfBoundsException(
+                sprintf('Offset "%s" does not exist', $offset)
+            );
         }
 
-        if (isset($this->frozen[$id])) {
-            throw new ContainerItemFrozenException($id);
+        if (isset($this->frozen[$offset])) {
+            throw new ContainerItemFrozenException($offset);
         }
 
-        if (isset($this->instantiated[$id]) && is_object($this->instantiated[$id])) {
-            unset($this->factories[$this->bag[$id]]);
+        if (isset($this->instantiated[$offset]) && is_object($this->instantiated[$offset])) {
+            unset($this->factories[$this->bag[$offset]]);
         }
 
-        unset($this->bag[$id], $this->frozen[$id]);
+        unset($this->bag[$offset], $this->frozen[$offset]);
     }
 
     /**
