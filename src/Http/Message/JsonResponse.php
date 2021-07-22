@@ -66,7 +66,7 @@ class JsonResponse extends ResponseDecorator
             | JSON_HEX_AMP
             | JSON_HEX_APOS
             | JSON_UNESCAPED_SLASHES;
-        
+
         $json = json_encode($data, $encodingOptions, $maxDepth);
 
         $factory = HttpFactory::getFactory();

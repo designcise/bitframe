@@ -25,7 +25,7 @@ class ResponseDecorator implements ResponseInterface
     {
         $this->response = $response;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -35,7 +35,7 @@ class ResponseDecorator implements ResponseInterface
         $new->setResponse($this->response->withStatus($code, $reasonPhrase));
         return $new;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -45,7 +45,7 @@ class ResponseDecorator implements ResponseInterface
         $new->setResponse($this->response->withHeader($name, $value));
         return $new;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -55,7 +55,7 @@ class ResponseDecorator implements ResponseInterface
         $new->setResponse($this->response->withAddedHeader($name, $value));
         return $new;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -65,7 +65,7 @@ class ResponseDecorator implements ResponseInterface
         $new->setResponse($this->response->withoutHeader($name));
         return $new;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -75,7 +75,7 @@ class ResponseDecorator implements ResponseInterface
         $new->setResponse($this->response->withProtocolVersion($version));
         return $new;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -93,7 +93,7 @@ class ResponseDecorator implements ResponseInterface
     {
         return $this->response->hasHeader($name);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -101,7 +101,7 @@ class ResponseDecorator implements ResponseInterface
     {
         return $this->response->getProtocolVersion();
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -109,7 +109,7 @@ class ResponseDecorator implements ResponseInterface
     {
         return $this->response->getHeaders();
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -117,7 +117,7 @@ class ResponseDecorator implements ResponseInterface
     {
         return $this->response->getHeader($name);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -125,7 +125,7 @@ class ResponseDecorator implements ResponseInterface
     {
         return $this->response->getHeaderLine($name);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -133,7 +133,7 @@ class ResponseDecorator implements ResponseInterface
     {
         return $this->response->getBody();
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -141,7 +141,7 @@ class ResponseDecorator implements ResponseInterface
     {
         return $this->response->getStatusCode();
     }
-    
+
     /**
      * {@inheritdoc}
      */

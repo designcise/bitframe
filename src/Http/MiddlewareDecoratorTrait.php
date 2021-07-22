@@ -87,12 +87,12 @@ trait MiddlewareDecoratorTrait
     {
         return new class ($middleware) implements MiddlewareInterface {
             private $middleware;
-            
+
             public function __construct(callable $middleware)
             {
                 $this->middleware = $middleware;
             }
-            
+
             public function process(
                 ServerRequestInterface $request,
                 RequestHandlerInterface $handler

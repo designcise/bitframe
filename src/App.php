@@ -88,7 +88,7 @@ class App implements RequestHandlerInterface
      * Run middleware with shared request/response from any previously run
      * middlewares.
      *
-     * @param null|array|string|callable|\Psr\Http\Server\MiddlewareInterface $middlewares
+     * @param null|array|string|callable|MiddlewareInterface $middlewares
      *
      * @return ResponseInterface
      *

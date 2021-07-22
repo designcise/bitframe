@@ -50,7 +50,7 @@ class SapiStreamEmitter extends AbstractSapiEmitter
             echo $body;
             return;
         }
-        
+
         while (! $body->eof()) {
             echo $body->read($this->maxBufferLength);
         }
