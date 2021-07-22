@@ -14,14 +14,9 @@ namespace BitFrame\Test\Factory;
 
 use ReflectionClass;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\{
-    RequestFactoryInterface,
-    ResponseFactoryInterface,
-    ServerRequestFactoryInterface
-};
 use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
-use BitFrame\Test\Asset\{HttpFactoryInterface, InteropMiddleware};
+use BitFrame\Test\Asset\{HttpFactoryInterface, InteropMiddleware, PartialPsr17Factory};
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -59,11 +54,9 @@ class HttpFactoryTest extends TestCase
             'invalid factory object' => [new InteropMiddleware],
             'invalid factory class' => [InteropMiddleware::class],
             'implements some PSR-17 Factories' => [
-                $this->getMockBuilder([
-                    RequestFactoryInterface::class,
-                    ResponseFactoryInterface::class,
-                    ServerRequestFactoryInterface::class,
-                ])->getMock()
+                $this->getMockBuilder(PartialPsr17Factory::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
             ],
         ];
     }

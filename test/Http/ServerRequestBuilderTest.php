@@ -15,15 +15,13 @@ namespace BitFrame\Test\Http;
 use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{
-    RequestFactoryInterface,
-    ResponseFactoryInterface,
     ServerRequestFactoryInterface,
     StreamFactoryInterface,
     UploadedFileFactoryInterface,
     StreamInterface,
     UploadedFileInterface
 };
-use BitFrame\Test\Asset\InteropMiddleware;
+use BitFrame\Test\Asset\{InteropMiddleware, PartialPsr17Factory};
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\ServerRequestBuilder;
 use UnexpectedValueException;
@@ -53,11 +51,9 @@ class ServerRequestBuilderTest extends TestCase
         return [
             'invalid factory object' => [new InteropMiddleware],
             'implements some PSR-17 Factories' => [
-                $this->getMockBuilder([
-                    RequestFactoryInterface::class,
-                    ResponseFactoryInterface::class,
-                    ServerRequestFactoryInterface::class,
-                ])->getMock()
+                $this->getMockBuilder(PartialPsr17Factory::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
             ],
         ];
     }
