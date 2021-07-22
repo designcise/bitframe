@@ -105,6 +105,14 @@ class AppTest extends TestCase
         }
     }
 
+    public function testCanAppendMiddleware(): void
+    {
+        $this->app->use([HelloWorldMiddleware::class]);
+        $this->app->use(['BitFrame\Test\Asset\helloWorldCallable']);
+
+        $this->assertSame(count($this->app->getMiddlewares()), 2);
+    }
+
     public function testCanGetContainerViaHandlerInCallback(): void
     {
         $app = $this->app;
