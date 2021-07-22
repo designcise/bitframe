@@ -37,7 +37,7 @@ class DownloadResponse extends AbstractFileResponse
      */
     public static function fromPath(
         string $filePath,
-        string $serveFilenameAs = ''
+        string $serveFilenameAs = '',
     ): self {
         return new self($filePath, $serveFilenameAs);
     }
@@ -66,7 +66,7 @@ class DownloadResponse extends AbstractFileResponse
      */
     public static function fromStream(
         StreamInterface $stream,
-        string $serveFilenameAs = ''
+        string $serveFilenameAs = '',
     ): self {
         return new self($stream, $serveFilenameAs);
     }

@@ -36,20 +36,20 @@ abstract class AbstractRouter
     /**
      * Add a route to the map.
      *
-     * @param string|string[] $methods
+     * @param array|string $methods
      * @param string $path
      * @param callable|string|array|MiddlewareInterface $handler
      */
     abstract public function map(
         array|string $methods,
         string $path,
-        callable|string|array|MiddlewareInterface $handler
+        callable|string|array|MiddlewareInterface $handler,
     );
 
     /**
      * Add a route to the map using $middleware.
      *
-     * @param string|string[] $methods
+     * @param string|array $methods
      * @param array|string|callable|MiddlewareInterface $middleware
      * @param string $path
      * @param callable|string|array $handler
@@ -58,7 +58,7 @@ abstract class AbstractRouter
         array|string $methods,
         array|string|callable|MiddlewareInterface $middleware,
         string $path,
-        callable|string|array $handler
+        callable|string|array $handler,
     ): void {
         $middlewares = $this->getUnpackedMiddleware($middleware);
         $middlewares[] = $this->getDecoratedMiddleware($handler);
@@ -73,7 +73,7 @@ abstract class AbstractRouter
 
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 foreach ($this->middlewares as $middleware) {
                     $middleware->process($request, $handler);
@@ -182,7 +182,7 @@ abstract class AbstractRouter
     /**
      * Add a route that sends a text response.
      *
-     * @param string[]|string $methods
+     * @param array|string $methods
      * @param string $route
      * @param string $text
      * @param int $statusCode
@@ -199,7 +199,7 @@ abstract class AbstractRouter
     /**
      * Add a route that sends HTML response.
      *
-     * @param string[]|string $methods
+     * @param array|string $methods
      * @param string $route
      * @param string $html
      * @param int $statusCode
@@ -216,7 +216,7 @@ abstract class AbstractRouter
     /**
      * Add a route that sends a JSON response.
      *
-     * @param string[]|string $methods
+     * @param array|string $methods
      * @param string $route
      * @param array $data
      * @param int $statusCode
@@ -233,7 +233,7 @@ abstract class AbstractRouter
     /**
      * Add a route that sends a JSONP response.
      *
-     * @param string[]|string $methods
+     * @param array|string $methods
      * @param string $route
      * @param array $data
      * @param string $callback
@@ -244,7 +244,7 @@ abstract class AbstractRouter
         string $route,
         array $data,
         string $callback,
-        int $statusCode = 200
+        int $statusCode = 200,
     ): void {
         $this->map(
             (array) $methods,
@@ -256,7 +256,7 @@ abstract class AbstractRouter
     /**
      * Add a route that sends XML response.
      *
-     * @param string[]|string $methods
+     * @param array|string $methods
      * @param string $route
      * @param string $xml
      * @param int $statusCode
@@ -295,7 +295,7 @@ abstract class AbstractRouter
     public function download(
         string $route,
         string $downloadUrl,
-        string $serveFilenameAs = ''
+        string $serveFilenameAs = '',
     ): void {
         $this->map(
             ['GET'],

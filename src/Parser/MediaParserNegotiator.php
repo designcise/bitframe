@@ -43,7 +43,8 @@ class MediaParserNegotiator implements MediaParserInterface
     private ?MediaParserInterface $activeParser = null;
 
     public function __construct(private ServerRequestInterface $request)
-    {}
+    {
+    }
 
     public function add(string $type, string $parser): void
     {

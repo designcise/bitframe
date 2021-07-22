@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace BitFrame\Http;
 
-use BitFrame\Factory\HttpFactory;
+use BitFrame\Factory\{PSR17FactoryInterface, HttpFactory};
 use BitFrame\Parser\MediaParserNegotiator;
 use Psr\Http\Message\{
     ServerRequestFactoryInterface,
@@ -63,11 +63,11 @@ class ServerRequestBuilder
 
     public static function fromSapi(
         array $server,
-        ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface|UriFactoryInterface $factory,
+        object $factory,
         ?array $parsedBody = null,
         array $cookies = [],
         array $files = [],
-        $body = ''
+        $body = '',
     ): ServerRequestInterface {
         $builder = new self($server, $factory);
 
@@ -85,10 +85,7 @@ class ServerRequestBuilder
 
     public function __construct(
         private array $server,
-        private ServerRequestFactoryInterface
-        |StreamFactoryInterface
-        |UploadedFileFactoryInterface
-        |UriFactoryInterface $factory
+        private object $factory,
     ) {
         $this->request = (HttpFactory::isPsr17Factory($factory))
             ? $factory->createServerRequest('GET', '/', $server)

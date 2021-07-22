@@ -95,7 +95,7 @@ trait MiddlewareDecoratorTrait
 
             public function process(
                 ServerRequestInterface $request,
-                RequestHandlerInterface $handler
+                RequestHandlerInterface $handler,
             ): ResponseInterface {
                 return ($this->middleware)($request, $handler);
             }

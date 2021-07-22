@@ -43,7 +43,7 @@ class JsonResponse extends ResponseDecorator
     public static function create(
         mixed $data = [],
         int $encodingOptions = 0,
-        int $maxDepth = 512
+        int $maxDepth = 512,
     ): self {
         return new self($data, $encodingOptions, $maxDepth);
     }
@@ -56,7 +56,7 @@ class JsonResponse extends ResponseDecorator
     public function __construct(
         mixed $data = [],
         int $encodingOptions = 0,
-        int $maxDepth = 512
+        int $maxDepth = 512,
     ) {
         $encodingOptions |= JSON_THROW_ON_ERROR
             | JSON_HEX_QUOT

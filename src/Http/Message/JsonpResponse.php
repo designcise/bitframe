@@ -49,7 +49,7 @@ class JsonpResponse extends ResponseDecorator
         $data,
         string $callback,
         int $encodingOptions = 0,
-        int $maxDepth = 512
+        int $maxDepth = 512,
     ): self {
         return new self($data, $callback, $encodingOptions, $maxDepth);
     }
@@ -67,7 +67,7 @@ class JsonpResponse extends ResponseDecorator
         $data,
         string $callback,
         int $encodingOptions = 0,
-        int $maxDepth = 512
+        int $maxDepth = 512,
     ) {
         if (empty($callback)) {
             throw new InvalidArgumentException('Callback cannot be empty');

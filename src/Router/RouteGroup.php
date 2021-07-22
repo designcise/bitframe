@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace BitFrame\Router;
 
+use Psr\Http\Server\MiddlewareInterface;
+
 use function ltrim;
 use function substr;
 
@@ -20,30 +22,28 @@ use function substr;
  */
 class RouteGroup extends AbstractRouter
 {
-    protected string $prefix;
-
-    /** @var callable */
-    protected $handler;
-
-    protected AbstractRouter $routeMapper;
-
+    /**
+     * @param string $prefix
+     * @param callable $handler
+     * @param AbstractRouter $routeMapper
+     */
     public function __construct(
-        string $prefix,
-        callable $handler,
-        AbstractRouter $routeMapper
+        protected string $prefix,
+        protected $handler,
+        protected AbstractRouter $routeMapper
     ) {
         $this->prefix = '/' . ltrim($prefix, '/');
-        $this->handler = $handler;
-        $this->routeMapper = $routeMapper;
-
         ($this->handler)($this);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function map($methods, string $path, $handler)
-    {
+    public function map(
+        array|string $methods,
+        string $path,
+        callable|string|array|MiddlewareInterface $handler,
+    ): void {
         if ($path === '' || $path === '/') {
             $path = '';
         } else {

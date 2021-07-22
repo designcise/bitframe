@@ -67,7 +67,7 @@ class HttpFactory
 
     public static function createResponse(
         int $statusCode = 200,
-        string $reasonPhrase = ''
+        string $reasonPhrase = '',
     ): ResponseInterface {
         $factory = self::getFactory();
         return $factory->createResponse($statusCode, $reasonPhrase);
@@ -79,7 +79,7 @@ class HttpFactory
      *
      * @return RequestInterface
      */
-    public static function createRequest(string $method, $uri): RequestInterface
+    public static function createRequest(string $method, UriInterface|string $uri): RequestInterface
     {
         return self::getFactory()->createRequest($method, $uri);
     }
@@ -94,7 +94,7 @@ class HttpFactory
     public static function createServerRequest(
         string $method,
         $uri,
-        array $serverParams = []
+        array $serverParams = [],
     ): ServerRequestInterface {
         return self::getFactory()->createServerRequest($method, $uri, $serverParams);
     }
@@ -113,7 +113,7 @@ class HttpFactory
         array $parsedBody = [],
         array $cookies = [],
         array $files = [],
-        $body = ''
+        $body = '',
     ): ServerRequestInterface {
         $factory = self::getFactory();
 
@@ -134,7 +134,7 @@ class HttpFactory
 
     public static function createStreamFromFile(
         string $filename,
-        string $mode = 'r'
+        string $mode = 'r',
     ): StreamInterface {
         return self::getFactory()->createStreamFromFile($filename, $mode);
     }
@@ -159,7 +159,7 @@ class HttpFactory
         ?int $size = null,
         int $error = UPLOAD_ERR_OK,
         ?string $clientFilename = null,
-        ?string $clientMediaType = null
+        ?string $clientMediaType = null,
     ): UploadedFileInterface {
         return self::getFactory()->createUploadedFile(
             $stream,

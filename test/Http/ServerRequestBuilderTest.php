@@ -50,7 +50,7 @@ class ServerRequestBuilderTest extends TestCase
     public function invalidFactoryProvider(): array
     {
         return [
-            'invalid factory object' => [new InteropMiddleware],
+            'invalid factory object' => [new InteropMiddleware()],
             'implements some PSR-17 Factories' => [
                 $this->getMockBuilder(PartialPsr17Factory::class)
                     ->disableOriginalConstructor()
@@ -62,11 +62,11 @@ class ServerRequestBuilderTest extends TestCase
     /**
      * @dataProvider invalidFactoryProvider
      *
-     * @param ServerRequestFactoryInterface|\Psr\Http\Message\StreamFactoryInterface $factory
+     * @param object $factory
      */
-    public function testShouldThrowExceptionWhenFactoryIsInvalid($factory): void
+    public function testShouldThrowExceptionWhenFactoryIsInvalid(object $factory): void
     {
-        $this->expectException(TypeError::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new ServerRequestBuilder([], $factory);
     }
@@ -213,7 +213,7 @@ class ServerRequestBuilderTest extends TestCase
      */
     public function testCanAddAndGetUriFromServerParams(
         array $serverParams,
-        string $expectedUri
+        string $expectedUri,
     ): void {
         $serverRequest = (new ServerRequestBuilder($serverParams, $this->factory))
             ->addUri()
@@ -272,7 +272,7 @@ class ServerRequestBuilderTest extends TestCase
      */
     public function testCanGetQueryParamsFromServerParams(
         array $serverParams,
-        array $expected
+        array $expected,
     ): void {
         $serverRequest = (new ServerRequestBuilder($serverParams, $this->factory))
             ->addUri()
@@ -416,7 +416,7 @@ class ServerRequestBuilderTest extends TestCase
     public function testCanAddCookieParams(
         array $serverParams,
         array $cookieParams,
-        array $expected
+        array $expected,
     ): void {
         $serverRequest = (new ServerRequestBuilder($serverParams, $this->factory))
             ->addCookieParams($cookieParams)
@@ -460,7 +460,7 @@ class ServerRequestBuilderTest extends TestCase
      */
     public function testCanAddBody(
         $body,
-        string $expected
+        string $expected,
     ): void {
         $serverRequest = (new ServerRequestBuilder([], $this->factory))
             ->addBody($body)
@@ -585,7 +585,7 @@ class ServerRequestBuilderTest extends TestCase
     public function testShouldParseBodyWhenParsedBodyIsEmpty(
         $body,
         $expected,
-        string $mimeType = 'text/plain'
+        string $mimeType = 'text/plain',
     ): void {
         $request = (new ServerRequestBuilder(['HTTP_ACCEPT' => $mimeType], $this->factory))
             ->addHeaders()
@@ -618,7 +618,7 @@ class ServerRequestBuilderTest extends TestCase
      */
     public function testCanAddProtocolVersion(
         array $serverParams,
-        string $expected
+        string $expected,
     ): void {
         $serverRequest = (new ServerRequestBuilder($serverParams, $this->factory))
             ->addProtocolVersion()
