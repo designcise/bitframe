@@ -8,6 +8,9 @@ language: php
 php:
   - 8.0.0
 
+env:
+  - XDEBUG_MODE=coverage
+
 before_script:
   - travis_retry composer install --no-interaction --no-suggest --prefer-source
   - travis_retry composer require nyholm/psr7:^1.4
