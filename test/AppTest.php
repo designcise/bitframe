@@ -26,6 +26,7 @@ use BitFrame\Test\Asset\{
     HelloWorldMiddlewareTrait
 };
 use InvalidArgumentException;
+use TypeError;
 
 use function str_repeat;
 
@@ -125,15 +126,33 @@ class AppTest extends TestCase
         });
     }
 
+    public function invalidArgsProvider(): array
+    {
+        return [
+            'boolean' => [false],
+            'number 0' => [0],
+            'float 0.0' => [0.0],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidArgsProvider
+     *
+     * @param mixed $middleware
+     */
+    public function testRunWithInvalidArgTypes(mixed $middleware): void
+    {
+        $this->expectException(TypeError::class);
+
+        $this->app->run($middleware);
+    }
+
     public function emptyValuesProvider(): array
     {
         return [
             'null' => [null],
             'empty string' => [''],
             'empty array' => [[]],
-            'boolean' => [false],
-            'number 0' => [0],
-            'float 0.0' => [0.0],
             'string 0' => ['0'],
         ];
     }
@@ -143,7 +162,7 @@ class AppTest extends TestCase
      *
      * @param mixed $middleware
      */
-    public function testRunWithoutMiddleware($middleware): void
+    public function testRunWithoutMiddleware(mixed $middleware): void
     {
         $this->expectException(InvalidArgumentException::class);
 
