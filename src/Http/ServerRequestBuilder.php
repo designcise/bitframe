@@ -55,21 +55,15 @@ class ServerRequestBuilder
     /** @var callable */
     private static $preferredMediaParser = MediaParserNegotiator::class;
 
-    private array $server;
-
     private ServerRequestInterface $request;
-
-    /** @var ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface|UriFactoryInterface */
-    private $factory;
 
     private ?StreamInterface $body = null;
 
-    /** @var null|array|object */
-    private $parsedBody;
+    private object|null|array $parsedBody;
 
     public static function fromSapi(
         array $server,
-        object $factory,
+        ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface|UriFactoryInterface $factory,
         ?array $parsedBody = null,
         array $cookies = [],
         array $files = [],
@@ -89,17 +83,16 @@ class ServerRequestBuilder
             ->build();
     }
 
-    public function __construct(array $server, object $factory)
-    {
-        if (! HttpFactory::isPsr17Factory($factory)) {
-            throw new InvalidArgumentException(
-                'Http factory must implement all PSR-17 factories'
-            );
-        }
-
-        $this->server = $server;
-        $this->factory = $factory;
-        $this->request = $factory->createServerRequest('GET', '/', $server);
+    public function __construct(
+        private array $server,
+        private ServerRequestFactoryInterface
+        |StreamFactoryInterface
+        |UploadedFileFactoryInterface
+        |UriFactoryInterface $factory
+    ) {
+        $this->request = (HttpFactory::isPsr17Factory($factory))
+            ? $factory->createServerRequest('GET', '/', $server)
+            : throw new InvalidArgumentException('Http factory must implement all PSR-17 factories');
     }
 
     public function build(): ServerRequestInterface
@@ -167,10 +160,7 @@ class ServerRequestBuilder
             $isNumeric = (int) $protocolVer;
 
             if (! $isNumeric) {
-                throw new UnexpectedValueException(sprintf(
-                    'Unrecognized protocol version "%s"',
-                    $protocolVer
-                ));
+                throw new UnexpectedValueException(sprintf('Unrecognized protocol version "%s"', $protocolVer));
             }
         }
 
@@ -226,19 +216,8 @@ class ServerRequestBuilder
         return $this;
     }
 
-    /**
-     * @param null|array|object $parsedBody
-     *
-     * @return $this
-     */
-    public function addParsedBody($parsedBody): self
+    public function addParsedBody(object|array|null $parsedBody): self
     {
-        if (null !== $parsedBody && ! is_array($parsedBody) && ! is_object($parsedBody)) {
-            throw new InvalidArgumentException(
-                'Parsed body can only be null, an array or an object'
-            );
-        }
-
         $this->request = $this->request
             ->withParsedBody($parsedBody);
 

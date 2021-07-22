@@ -20,7 +20,8 @@ use Psr\Http\Message\{ResponseInterface, StreamInterface};
 class ResponseDecorator implements ResponseInterface
 {
     public function __construct(private ResponseInterface $response)
-    {}
+    {
+    }
 
     /**
      * {@inheritdoc}

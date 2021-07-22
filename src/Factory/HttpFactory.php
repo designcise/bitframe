@@ -193,8 +193,7 @@ class HttpFactory
         return empty(array_diff($requiredFactories, class_implements($factory)));
     }
 
-    public static function getFactory():
-        RequestFactoryInterface
+    public static function getFactory(): RequestFactoryInterface
         |ResponseFactoryInterface
         |ServerRequestFactoryInterface
         |StreamFactoryInterface

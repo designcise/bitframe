@@ -26,6 +26,7 @@ use BitFrame\Factory\HttpFactory;
 use BitFrame\Http\ServerRequestBuilder;
 use UnexpectedValueException;
 use InvalidArgumentException;
+use TypeError;
 
 use function fopen;
 use function fwrite;
@@ -65,7 +66,7 @@ class ServerRequestBuilderTest extends TestCase
      */
     public function testShouldThrowExceptionWhenFactoryIsInvalid($factory): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         new ServerRequestBuilder([], $factory);
     }
@@ -487,9 +488,9 @@ class ServerRequestBuilderTest extends TestCase
      *
      * @param mixed $parsedBody
      */
-    public function testCantAddInvalidParsedBody($parsedBody): void
+    public function testCantAddInvalidParsedBody(mixed $parsedBody): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         (new ServerRequestBuilder([], $this->factory))
             ->addParsedBody($parsedBody)

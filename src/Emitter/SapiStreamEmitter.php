@@ -22,7 +22,8 @@ use function headers_sent;
 class SapiStreamEmitter extends AbstractSapiEmitter
 {
     public function __construct(private int $maxBufferLength = 8192)
-    {}
+    {
+    }
 
     /**
      * {@inheritdoc}
