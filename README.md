@@ -1,45 +1,39 @@
-# BitFrame PHP Microframework
-
 [![codecov](https://codecov.io/gh/designcise/bitframe/branch/master/graph/badge.svg?token=7V77L5P3AX)](https://codecov.io/gh/designcise/bitframe)
 [![Build Status](https://travis-ci.com/designcise/bitframe.svg?branch=master)](https://travis-ci.com/designcise/bitframe)
 
-## At-a-glance
+# BitFrame PHP Microframework
 
-* Highly customizable PSR-15 and PSR-7 compatible middleware-based microframework for PHP;
-* Simple PSR-11 based dependency injection container;
-* Simple to learn, use and implement;
-* Follows the [PSR standards](http://www.php-fig.org/) and integrates the best of existing opensource frameworks wherever possible.
+A highly customizable PSR-15 / PSR-7 compatible middleware-based microframework for PHP that comes bundled with a simple PSR-11 based DI container for sharing services and data across the application. It is:
 
-## Why use BitFrame?
+1. Easy-to-learn and intuitive;
+2. Standards-based;
+4. Simple by design;
+5. Free of unnecessary bloat;
+6. Non-intrusive;
+7. Customizable, modular and easy-to-scale.
 
-BitFrame's approach of making the middleware dispatcher the core component of the framework encourages the developer to use middleware-based services that plug right-in with ease. This allows for greater flexibility especially in terms of debugging, replacements and updating. While this design pattern may not suit the needs of all projects, it certainly has its advantages for long-term and strategic ones because as they grow in complexity the underlying framework helps keep things well-organized, easy-to-manage and very simple.
+## How to Get Started?
 
-At the core of our development, we've tried very hard to abide by some simple rules that we've mostly found missing in other microframeworks:
+You can get started in a few simple steps:
 
-1. **Easy-to-learn:** Be well-documented and intuitive;
-1. **Non-intrusive:** Facilitate the developer and not be a nuisance;
-1. **Simple by design:** Encourage flow of development to be simple and easy to read;
-1. **Customizable:** Promote modularity and high customizability;
-1. **Fat-free:** Be free of unnecessary bloat;
-1. **Standards-based:** Be standards-based wherever possible.
+1. Setup your environment;
+2. Install `composer` dependencies;
+3. Create your first "Hello World" app.
 
-## Installation
+Also, please note the following prerequisites:
 
-Install BitFrame and its required dependencies using composer:
+### Prerequisites
 
-```
-$ composer require "designcise/bitframe"
-```
+1. PHP 8.0+;
+2. Server with URL Rewriting (such as Apache, Nginx, etc.).
 
-Please note that BitFrame v3+ requires PHP 8.0.0 or newer.
+### 1. Setup Your Environment
 
-## Quickstart
+You can refer to the following minimal Apache and Nginx configurations to get started:
 
-Get started quickly by using the boilerplate code at https://github.com/designcise/bitframe-boilerplate.
+#### Apache
 
-### Apache
-
-After you have installed the required dependencies specific to your project, create an `.htaccess` file with at least the following code:
+Create an `.htaccess` file with at least the following code:
 
 ```apacheconfig
 RewriteEngine On
@@ -48,11 +42,11 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 ```
 
-This sets the directive in apache to redirect all Http Requests to `index.php` in which we can write our application code.
+This sets the directive in Apache to redirect all Http requests to a front controller `index.php` file in which you can write your main application code.
 
-### Nginx
+#### Nginx
 
-A configuration like the following in nginx will help you set the directive to rewrite path to our application front controller (i.e. `index.php`):
+A configuration like the following in Nginx will help you set the directive to rewrite path to your application front controller (i.e. `index.php`):
 
 ```
 server {
@@ -82,9 +76,21 @@ server {
 
 Remember to make changes according to your project setup. For example, ensure that `listen`, `root`, `fastcgi_pass`, `*_log`, etc. are setup correctly according to your project.
 
-### Example
+### 2. Install Composer Dependencies
 
-For a full application example, please [check out the boilerplate](https://github.com/designcise/bitframe-boilerplate).
+You can use `composer require` like so:
+
+```
+$ composer require "designcise/bitframe":^3.5
+```
+
+Or, alternatively, you can add the package dependency in your `composer.json` file.
+
+Please note that you must include a PSR-17 factory in your composer dependencies. [nyholm/psr7](https://github.com/Nyholm/psr7/blob/master/src/Factory/Psr17Factory.php) and [guzzle/psr7](https://github.com/guzzle/psr7/blob/master/src/HttpFactory.php) are good examples of these &mdash; if you include either of these, they're automatically picked up by BitFrame. For any other PSR-17 factory implementation, you can add it add via `\BitFrame\Factory\HttpFactory::addFactory()` method before you instantiate `\BitFrame\App`.
+
+### 3. Create Your First "Hello World" App
+
+If you have ever used a middleware based framework, you will feel at ease. A "Hello World" app would look something like the following:
 
 ```php
 <?php
@@ -96,6 +102,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use BitFrame\App;
 use BitFrame\Emitter\SapiEmitter;
 
+// 1. Instantiate the App
 $app = new App();
 
 $middleware = function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
@@ -104,31 +111,34 @@ $middleware = function (ServerRequestInterface $request, RequestHandlerInterface
     return $response;
 };
 
+// 2. Add middleware
 $app->use([
     SapiEmitter::class,
     $middleware,
 ]);
 
+// 3. Run the application
 $app->run();
 ```
 
-From the code above you can see that we're using two middlewares: 
+From the code above you can see that the application uses two middlewares: 
 
-1. A PSR-15 middleware `\BitFrame\Emitter\SapiEmitter` that allows us to emit the HTTP Response to the requesting user-agent (such as a web browser);
-1. A closure middleware used to write `Hello World!` to the HTTP Response.
+1. A PSR-15 middleware `\BitFrame\Emitter\SapiEmitter` (that comes bundled with BitFrame package) which allows to emit the HTTP Response to the requesting user-agent (such as a web browser);
+2. A closure middleware used to write `Hello World!` to the HTTP response stream.
 
-This is of course a very basic example. You could extend the functionality by using additional middleware such as a [router](https://github.com/designcise/bitframe-fastroute), error handler, etc.
+This is of course a very basic example. In a real-world application, the setup would be much more complex than this. For example, you could extend the functionality by using an additional PSR-15 middleware such as a [router](https://github.com/designcise/bitframe-fastroute), [error handler](https://github.com/designcise/bitframe-whoops), etc. For suggestions on how to go about designing your application (and to get started quickly), have a look at the [simple dockerized boilerplate example](https://github.com/designcise/bitframe-boilerplate).
 
 ## Tests
 
 To run the tests you can use the following commands:
 
-| Command          | Type            |
-| ---------------- |:---------------:|
-| `composer test`  | PHPUnit tests   |
-| `composer style` | CodeSniffer     |
-| `composer md`    | MessDetector    |
-| `composer check` | PHPStan         |
+| Command             | Type             |
+| ------------------- |:----------------:|
+| `composer test`     | PHPUnit tests    |
+| `composer style`    | CodeSniffer      |
+| `composer style-fix`| CodeSniffer Fixer|
+| `composer md`       | MessDetector     |
+| `composer check`    | PHPStan          |
 
 ### Contributing
 
@@ -136,10 +146,6 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 * File issues at https://github.com/designcise/bitframe/issues
 * Issue patches to https://github.com/designcise/bitframe/pulls
-
-### Documentation
-
-Complete documentation for v3 will be released soon.
 
 ### License
 
