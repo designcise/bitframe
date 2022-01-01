@@ -1,5 +1,3 @@
-dist: trusty
-
 cache:
   apt: true
   directories:
