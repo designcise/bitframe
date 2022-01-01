@@ -15,9 +15,12 @@ namespace BitFrame\Test\Http;
 use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{
+    RequestFactoryInterface,
+    ResponseFactoryInterface,
     ServerRequestFactoryInterface,
     StreamFactoryInterface,
     UploadedFileFactoryInterface,
+    UriFactoryInterface,
     StreamInterface,
     UploadedFileInterface
 };
@@ -39,8 +42,12 @@ class ServerRequestBuilderTest extends TestCase
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
 
-    /** @var ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface */
-    private $factory;
+    private RequestFactoryInterface
+    &ResponseFactoryInterface
+    &ServerRequestFactoryInterface
+    &StreamFactoryInterface
+    &UploadedFileFactoryInterface
+    &UriFactoryInterface $factory;
 
     public function setUp(): void
     {
@@ -66,7 +73,7 @@ class ServerRequestBuilderTest extends TestCase
      */
     public function testShouldThrowExceptionWhenFactoryIsInvalid(object $factory): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         new ServerRequestBuilder([], $factory);
     }

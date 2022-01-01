@@ -15,13 +15,15 @@ namespace BitFrame\Http;
 use BitFrame\Factory\{PSR17FactoryInterface, HttpFactory};
 use BitFrame\Parser\MediaParserNegotiator;
 use Psr\Http\Message\{
+    RequestFactoryInterface,
+    ResponseFactoryInterface,
     ServerRequestFactoryInterface,
     StreamFactoryInterface,
     UploadedFileFactoryInterface,
+    UriFactoryInterface,
     ServerRequestInterface,
     StreamInterface,
-    UploadedFileInterface,
-    UriFactoryInterface
+    UploadedFileInterface
 };
 use InvalidArgumentException;
 use UnexpectedValueException;
@@ -63,7 +65,12 @@ class ServerRequestBuilder
 
     public static function fromSapi(
         array $server,
-        object $factory,
+        RequestFactoryInterface
+        &ResponseFactoryInterface
+        &ServerRequestFactoryInterface
+        &StreamFactoryInterface
+        &UploadedFileFactoryInterface
+        &UriFactoryInterface $factory,
         ?array $parsedBody = null,
         array $cookies = [],
         array $files = [],
@@ -85,7 +92,12 @@ class ServerRequestBuilder
 
     public function __construct(
         private array $server,
-        private object $factory,
+        private RequestFactoryInterface
+        &ResponseFactoryInterface
+        &ServerRequestFactoryInterface
+        &StreamFactoryInterface
+        &UploadedFileFactoryInterface
+        &UriFactoryInterface $factory,
     ) {
         $this->request = (HttpFactory::isPsr17Factory($factory))
             ? $factory->createServerRequest('GET', '/', $server)

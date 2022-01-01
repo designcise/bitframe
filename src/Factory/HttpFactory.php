@@ -194,11 +194,11 @@ class HttpFactory
     }
 
     public static function getFactory(): RequestFactoryInterface
-        |ResponseFactoryInterface
-        |ServerRequestFactoryInterface
-        |StreamFactoryInterface
-        |UploadedFileFactoryInterface
-        |UriFactoryInterface
+        &ResponseFactoryInterface
+        &ServerRequestFactoryInterface
+        &StreamFactoryInterface
+        &UploadedFileFactoryInterface
+        &UriFactoryInterface
     {
         $factory = self::$factoriesList[0] ?? throw new RuntimeException('No supported PSR-17 library found');
 
