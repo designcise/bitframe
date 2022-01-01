@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2021 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -28,13 +28,10 @@ use Psr\Http\Message\{
 };
 use BitFrame\Http\ServerRequestBuilder;
 use RuntimeException;
-use InvalidArgumentException;
 
-use function array_diff;
 use function array_shift;
 use function array_unshift;
 use function class_exists;
-use function class_implements;
 use function file_get_contents;
 use function is_object;
 use function is_string;
@@ -52,16 +49,16 @@ class HttpFactory
     ];
 
     /**
-     * Add PSR-17 factory creator class.
-     *
-     * @param object|string $factory
+     * Add PSR-17 factory creator object.
      */
-    public static function addFactory(object|string $factory): void
-    {
-        if (! self::isPsr17Factory($factory)) {
-            throw new InvalidArgumentException('Http factory must implement all PSR-17 factories');
-        }
-
+    public static function addFactory(
+        RequestFactoryInterface
+        & ResponseFactoryInterface
+        & ServerRequestFactoryInterface
+        & StreamFactoryInterface
+        & UploadedFileFactoryInterface
+        &UriFactoryInterface $factory
+    ): void {
         array_unshift(self::$factoriesList, $factory);
     }
 
@@ -170,35 +167,12 @@ class HttpFactory
         );
     }
 
-    /**
-     * @param object|string $factory
-     *
-     * @return bool
-     */
-    public static function isPsr17Factory(object|string $factory): bool
-    {
-        if (is_string($factory) && ! class_exists($factory)) {
-            return false;
-        }
-
-        $requiredFactories = [
-            RequestFactoryInterface::class,
-            ResponseFactoryInterface::class,
-            ServerRequestFactoryInterface::class,
-            StreamFactoryInterface::class,
-            UploadedFileFactoryInterface::class,
-            UriFactoryInterface::class,
-        ];
-
-        return empty(array_diff($requiredFactories, class_implements($factory)));
-    }
-
     public static function getFactory(): RequestFactoryInterface
-        |ResponseFactoryInterface
-        |ServerRequestFactoryInterface
-        |StreamFactoryInterface
-        |UploadedFileFactoryInterface
-        |UriFactoryInterface
+        & ResponseFactoryInterface
+        & ServerRequestFactoryInterface
+        & StreamFactoryInterface
+        & UploadedFileFactoryInterface
+        & UriFactoryInterface
     {
         $factory = self::$factoriesList[0] ?? throw new RuntimeException('No supported PSR-17 library found');
 

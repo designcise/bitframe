@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2021 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -46,7 +46,7 @@ class JsonpResponse extends ResponseDecorator
      * @throws \JsonException
      */
     public static function create(
-        $data,
+        mixed $data,
         string $callback,
         int $encodingOptions = 0,
         int $maxDepth = 512,
@@ -64,7 +64,7 @@ class JsonpResponse extends ResponseDecorator
      * @throws \JsonException
      */
     public function __construct(
-        $data,
+        mixed $data,
         string $callback,
         int $encodingOptions = 0,
         int $maxDepth = 512,

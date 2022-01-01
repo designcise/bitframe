@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2021 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{StreamInterface, UploadedFileInterface};
 use BitFrame\Factory\HttpFactory;
 use BitFrame\Test\Asset\{HttpFactoryInterface, InteropMiddleware, PartialPsr17Factory};
-use InvalidArgumentException;
+use TypeError;
 use RuntimeException;
 
 use function get_class;
@@ -68,7 +68,7 @@ class HttpFactoryTest extends TestCase
      */
     public function testShouldNotAddInvalidFactory($factory): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         HttpFactory::addFactory($factory);
     }

@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2021 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -15,6 +15,7 @@ namespace BitFrame;
 use ArrayAccess;
 use IteratorAggregate;
 use SplObjectStorage;
+use Traversable;
 use Psr\Container\ContainerInterface;
 use BitFrame\Exception\{ContainerItemNotFoundException, ContainerItemFrozenException};
 use TypeError;
@@ -176,11 +177,11 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
     /**
      * {@inheritdoc}
      *
-     * @return iterable
+     * @return Traversable
      *
      * @see IteratorAggregate::getIterator()
      */
-    public function getIterator(): iterable
+    public function getIterator(): Traversable
     {
         foreach ($this->bag as $key => $value) {
             yield $key => $value;

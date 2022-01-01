@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2021 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -15,9 +15,12 @@ namespace BitFrame\Test\Http;
 use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\{
+    RequestFactoryInterface,
+    ResponseFactoryInterface,
     ServerRequestFactoryInterface,
     StreamFactoryInterface,
     UploadedFileFactoryInterface,
+    UriFactoryInterface,
     StreamInterface,
     UploadedFileInterface
 };
@@ -39,8 +42,12 @@ class ServerRequestBuilderTest extends TestCase
     /** @var string */
     private const ASSETS_DIR = __DIR__ . '/../Asset/';
 
-    /** @var ServerRequestFactoryInterface|StreamFactoryInterface|UploadedFileFactoryInterface */
-    private $factory;
+    private RequestFactoryInterface
+    &ResponseFactoryInterface
+    &ServerRequestFactoryInterface
+    &StreamFactoryInterface
+    &UploadedFileFactoryInterface
+    &UriFactoryInterface $factory;
 
     public function setUp(): void
     {
@@ -66,7 +73,7 @@ class ServerRequestBuilderTest extends TestCase
      */
     public function testShouldThrowExceptionWhenFactoryIsInvalid(object $factory): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
 
         new ServerRequestBuilder([], $factory);
     }
