@@ -52,16 +52,16 @@ class HttpFactory
     ];
 
     /**
-     * Add PSR-17 factory creator class.
-     *
-     * @param object|string $factory
+     * Add PSR-17 factory creator object.
      */
-    public static function addFactory(object|string $factory): void
-    {
-        if (! self::isPsr17Factory($factory)) {
-            throw new InvalidArgumentException('Http factory must implement all PSR-17 factories');
-        }
-
+    public static function addFactory(
+        RequestFactoryInterface
+        &ResponseFactoryInterface
+        &ServerRequestFactoryInterface
+        &StreamFactoryInterface
+        &UploadedFileFactoryInterface
+        &UriFactoryInterface $factory
+    ): void {
         array_unshift(self::$factoriesList, $factory);
     }
 
@@ -168,29 +168,6 @@ class HttpFactory
             $clientFilename,
             $clientMediaType
         );
-    }
-
-    /**
-     * @param object|string $factory
-     *
-     * @return bool
-     */
-    public static function isPsr17Factory(object|string $factory): bool
-    {
-        if (is_string($factory) && ! class_exists($factory)) {
-            return false;
-        }
-
-        $requiredFactories = [
-            RequestFactoryInterface::class,
-            ResponseFactoryInterface::class,
-            ServerRequestFactoryInterface::class,
-            StreamFactoryInterface::class,
-            UploadedFileFactoryInterface::class,
-            UriFactoryInterface::class,
-        ];
-
-        return empty(array_diff($requiredFactories, class_implements($factory)));
     }
 
     public static function getFactory(): RequestFactoryInterface
