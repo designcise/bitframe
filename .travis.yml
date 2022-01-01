@@ -8,6 +8,9 @@ language: php
 php:
   - 8.1.0
 
+before_install:
+  - sudo apt-get install -y libargon2-0
+
 env:
   - XDEBUG_MODE=coverage
 
