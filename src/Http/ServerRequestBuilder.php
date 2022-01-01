@@ -99,9 +99,7 @@ class ServerRequestBuilder
         &UploadedFileFactoryInterface
         &UriFactoryInterface $factory,
     ) {
-        $this->request = (HttpFactory::isPsr17Factory($factory))
-            ? $factory->createServerRequest('GET', '/', $server)
-            : throw new InvalidArgumentException('Http factory must implement all PSR-17 factories');
+        $this->request = $factory->createServerRequest('GET', '/', $server);
     }
 
     public function build(): ServerRequestInterface
