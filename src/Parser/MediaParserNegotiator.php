@@ -26,13 +26,13 @@ use function strpos;
 class MediaParserNegotiator implements MediaParserInterface
 {
     /** @var string */
-    public const CONTENT_TYPE_DEFAULT = 'default';
+    final public const CONTENT_TYPE_DEFAULT = 'default';
 
     /** @var string */
-    public const CONTENT_TYPE_JSON = 'json';
+    final public const CONTENT_TYPE_JSON = 'json';
 
     /** @var string */
-    public const CONTENT_TYPE_XML = 'xml';
+    final public const CONTENT_TYPE_XML = 'xml';
 
     private array $contentParsers = [
         self::CONTENT_TYPE_DEFAULT => DefaultMediaParser::class,
