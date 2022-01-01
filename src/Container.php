@@ -177,7 +177,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
     /**
      * {@inheritdoc}
      *
-     * @return iterable
+     * @return Traversable
      *
      * @see IteratorAggregate::getIterator()
      */
