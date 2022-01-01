@@ -28,13 +28,10 @@ use Psr\Http\Message\{
 };
 use BitFrame\Http\ServerRequestBuilder;
 use RuntimeException;
-use InvalidArgumentException;
 
-use function array_diff;
 use function array_shift;
 use function array_unshift;
 use function class_exists;
-use function class_implements;
 use function file_get_contents;
 use function is_object;
 use function is_string;
