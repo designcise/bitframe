@@ -66,10 +66,10 @@ class ServerRequestBuilder
     public static function fromSapi(
         array $server,
         RequestFactoryInterface
-        &ResponseFactoryInterface
-        &ServerRequestFactoryInterface
-        &StreamFactoryInterface
-        &UploadedFileFactoryInterface
+        & ResponseFactoryInterface
+        & ServerRequestFactoryInterface
+        & StreamFactoryInterface
+        & UploadedFileFactoryInterface
         &UriFactoryInterface $factory,
         ?array $parsedBody = null,
         array $cookies = [],
@@ -93,10 +93,10 @@ class ServerRequestBuilder
     public function __construct(
         private array $server,
         private RequestFactoryInterface
-        &ResponseFactoryInterface
-        &ServerRequestFactoryInterface
-        &StreamFactoryInterface
-        &UploadedFileFactoryInterface
+        & ResponseFactoryInterface
+        & ServerRequestFactoryInterface
+        & StreamFactoryInterface
+        & UploadedFileFactoryInterface
         &UriFactoryInterface $factory,
     ) {
         $this->request = $factory->createServerRequest('GET', '/', $server);

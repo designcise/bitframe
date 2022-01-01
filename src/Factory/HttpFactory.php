@@ -53,10 +53,10 @@ class HttpFactory
      */
     public static function addFactory(
         RequestFactoryInterface
-        &ResponseFactoryInterface
-        &ServerRequestFactoryInterface
-        &StreamFactoryInterface
-        &UploadedFileFactoryInterface
+        & ResponseFactoryInterface
+        & ServerRequestFactoryInterface
+        & StreamFactoryInterface
+        & UploadedFileFactoryInterface
         &UriFactoryInterface $factory
     ): void {
         array_unshift(self::$factoriesList, $factory);
@@ -168,11 +168,11 @@ class HttpFactory
     }
 
     public static function getFactory(): RequestFactoryInterface
-        &ResponseFactoryInterface
-        &ServerRequestFactoryInterface
-        &StreamFactoryInterface
-        &UploadedFileFactoryInterface
-        &UriFactoryInterface
+        & ResponseFactoryInterface
+        & ServerRequestFactoryInterface
+        & StreamFactoryInterface
+        & UploadedFileFactoryInterface
+        & UriFactoryInterface
     {
         $factory = self::$factoriesList[0] ?? throw new RuntimeException('No supported PSR-17 library found');
 
