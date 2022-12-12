@@ -74,7 +74,7 @@ class HttpFactory
 
     public static function createServerRequest(
         string $method,
-        $uri,
+        UriInterface|string $uri,
         array $serverParams = [],
     ): ServerRequestInterface {
         return self::getFactory()->createServerRequest($method, $uri, $serverParams);
