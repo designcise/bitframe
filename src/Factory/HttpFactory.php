@@ -48,9 +48,6 @@ class HttpFactory
         'GuzzleHttp\Psr7\HttpFactory',
     ];
 
-    /**
-     * Add PSR-17 factory creator object.
-     */
     public static function addFactory(
         RequestFactoryInterface
         & ResponseFactoryInterface
@@ -70,24 +67,11 @@ class HttpFactory
         return $factory->createResponse($statusCode, $reasonPhrase);
     }
 
-    /**
-     * @param string $method
-     * @param string|UriInterface $uri
-     *
-     * @return RequestInterface
-     */
     public static function createRequest(string $method, UriInterface|string $uri): RequestInterface
     {
         return self::getFactory()->createRequest($method, $uri);
     }
 
-    /**
-     * @param string $method
-     * @param string|UriInterface $uri
-     * @param array $serverParams
-     *
-     * @return ServerRequestInterface
-     */
     public static function createServerRequest(
         string $method,
         $uri,
