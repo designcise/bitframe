@@ -70,7 +70,7 @@ class ServerRequestBuilder
         & ServerRequestFactoryInterface
         & StreamFactoryInterface
         & UploadedFileFactoryInterface
-        &UriFactoryInterface $factory,
+        & UriFactoryInterface $factory,
         ?array $parsedBody = null,
         array $cookies = [],
         array $files = [],
@@ -97,7 +97,7 @@ class ServerRequestBuilder
         & ServerRequestFactoryInterface
         & StreamFactoryInterface
         & UploadedFileFactoryInterface
-        &UriFactoryInterface $factory,
+        & UriFactoryInterface $factory,
     ) {
         $this->request = $factory->createServerRequest('GET', '/', $server);
     }

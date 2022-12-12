@@ -57,7 +57,7 @@ class HttpFactory
         & ServerRequestFactoryInterface
         & StreamFactoryInterface
         & UploadedFileFactoryInterface
-        &UriFactoryInterface $factory
+        & UriFactoryInterface $factory
     ): void {
         array_unshift(self::$factoriesList, $factory);
     }
