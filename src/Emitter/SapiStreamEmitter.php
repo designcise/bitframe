@@ -25,9 +25,6 @@ class SapiStreamEmitter extends AbstractSapiEmitter
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function emit(ResponseInterface $response): void
     {
         if (! headers_sent()) {
