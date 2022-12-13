@@ -18,7 +18,6 @@ use InvalidArgumentException;
 use function array_key_last;
 use function asort;
 use function is_a;
-use function strpos;
 
 /**
  * Determine media parser to use for an incoming Http request.
