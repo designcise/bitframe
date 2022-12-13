@@ -90,7 +90,7 @@ class ServerRequestBuilder
     }
 
     public function __construct(
-        private array $server,
+        private readonly array $server,
         private RequestFactoryInterface
         & ResponseFactoryInterface
         & ServerRequestFactoryInterface
