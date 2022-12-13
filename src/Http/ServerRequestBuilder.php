@@ -136,7 +136,7 @@ class ServerRequestBuilder
         $uri = (
             ($baseUri ?: '/')
             . ($query ? ('?' . ltrim($query, '?')) : '')
-            . ($fragment ? "#{$fragment}" : '')
+            . ($fragment ? "#$fragment" : '')
         );
 
         parse_str($query, $queryParams);
@@ -159,7 +159,7 @@ class ServerRequestBuilder
 
         if (
             isset($this->server['SERVER_PROTOCOL'])
-            && $this->server['SERVER_PROTOCOL'] !== "HTTP/{$protocolVer}"
+            && $this->server['SERVER_PROTOCOL'] !== "HTTP/$protocolVer"
         ) {
             $protocolVer = strtr((string) $this->server['SERVER_PROTOCOL'], ['HTTP/' => '']);
 

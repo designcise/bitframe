@@ -41,7 +41,7 @@ class AbstractFileResponse extends ResponseDecorator
         $isFilePath = is_string($file);
 
         if ($isFilePath && ! file_exists($file)) {
-            throw new InvalidArgumentException("File \"{$file}\" does not exist.");
+            throw new InvalidArgumentException("File \"$file\" does not exist.");
         }
 
         $mimeType = ($isFilePath) ? mime_content_type($file) : self::DEFAULT_MIME_TYPE;
