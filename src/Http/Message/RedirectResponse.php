@@ -16,12 +16,6 @@ use Psr\Http\Message\UriInterface;
 use BitFrame\Factory\HttpFactory;
 use InvalidArgumentException;
 
-use function is_string;
-use function is_object;
-use function sprintf;
-use function get_class;
-use function gettype;
-
 /**
  * Http response for redirect.
  */
