@@ -23,7 +23,7 @@ use BitFrame\Http\Message\{
     XmlResponse,
     FileResponse,
     DownloadResponse,
-    RedirectResponse
+    RedirectResponse,
 };
 
 /**
