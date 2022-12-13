@@ -371,7 +371,7 @@ class ServerRequestBuilder
         }
 
         return (
-            (substr($authority, -1) === '/')
+            (str_ends_with($authority, '/'))
                 ? rtrim($authority, '/') . ":{$server['SERVER_PORT']}/"
                 : "$authority:{$server['SERVER_PORT']}"
         );
