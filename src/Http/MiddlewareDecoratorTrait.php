@@ -32,7 +32,7 @@ trait MiddlewareDecoratorTrait
      *
      * @return array
      */
-    public function getUnpackedMiddleware(null|array|string|callable|MiddlewareInterface $middleware): array
+    public function unpackMiddleware(null|array|string|callable|MiddlewareInterface $middleware): array
     {
         if (empty($middleware)) {
             return [];
@@ -42,7 +42,7 @@ trait MiddlewareDecoratorTrait
             $collection = [];
 
             foreach ($middleware as $md) {
-                $collection = [...$collection, ...$this->getUnpackedMiddleware($md)];
+                $collection = [...$collection, ...$this->unpackMiddleware($md)];
             }
 
             return $collection;

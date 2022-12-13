@@ -28,7 +28,7 @@ class MiddlewareHandler implements RequestHandlerInterface
 
     public function __construct($middleware, ResponseFactoryInterface $factory)
     {
-        $this->middlewares = [...$this->getUnpackedMiddleware($middleware)];
+        $this->middlewares = [...$this->unpackMiddleware($middleware)];
         $this->response = $factory->createResponse();
     }
 

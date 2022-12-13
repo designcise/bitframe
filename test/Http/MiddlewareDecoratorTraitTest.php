@@ -64,7 +64,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function testUnpackingInvalidValues(mixed $value): void
     {
         $this->expectException(TypeError::class);
-        $this->middlewareDecorator->getUnpackedMiddleware($value);
+        $this->middlewareDecorator->unpackMiddleware($value);
     }
 
     public function emptyValuesProvider(): array
@@ -84,7 +84,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
      */
     public function testUnpackingEmptyValues(mixed $value): void
     {
-        $this->assertEmpty($this->middlewareDecorator->getUnpackedMiddleware($value));
+        $this->assertEmpty($this->middlewareDecorator->unpackMiddleware($value));
     }
 
     public function testUnpackingArrayOfMiddlewares(): void
@@ -100,7 +100,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
             [InteropMiddleware::class, 'staticRun'],
         ];
 
-        $unpackedMiddlewares = $this->middlewareDecorator->getUnpackedMiddleware($middlewares);
+        $unpackedMiddlewares = $this->middlewareDecorator->unpackMiddleware($middlewares);
 
         foreach ($unpackedMiddlewares as $middleware) {
             $this->assertInstanceOf(MiddlewareInterface::class, $middleware);

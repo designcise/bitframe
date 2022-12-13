@@ -58,7 +58,7 @@ class App implements RequestHandlerInterface
     {
         $this->middlewares = [
             ...$this->middlewares,
-            ...$this->getUnpackedMiddleware($middleware)
+            ...$this->unpackMiddleware($middleware)
         ];
 
         return $this;
