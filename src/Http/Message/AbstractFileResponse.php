@@ -45,7 +45,7 @@ class AbstractFileResponse extends ResponseDecorator
         }
 
         $mimeType = ($isFilePath) ? mime_content_type($file) : self::DEFAULT_MIME_TYPE;
-        $stream = $this->getFileAsStream($file, HttpFactory::getFactory());
+        $stream = $this->createStreamFromFile($file, HttpFactory::getFactory());
 
         return HttpFactory::createResponse()
             ->withHeader('Content-Type', $mimeType)
@@ -58,7 +58,7 @@ class AbstractFileResponse extends ResponseDecorator
      *
      * @return StreamInterface
      */
-    protected function getFileAsStream($file, StreamFactoryInterface $factory): StreamInterface
+    protected function createStreamFromFile($file, StreamFactoryInterface $factory): StreamInterface
     {
         if (is_string($file)) {
             $file = $factory->createStreamFromFile($file);
