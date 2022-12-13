@@ -47,7 +47,7 @@ class RouteGroup extends AbstractRouter
         if ($path === '' || $path === '/') {
             $path = '';
         } else {
-            $path = ((substr($this->prefix, -1) === '/') ? '' : '/')
+            $path = ((str_ends_with($this->prefix, '/')) ? '' : '/')
                 . ltrim($path, '/');
         }
 
