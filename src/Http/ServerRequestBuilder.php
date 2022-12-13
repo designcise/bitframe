@@ -359,7 +359,7 @@ class ServerRequestBuilder
                 ?? ('http' . ((isset($server['HTTPS']) && $server['HTTPS'] === 'on') ? 's' : ''))
             ) . ':';
 
-            $authority = "{$scheme}//{$authority}";
+            $authority = "$scheme//$authority";
         }
 
         if (
@@ -373,7 +373,7 @@ class ServerRequestBuilder
         return (
             (substr($authority, -1) === '/')
                 ? rtrim($authority, '/') . ":{$server['SERVER_PORT']}/"
-                : "{$authority}:{$server['SERVER_PORT']}"
+                : "$authority:{$server['SERVER_PORT']}"
         );
     }
 
