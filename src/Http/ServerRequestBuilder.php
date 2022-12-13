@@ -181,7 +181,7 @@ class ServerRequestBuilder
         $str = implode(' ', array_keys($this->server));
         preg_match_all($pattern, $str, $originalHeaders, PREG_SET_ORDER);
 
-        $pattern = '/(redirect-)?(?:(?:http-)|(content-))([^ ]*)/';
+        $pattern = '/(redirect-)?(?:(http-)|(content-))([^ ]*)/';
         $str = strtolower(str_replace('_', '-', $str));
         preg_match_all($pattern, $str, $normalizedHeaders, PREG_SET_ORDER);
 
