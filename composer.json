@@ -25,6 +25,7 @@
     "phpstan/phpstan": "*"
   },
   "suggest": {
+    "ext-fileinfo": "For supporting embedded files when using BitFrame\\Http\\Message\\FileResponse",
     "ext-libxml": "For out-of-the-box XML support, please install libxml extension",
     "ext-simplexml": "For out-of-the-box XML support, please install simplexml extension",
     "nyholm/psr7": "Add PSR-7 / PSR-17 based HTTP Messaging support for your App",
