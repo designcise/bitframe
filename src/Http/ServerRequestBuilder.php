@@ -276,7 +276,7 @@ class ServerRequestBuilder
     /**
      * Create and return an UploadedFile instance from a `$_FILES` specification.
      *
-     * If the specification represents an array of values, this method will loops
+     * If the specification represents an array of values, this method will loop
      * through all nested files and return a normalized array of `UploadedFileInterface`
      * instances.
      *
@@ -284,7 +284,7 @@ class ServerRequestBuilder
      *
      * @return UploadedFileInterface[]|UploadedFileInterface
      */
-    private function createUploadedFileFromSpec(array $files)
+    private function createUploadedFileFromSpec(array $files): array|UploadedFileInterface
     {
         if (is_array($files['tmp_name'])) {
             $normalizedFiles = [];
