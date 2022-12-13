@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace BitFrame\Http;
 
-use BitFrame\Factory\{PSR17FactoryInterface, HttpFactory};
 use BitFrame\Parser\MediaParserNegotiator;
 use Psr\Http\Message\{
     RequestFactoryInterface,
