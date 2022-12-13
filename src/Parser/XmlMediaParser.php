@@ -29,6 +29,8 @@ class XmlMediaParser implements MediaParserInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \Exception
      */
     public function parse(string $input): ?SimpleXMLElement
     {
