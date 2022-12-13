@@ -61,7 +61,7 @@ class AbstractFileResponse extends ResponseDecorator
     protected function getFileAsStream($file, StreamFactoryInterface $factory): StreamInterface
     {
         if (is_string($file)) {
-            $file = $factory->createStreamFromFile($file, 'r');
+            $file = $factory->createStreamFromFile($file);
         } elseif (is_resource($file)) {
             $file = $factory->createStreamFromResource($file);
         }
