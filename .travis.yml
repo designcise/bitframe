@@ -5,12 +5,14 @@ cache:
 
 language: php
 
-php: "8.2"
-dist: focal
-addons:
-  apt:
-    packages:
-      - libonig5
+jobs:
+  include:
+    - dist: "jammy"
+      addons:
+        apt:
+          packages:
+            - "libonig5"
+      php: "8.2"
 
 env:
   - XDEBUG_MODE=coverage
