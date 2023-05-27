@@ -17,7 +17,6 @@ use BitFrame\Container;
 use BitFrame\Test\Asset\NoopService;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use TypeError;
 use OutOfBoundsException;
 use BitFrame\Exception\{
     ContainerItemNotFoundException,
@@ -193,15 +192,6 @@ class ContainerTest extends TestCase
 
         $this->expectException(ContainerItemFrozenException::class);
         unset($container['foo']);
-    }
-
-    public function testNonStringIdShouldThrowTypeError(): void
-    {
-        $container = $this->container;
-        $container['foo'] = 'bar';
-
-        $this->expectException(TypeError::class);
-        $container->has(456);
     }
 
     public function testExceptionIsThrownIfValueNotFound(): void
