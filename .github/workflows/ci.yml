@@ -13,9 +13,7 @@ jobs:
         with:
           version: "2.5.5"
       - name: Running PHPUnit Tests
-        shell: bash-wrapper {0}
-        run: |
-          bash ./.github/scripts/run-phpunit.sh
+        run: ./.github/scripts/run-phpunit.sh
 
       - name: Codecov
         uses: codecov/codecov-action@v3
