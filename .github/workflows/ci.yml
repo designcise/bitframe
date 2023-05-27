@@ -17,6 +17,7 @@ jobs:
           version: "9.5"
           configuration: "phpunit.xml"
           coverage_clover: "coverage.xml"
+          testsuite: "bitframe"
 
       - uses: actions/checkout@master
       - uses: codecov/codecov-action@v3
