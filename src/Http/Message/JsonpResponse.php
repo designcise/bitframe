@@ -98,7 +98,7 @@ class JsonpResponse extends ResponseDecorator
     /**
      * @param string $callback
      *
-     * @return boolean
+     * @return bool
      *
      * @see \Symfony\Component\HttpFoundation\JsonResponse::setCallback()
      */
