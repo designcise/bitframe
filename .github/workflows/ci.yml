@@ -12,7 +12,7 @@ jobs:
       - uses: php-actions/phpunit@v3
         with:
           configuration: "phpunit.xml"
-          coverage-clover: "coverage.xml"
+          coverage_clover: "coverage.xml"
 
       - uses: actions/checkout@master
       - uses: codecov/codecov-action@v3
