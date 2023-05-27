@@ -1,5 +1,5 @@
-[![codecov](https://codecov.io/gh/designcise/bitframe/branch/master/graph/badge.svg?token=7V77L5P3AX)](https://codecov.io/gh/designcise/bitframe)
-[![Build Status](https://travis-ci.com/designcise/bitframe.svg?branch=master)](https://travis-ci.com/designcise/bitframe)
+[![CI](https://github.com/designcise/bitframe/actions/workflows/ci.yml/badge.svg)](https://github.com/designcise/bitframe/actions/workflows/ci.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b326e89aefecd26e60b8/maintainability)](https://codeclimate.com/github/designcise/bitframe/maintainability)
 
 # BitFrame PHP Microframework
 
