@@ -62,7 +62,7 @@ trait MiddlewareDecoratorTrait
     {
         if (! $middleware instanceof MiddlewareInterface) {
             if (is_callable($middleware)) {
-                return $this->getDecoratedCallableMiddleware($middleware);
+                return $this->createDecoratedCallableMiddleware($middleware);
             }
 
             if (is_string($middleware)) {
@@ -83,7 +83,7 @@ trait MiddlewareDecoratorTrait
      *
      * @return MiddlewareInterface
      */
-    public function getDecoratedCallableMiddleware(callable $middleware): MiddlewareInterface
+    public function createDecoratedCallableMiddleware(callable $middleware): MiddlewareInterface
     {
         return new class ($middleware) implements MiddlewareInterface {
             private $middleware;

@@ -193,7 +193,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
      */
     public function testGetDecoratedCallableMiddleware(callable $callable): void
     {
-        $middleware = $this->middlewareDecorator->getDecoratedCallableMiddleware($callable);
+        $middleware = $this->middlewareDecorator->createDecoratedCallableMiddleware($callable);
         $response = $middleware->process($this->request, $this->getRequestHandlerMock());
 
         $this->assertSame('Hello World!', (string) $response->getBody());
