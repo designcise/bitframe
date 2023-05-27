@@ -22,7 +22,6 @@ use TypeError;
 use OutOfBoundsException;
 
 use function is_object;
-use function gettype;
 use function sprintf;
 use function is_callable;
 use function array_key_exists;
