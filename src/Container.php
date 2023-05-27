@@ -135,15 +135,8 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
      *
      * @throws TypeError
      */
-    public function has($id): bool
+    public function has(string $id): bool
     {
-        if (! is_string($id)) {
-            throw new TypeError(sprintf(
-                'The name parameter must be of type string, %s given',
-                is_object($id) ? $id::class : gettype($id)
-            ));
-        }
-
         return (isset($this->bag[$id]) || array_key_exists($id, $this->bag));
     }
 
@@ -153,7 +146,7 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
      * @thorws TypeError
      * @throws ContainerItemNotFoundException
      */
-    public function get($id)
+    public function get(string $id)
     {
         if (! $this->has($id)) {
             throw new ContainerItemNotFoundException($id);
