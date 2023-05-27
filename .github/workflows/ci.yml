@@ -8,19 +8,18 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Install dependencies
-        uses: php-actions/composer@v6
-        with:
-          version: "2.5.5"
-      - uses: php-actions/phpunit@v3
-        with:
-          version: "9.5"
-          configuration: "phpunit.xml"
-          coverage_clover: "coverage.xml"
-          testsuite: "bitframe"
 
-      - uses: actions/checkout@master
-      - uses: codecov/codecov-action@v3
+      - name: Setting up PHP
+        uses: ./.github/actions/php
+
+      - name: Installing Composer
+        run: ./.github/scripts/run-composer.sh
+
+      - name: Running PHPUnit
+        run: ./.github/scripts/run-phpunit.sh
+
+      - name: Codecov
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage1.xml
@@ -28,3 +27,5 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: true
           verbose: true
+
+      - uses: actions/checkout@master
