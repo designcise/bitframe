@@ -61,7 +61,7 @@ abstract class AbstractRouter
         callable|string|array $handler,
     ): void {
         $middlewares = $this->unpackMiddleware($middleware);
-        $middlewares[] = $this->getDecoratedMiddleware($handler);
+        $middlewares[] = $this->createDecoratedMiddleware($handler);
 
         $handlerWithMiddleware = new class ($middlewares) implements MiddlewareInterface {
             private array $middlewares;

@@ -126,7 +126,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function testGetDecoratedMiddlewareWithUnsupportedMiddlewareType($middleware): void
     {
         $this->expectException(TypeError::class);
-        $this->middlewareDecorator->getDecoratedMiddleware($middleware);
+        $this->middlewareDecorator->createDecoratedMiddleware($middleware);
     }
 
     public function nonExistentMiddlewareProvider(): array
@@ -145,7 +145,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function testGetDecoratedMiddlewareWithNonExistentMiddlewareType($middleware): void
     {
         $this->expectException(Error::class);
-        $this->middlewareDecorator->getDecoratedMiddleware($middleware);
+        $this->middlewareDecorator->createDecoratedMiddleware($middleware);
     }
 
     public function middlewareProvider(): array
@@ -171,7 +171,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     {
         $this->assertInstanceOf(
             MiddlewareInterface::class,
-            $this->middlewareDecorator->getDecoratedMiddleware($middleware)
+            $this->middlewareDecorator->createDecoratedMiddleware($middleware)
         );
     }
 

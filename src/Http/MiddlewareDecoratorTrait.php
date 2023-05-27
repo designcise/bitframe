@@ -48,7 +48,7 @@ trait MiddlewareDecoratorTrait
             return $collection;
         }
 
-        return [$this->getDecoratedMiddleware($middleware)];
+        return [$this->createDecoratedMiddleware($middleware)];
     }
 
     /**
@@ -58,7 +58,7 @@ trait MiddlewareDecoratorTrait
      *
      * @return MiddlewareInterface
      */
-    public function getDecoratedMiddleware(array|string|callable|MiddlewareInterface $middleware): MiddlewareInterface
+    public function createDecoratedMiddleware(array|string|callable|MiddlewareInterface $middleware): MiddlewareInterface
     {
         if (! $middleware instanceof MiddlewareInterface) {
             if (is_callable($middleware)) {
