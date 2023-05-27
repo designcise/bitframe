@@ -15,7 +15,6 @@ namespace BitFrame\Router;
 use Psr\Http\Server\MiddlewareInterface;
 
 use function ltrim;
-use function substr;
 
 /**
  * Group multiple routes together under the same prefix.
