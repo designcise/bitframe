@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Parser;
+namespace BitFrame\Parser\Media;
 
 use function parse_str;
 

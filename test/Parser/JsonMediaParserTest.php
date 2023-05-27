@@ -13,11 +13,11 @@ declare(strict_types=1);
 namespace BitFrame\Test\Parser;
 
 use PHPUnit\Framework\TestCase;
-use BitFrame\Parser\JsonMediaParser;
+use BitFrame\Parser\Media\JsonMediaParser;
 use JsonException;
 
 /**
- * @covers \BitFrame\Parser\JsonMediaParser
+ * @covers \BitFrame\Parser\Media\JsonMediaParser
  */
 class JsonMediaParserTest extends TestCase
 {

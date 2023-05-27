@@ -13,10 +13,10 @@ declare(strict_types=1);
 namespace BitFrame\Test\Parser;
 
 use PHPUnit\Framework\TestCase;
-use BitFrame\Parser\DefaultMediaParser;
+use BitFrame\Parser\Media\DefaultMediaParser;
 
 /**
- * @covers \BitFrame\Parser\DefaultMediaParser
+ * @covers \BitFrame\Parser\Media\DefaultMediaParser
  */
 class DefaultMediaParserTest extends TestCase
 {
