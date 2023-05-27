@@ -59,10 +59,10 @@ class MediaParserNegotiator implements MediaParserInterface
      */
     public function parse(string $input): mixed
     {
-        return $this->getPreferredMediaParser()->parse($input);
+        return $this->createPreferredMediaParser()->parse($input);
     }
 
-    public function getPreferredMediaParser(): MediaParserInterface
+    public function createPreferredMediaParser(): MediaParserInterface
     {
         if ($this->activeParser instanceof MediaParserInterface) {
             return $this->activeParser;

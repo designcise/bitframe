@@ -152,7 +152,7 @@ class MediaParserNegotiatorTest extends TestCase
 
         $negotiator = new MediaParserNegotiator($request);
 
-        $this->assertInstanceOf($expectedParser, $negotiator->getPreferredMediaParser());
+        $this->assertInstanceOf($expectedParser, $negotiator->createPreferredMediaParser());
     }
 
     public function testGetsDefaultParserWhenAcceptHeaderNotPresent(): void
@@ -171,7 +171,7 @@ class MediaParserNegotiatorTest extends TestCase
 
         $this->assertInstanceOf(
             DefaultMediaParser::class,
-            $negotiator->getPreferredMediaParser()
+            $negotiator->createPreferredMediaParser()
         );
     }
 
@@ -189,8 +189,8 @@ class MediaParserNegotiatorTest extends TestCase
 
         $negotiator = new MediaParserNegotiator($request);
 
-        $preferredProvider = $negotiator->getPreferredMediaParser();
+        $preferredProvider = $negotiator->createPreferredMediaParser();
 
-        $this->assertSame($preferredProvider, $negotiator->getPreferredMediaParser());
+        $this->assertSame($preferredProvider, $negotiator->createPreferredMediaParser());
     }
 }
