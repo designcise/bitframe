@@ -11,6 +11,8 @@ jobs:
       - uses: php-actions/composer@v6
       - uses: php-actions/phpunit@v3
         with:
+          version: "9.5.0"
+          php_extensions: "ext-json"
           configuration: "phpunit.xml"
           coverage_clover: "coverage.xml"
 
