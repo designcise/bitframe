@@ -5,15 +5,16 @@ on: [push]
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    container:
-      image: php:8.2
 
     steps:
       - uses: actions/checkout@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
       - name: Install dependencies
         uses: php-actions/composer@v6
         with:
-          php_version: 8.2
           version: 2.5.5
       - name: Running PHPUnit Tests
         run: ./.github/scripts/run-phpunit.sh
