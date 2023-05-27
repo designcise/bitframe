@@ -34,7 +34,6 @@ use function is_object;
 use function ltrim;
 use function rtrim;
 use function strtr;
-use function substr;
 use function parse_str;
 use function parse_url;
 use function strtolower;
