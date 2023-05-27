@@ -1,2 +1,2 @@
 #!/bin/sh
-composer test
+composer test-report
