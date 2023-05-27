@@ -98,14 +98,18 @@ class HttpFactory
     ): ServerRequestInterface {
         $factory = self::getFactory();
 
-        return ServerRequestBuilder::fromSapi(
-            $server ?: $_SERVER,
-            $factory,
-            $parsedBody ?: $_POST ?: [],
-            $cookies ?: $_COOKIE ?: [],
-            $files ?: $_FILES ?: [],
-            $body ?: file_get_contents('php://input') ?: ''
-        );
+        $builder = new ServerRequestBuilder($server ?: $_SERVER, $factory);
+
+        return $builder
+            ->addMethod()
+            ->addUri()
+            ->addProtocolVersion()
+            ->addHeaders()
+            ->addCookieParams($cookies ?: $_COOKIE ?: [])
+            ->addUploadedFiles($files ?: $_FILES ?: [])
+            ->addParsedBody($parsedBody ?: $_POST ?: [])
+            ->addBody($body ?: file_get_contents('php://input') ?: '')
+            ->build();
     }
 
     public static function createStream(string $content = ''): StreamInterface

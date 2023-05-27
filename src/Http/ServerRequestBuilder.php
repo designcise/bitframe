@@ -62,33 +62,6 @@ class ServerRequestBuilder
 
     private object|null|array $parsedBody;
 
-    public static function fromSapi(
-        array $server,
-        RequestFactoryInterface
-        & ResponseFactoryInterface
-        & ServerRequestFactoryInterface
-        & StreamFactoryInterface
-        & UploadedFileFactoryInterface
-        & UriFactoryInterface $factory,
-        ?array $parsedBody = null,
-        array $cookies = [],
-        array $files = [],
-        $body = '',
-    ): ServerRequestInterface {
-        $builder = new self($server, $factory);
-
-        return $builder
-            ->addMethod()
-            ->addUri()
-            ->addProtocolVersion()
-            ->addHeaders()
-            ->addCookieParams($cookies)
-            ->addUploadedFiles($files)
-            ->addParsedBody($parsedBody)
-            ->addBody($body)
-            ->build();
-    }
-
     public function __construct(
         private readonly array $server,
         private readonly RequestFactoryInterface
