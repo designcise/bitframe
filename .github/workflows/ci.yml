@@ -19,14 +19,9 @@ jobs:
       - name: Running PHPUnit Tests
         run: ./.github/scripts/run-phpunit.sh
 
-      - name: Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage1.xml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          verbose: true
+      - name: Publish code coverage
+        uses: paambaati/codeclimate-action@v4.0.0
+        env:
+          CC_TEST_REPORTER_ID: a053ec039e0f1be4176cff6646fe1e9fe4d410a828e30d925ff7db04cb459ef6
 
       - uses: actions/checkout@master
