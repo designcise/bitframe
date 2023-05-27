@@ -132,8 +132,6 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
 
     /**
      * {@inheritDoc}
-     *
-     * @throws TypeError
      */
     public function has(string $id): bool
     {
@@ -143,7 +141,6 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
     /**
      * {@inheritDoc}
      *
-     * @thorws TypeError
      * @throws ContainerItemNotFoundException
      */
     public function get(string $id)
