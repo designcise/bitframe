@@ -11,8 +11,8 @@ jobs:
       - name: Install dependencies
         uses: php-actions/composer@v6
         with:
-          php_version: "8.2"
-          version: "2.5.5"
+          php_version: 8.2
+          version: 2.5.5
       - name: Running PHPUnit Tests
         run: ./.github/scripts/run-phpunit.sh
 
