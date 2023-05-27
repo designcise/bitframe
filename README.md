@@ -24,7 +24,7 @@ Also, please note the following prerequisites:
 
 ### Prerequisites
 
-1. PHP 8.1+;
+1. PHP 8.2+;
 2. Server with URL Rewriting (such as Apache, Nginx, etc.).
 
 ### 1. Setup Your Environment
