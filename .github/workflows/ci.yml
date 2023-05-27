@@ -19,4 +19,7 @@ jobs:
       - name: Running PHPUnit Tests
         run: ./.github/scripts/run-phpunit.sh
 
-      - uses: actions/checkout@master
+      - name: Clean up GitHub workspace
+        uses: docker://ubuntu:latest
+        with:
+          args: find /github/workspace/. -name . -o -prune -exec rm -rf -- {} +
