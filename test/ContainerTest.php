@@ -75,7 +75,7 @@ class ContainerTest extends TestCase
      * @param string $key
      * @param mixed $value
      */
-    public function testIsset(string $key, $value): void
+    public function testIsset(string $key, mixed $value): void
     {
         $container = $this->container;
         $container[$key] = $value;
