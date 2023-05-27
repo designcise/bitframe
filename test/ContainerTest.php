@@ -15,6 +15,8 @@ namespace BitFrame\Test;
 use PHPUnit\Framework\TestCase;
 use BitFrame\Container;
 use BitFrame\Test\Asset\NoopService;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use TypeError;
 use OutOfBoundsException;
 use BitFrame\Exception\{
@@ -48,8 +50,11 @@ class ContainerTest extends TestCase
      *
      * @param string $key
      * @param mixed $value
+     *
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
      */
-    public function testSetterAndGetter(string $key, $value): void
+    public function testSetterAndGetter(string $key, mixed $value): void
     {
         $container = $this->container;
         $container[$key] = $value;
