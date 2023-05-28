@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Test\Parser;
+namespace BitFrame\Test\Http\Parser;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
