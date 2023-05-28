@@ -1,6 +1,12 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    tags:
+      - '!*' # Do not execute on tags
+    pull_request:
+      paths:
+        - '!*.md'
 
 jobs:
   build-test:
