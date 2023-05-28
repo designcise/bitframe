@@ -22,8 +22,15 @@ jobs:
         uses: php-actions/composer@v6
         with:
           version: 2.5.5
-      - name: Running PHPUnit Tests
-        run: ./.github/scripts/run-phpunit.sh
+
+      - name: Test & Coverage
+        uses: paambaati/codeclimate-action@v4.0.0
+        env:
+          CC_TEST_REPORTER_ID: a053ec039e0f1be4176cff6646fe1e9fe4d410a828e30d925ff7db04cb459ef6
+        with:
+          coverageCommand: ./.github/scripts/run-phpunit.sh
+          coverageLocations: coverage.xml:clover
+          debug: true
 
       - name: Clean up GitHub workspace
         uses: docker://ubuntu:latest
