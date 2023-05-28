@@ -54,7 +54,8 @@ class UriParser
                     ?? ('http' . ((isset($server['HTTPS']) && $server['HTTPS'] === 'on') ? 's' : ''))
                 ) . ':';
 
-            $authority = "$scheme//$authority";
+            // @see https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1
+            $authority = strtolower("$scheme//$authority");
         }
 
         if (
@@ -65,10 +66,12 @@ class UriParser
             return $authority;
         }
 
+        $port = (empty($server['SERVER_PORT'])) ? '' : ":{$server['SERVER_PORT']}";
+
         return (
         (str_ends_with($authority, '/'))
-            ? rtrim($authority, '/') . ":{$server['SERVER_PORT']}/"
-            : "$authority:{$server['SERVER_PORT']}"
+            ? rtrim($authority, '/') . "$port/"
+            : "$authority$port"
         );
     }
 
