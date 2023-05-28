@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Parser\Media;
+namespace BitFrame\Http\Parser;
 
 use function is_array;
 use function json_decode;

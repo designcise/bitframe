@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace BitFrame\Http;
 
 use BitFrame\Http\Normalizer\UploadedFilesNormalizer;
-use BitFrame\Parser\Media\MediaParserNegotiator;
+use BitFrame\Http\Parser\MediaParserNegotiator;
 use BitFrame\Http\Parser\{UriParser, CookieHeaderParser};
 use Psr\Http\Message\{
     RequestFactoryInterface,

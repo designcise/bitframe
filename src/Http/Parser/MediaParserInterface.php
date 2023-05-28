@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Parser\Media;
+namespace BitFrame\Http\Parser;
 
 /**
  * Implementation for a media parser.

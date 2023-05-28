@@ -14,7 +14,7 @@ namespace BitFrame\Test\Parser;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
-use BitFrame\Parser\Media\{
+use BitFrame\Http\Parser\{
     MediaParserInterface,
     MediaParserNegotiator,
     DefaultMediaParser,
@@ -27,7 +27,7 @@ use function get_class;
 use function json_decode;
 
 /**
- * @covers \BitFrame\Parser\Media\MediaParserNegotiator
+ * @covers \BitFrame\Http\Parser\MediaParserNegotiator
  */
 class MediaParserNegotiatorTest extends TestCase
 {

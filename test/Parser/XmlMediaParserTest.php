@@ -14,10 +14,10 @@ namespace BitFrame\Test\Parser;
 
 use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;
-use BitFrame\Parser\Media\XmlMediaParser;
+use BitFrame\Http\Parser\XmlMediaParser;
 
 /**
- * @covers \BitFrame\Parser\Media\XmlMediaParser
+ * @covers \BitFrame\Http\Parser\XmlMediaParser
  */
 class XmlMediaParserTest extends TestCase
 {
