@@ -14,8 +14,7 @@ namespace BitFrame\Http;
 
 use BitFrame\Http\Normalizer\UploadedFilesNormalizer;
 use BitFrame\Parser\Media\MediaParserNegotiator;
-use BitFrame\Parser\ServerRequest\CookieHeaderParser;
-use BitFrame\Parser\ServerRequest\UriParser;
+use BitFrame\Http\Parser\{UriParser, CookieHeaderParser};
 use Psr\Http\Message\{
     RequestFactoryInterface,
     ResponseFactoryInterface,

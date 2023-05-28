@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Parser\ServerRequest;
+namespace BitFrame\Http\Parser;
 
 use function preg_match_all;
 use function urldecode;
