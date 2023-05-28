@@ -20,6 +20,7 @@ jobs:
       - name: Test & Coverage
         uses: paambaati/codeclimate-action@v4.0.0
         env:
+          GIT_BRANCH: ${GITHUB_REF##*/}
           CC_TEST_REPORTER_ID: a053ec039e0f1be4176cff6646fe1e9fe4d410a828e30d925ff7db04cb459ef6
         with:
           coverageCommand: ./.github/scripts/run-phpunit.sh
