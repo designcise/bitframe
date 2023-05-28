@@ -25,7 +25,7 @@ use const PREG_SET_ORDER;
  * overwriting. Thus, the server request should take the cookies
  * from the request header instead.
  */
-class CookieHeaderParser
+class HttpCookieParser
 {
     public static function parse(string $cookieHeader): array
     {

@@ -14,7 +14,7 @@ namespace BitFrame\Http;
 
 use BitFrame\Http\Normalizer\UploadedFilesNormalizer;
 use BitFrame\Http\Parser\MediaParserNegotiator;
-use BitFrame\Http\Parser\{UriParser, CookieHeaderParser};
+use BitFrame\Http\Parser\{UriParser, HttpCookieParser};
 use Psr\Http\Message\{
     RequestFactoryInterface,
     ResponseFactoryInterface,
@@ -165,7 +165,7 @@ class ServerRequestBuilder
     public function addCookieParams(array $cookies): self
     {
         if ($cookies === [] && isset($this->server['HTTP_COOKIE'])) {
-            $cookies = CookieHeaderParser::parse($this->server['HTTP_COOKIE']);
+            $cookies = HttpCookieParser::parse($this->server['HTTP_COOKIE']);
         }
 
         $this->request = $this->request
