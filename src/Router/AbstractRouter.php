@@ -46,6 +46,8 @@ abstract class AbstractRouter
         callable|string|array|MiddlewareInterface $handler,
     );
 
+    abstract public function registerControllers(array $controllers);
+
     /**
      * Add a route to the map using $middleware.
      *
