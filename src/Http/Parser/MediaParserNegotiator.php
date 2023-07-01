@@ -4,13 +4,13 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
 declare(strict_types=1);
 
-namespace BitFrame\Parser;
+namespace BitFrame\Http\Parser;
 
 use Psr\Http\Message\ServerRequestInterface;
 use InvalidArgumentException;
@@ -18,7 +18,6 @@ use InvalidArgumentException;
 use function array_key_last;
 use function asort;
 use function is_a;
-use function strpos;
 
 /**
  * Determine media parser to use for an incoming Http request.
@@ -42,7 +41,7 @@ class MediaParserNegotiator implements MediaParserInterface
 
     private ?MediaParserInterface $activeParser = null;
 
-    public function __construct(private ServerRequestInterface $request)
+    public function __construct(private readonly ServerRequestInterface $request)
     {
     }
 
@@ -60,10 +59,10 @@ class MediaParserNegotiator implements MediaParserInterface
      */
     public function parse(string $input): mixed
     {
-        return $this->getPreferredMediaParser()->parse($input);
+        return $this->createPreferredMediaParser()->parse($input);
     }
 
-    public function getPreferredMediaParser(): MediaParserInterface
+    public function createPreferredMediaParser(): MediaParserInterface
     {
         if ($this->activeParser instanceof MediaParserInterface) {
             return $this->activeParser;

@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -22,7 +22,6 @@ use TypeError;
 use OutOfBoundsException;
 
 use function is_object;
-use function gettype;
 use function sprintf;
 use function is_callable;
 use function array_key_exists;
@@ -45,66 +44,51 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
         $this->factories = new SplObjectStorage();
     }
 
-    /**
-     * @param mixed $offset
-     *
-     * @return bool
-     *
-     * @see Container::has()
-     */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
-        return $this->has($offset);
+        return $this->has((string) $offset);
     }
 
-    /**
-     * @param mixed $offset
-     *
-     * @return mixed
-     *
-     * @see Container::get()
-     */
-    public function offsetGet($offset): mixed
+    public function offsetGet(mixed $offset): mixed
     {
-        return $this->get($offset);
+        return $this->get((string) $offset);
     }
 
-    /**
-     * @param mixed $offset
-     * @param mixed $value
-     */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
-        if (isset($this->frozen[$offset])) {
-            throw new ContainerItemFrozenException($offset);
+        $strOffset = (string) $offset;
+
+        if (isset($this->frozen[$strOffset])) {
+            throw new ContainerItemFrozenException($strOffset);
         }
 
-        $this->bag[$offset] = $value;
+        $this->bag[$strOffset] = $value;
     }
 
     /**
-     * @param string $offset
+     * @param mixed $offset
      *
-     * @throws TypeError
      * @throws OutOfBoundsException
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
-        if (! $this->has($offset)) {
+        $strOffset = (string) $offset;
+
+        if (! $this->has($strOffset)) {
             throw new OutOfBoundsException(
-                sprintf('Offset "%s" does not exist', $offset)
+                sprintf('Offset "%s" does not exist', $strOffset)
             );
         }
 
-        if (isset($this->frozen[$offset])) {
-            throw new ContainerItemFrozenException($offset);
+        if (isset($this->frozen[$strOffset])) {
+            throw new ContainerItemFrozenException($strOffset);
         }
 
-        if (isset($this->instantiated[$offset]) && is_object($this->instantiated[$offset])) {
-            unset($this->factories[$this->bag[$offset]]);
+        if (isset($this->instantiated[$strOffset]) && is_object($this->instantiated[$strOffset])) {
+            unset($this->factories[$this->bag[$strOffset]]);
         }
 
-        unset($this->bag[$offset], $this->frozen[$offset]);
+        unset($this->bag[$strOffset], $this->frozen[$strOffset]);
     }
 
     /**
@@ -132,28 +116,18 @@ class Container implements ContainerInterface, ArrayAccess, IteratorAggregate
 
     /**
      * {@inheritDoc}
-     *
-     * @throws TypeError
      */
-    public function has($id): bool
+    public function has(string $id): bool
     {
-        if (! is_string($id)) {
-            throw new TypeError(sprintf(
-                'The name parameter must be of type string, %s given',
-                is_object($id) ? $id::class : gettype($id)
-            ));
-        }
-
         return (isset($this->bag[$id]) || array_key_exists($id, $this->bag));
     }
 
     /**
      * {@inheritDoc}
      *
-     * @thorws TypeError
      * @throws ContainerItemNotFoundException
      */
-    public function get($id)
+    public function get(string $id)
     {
         if (! $this->has($id)) {
             throw new ContainerItemNotFoundException($id);

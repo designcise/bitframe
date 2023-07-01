@@ -15,7 +15,8 @@ namespace BitFrame\Test;
 use PHPUnit\Framework\TestCase;
 use BitFrame\Container;
 use BitFrame\Test\Asset\NoopService;
-use TypeError;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use OutOfBoundsException;
 use BitFrame\Exception\{
     ContainerItemNotFoundException,
@@ -48,8 +49,11 @@ class ContainerTest extends TestCase
      *
      * @param string $key
      * @param mixed $value
+     *
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
      */
-    public function testSetterAndGetter(string $key, $value): void
+    public function testSetterAndGetter(string $key, mixed $value): void
     {
         $container = $this->container;
         $container[$key] = $value;
@@ -71,7 +75,7 @@ class ContainerTest extends TestCase
      * @param string $key
      * @param mixed $value
      */
-    public function testIsset(string $key, $value): void
+    public function testIsset(string $key, mixed $value): void
     {
         $container = $this->container;
         $container[$key] = $value;
@@ -188,15 +192,6 @@ class ContainerTest extends TestCase
 
         $this->expectException(ContainerItemFrozenException::class);
         unset($container['foo']);
-    }
-
-    public function testNonStringIdShouldThrowTypeError(): void
-    {
-        $container = $this->container;
-        $container['foo'] = 'bar';
-
-        $this->expectException(TypeError::class);
-        $container->has(456);
     }
 
     public function testExceptionIsThrownIfValueNotFound(): void

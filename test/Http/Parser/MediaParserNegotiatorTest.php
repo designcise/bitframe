@@ -10,11 +10,11 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Test\Parser;
+namespace BitFrame\Test\Http\Parser;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
-use BitFrame\Parser\{
+use BitFrame\Http\Parser\{
     MediaParserInterface,
     MediaParserNegotiator,
     DefaultMediaParser,
@@ -27,7 +27,7 @@ use function get_class;
 use function json_decode;
 
 /**
- * @covers \BitFrame\Parser\MediaParserNegotiator
+ * @covers \BitFrame\Http\Parser\MediaParserNegotiator
  */
 class MediaParserNegotiatorTest extends TestCase
 {
@@ -152,7 +152,7 @@ class MediaParserNegotiatorTest extends TestCase
 
         $negotiator = new MediaParserNegotiator($request);
 
-        $this->assertInstanceOf($expectedParser, $negotiator->getPreferredMediaParser());
+        $this->assertInstanceOf($expectedParser, $negotiator->createPreferredMediaParser());
     }
 
     public function testGetsDefaultParserWhenAcceptHeaderNotPresent(): void
@@ -171,7 +171,7 @@ class MediaParserNegotiatorTest extends TestCase
 
         $this->assertInstanceOf(
             DefaultMediaParser::class,
-            $negotiator->getPreferredMediaParser()
+            $negotiator->createPreferredMediaParser()
         );
     }
 
@@ -189,8 +189,8 @@ class MediaParserNegotiatorTest extends TestCase
 
         $negotiator = new MediaParserNegotiator($request);
 
-        $preferredProvider = $negotiator->getPreferredMediaParser();
+        $preferredProvider = $negotiator->createPreferredMediaParser();
 
-        $this->assertSame($preferredProvider, $negotiator->getPreferredMediaParser());
+        $this->assertSame($preferredProvider, $negotiator->createPreferredMediaParser());
     }
 }

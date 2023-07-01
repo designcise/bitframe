@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -55,7 +55,7 @@ abstract class AbstractSapiEmitter implements MiddlewareInterface
         foreach ($headers as $name => $values) {
             $first = ($name !== 'Set-Cookie');
             foreach ($values as $value) {
-                header("{$name}: {$value}", $first, $statusCode);
+                header("$name: $value", $first, $statusCode);
                 $first = false;
             }
         }
@@ -65,6 +65,6 @@ abstract class AbstractSapiEmitter implements MiddlewareInterface
 
         // status line should be emitted at the end in order to prevent PHP from
         // changing the status code of the emitted response
-        header("HTTP/{$protocol} {$statusCode} {$reason}", true, $statusCode);
+        header("HTTP/$protocol $statusCode $reason", true, $statusCode);
     }
 }

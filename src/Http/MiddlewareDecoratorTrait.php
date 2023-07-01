@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -32,7 +32,7 @@ trait MiddlewareDecoratorTrait
      *
      * @return array
      */
-    public function getUnpackedMiddleware(null|array|string|callable|MiddlewareInterface $middleware): array
+    public function unpackMiddleware(null|array|string|callable|MiddlewareInterface $middleware): array
     {
         if (empty($middleware)) {
             return [];
@@ -42,13 +42,13 @@ trait MiddlewareDecoratorTrait
             $collection = [];
 
             foreach ($middleware as $md) {
-                $collection = [...$collection, ...$this->getUnpackedMiddleware($md)];
+                $collection = [...$collection, ...$this->unpackMiddleware($md)];
             }
 
             return $collection;
         }
 
-        return [$this->getDecoratedMiddleware($middleware)];
+        return [$this->createDecoratedMiddleware($middleware)];
     }
 
     /**
@@ -58,11 +58,12 @@ trait MiddlewareDecoratorTrait
      *
      * @return MiddlewareInterface
      */
-    public function getDecoratedMiddleware(array|string|callable|MiddlewareInterface $middleware): MiddlewareInterface
-    {
+    public function createDecoratedMiddleware(
+        array|string|callable|MiddlewareInterface $middleware
+    ): MiddlewareInterface {
         if (! $middleware instanceof MiddlewareInterface) {
             if (is_callable($middleware)) {
-                return $this->getDecoratedCallableMiddleware($middleware);
+                return $this->createDecoratedCallableMiddleware($middleware);
             }
 
             if (is_string($middleware)) {
@@ -83,7 +84,7 @@ trait MiddlewareDecoratorTrait
      *
      * @return MiddlewareInterface
      */
-    public function getDecoratedCallableMiddleware(callable $middleware): MiddlewareInterface
+    public function createDecoratedCallableMiddleware(callable $middleware): MiddlewareInterface
     {
         return new class ($middleware) implements MiddlewareInterface {
             private $middleware;

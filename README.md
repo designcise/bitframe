@@ -1,5 +1,6 @@
-[![codecov](https://codecov.io/gh/designcise/bitframe/branch/master/graph/badge.svg?token=7V77L5P3AX)](https://codecov.io/gh/designcise/bitframe)
-[![Build Status](https://travis-ci.com/designcise/bitframe.svg?branch=master)](https://travis-ci.com/designcise/bitframe)
+[![CI](https://github.com/designcise/bitframe/actions/workflows/ci.yml/badge.svg)](https://github.com/designcise/bitframe/actions/workflows/ci.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b326e89aefecd26e60b8/maintainability)](https://codeclimate.com/github/designcise/bitframe/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/b326e89aefecd26e60b8/test_coverage)](https://codeclimate.com/github/designcise/bitframe/test_coverage)
 
 # BitFrame PHP Microframework
 
@@ -12,6 +13,11 @@ A highly customizable PSR-15 / PSR-7 compatible middleware-based microframework 
 6. Non-intrusive;
 7. Customizable, modular and easy-to-scale.
 
+## Prerequisites
+
+1. PHP 8.2+;
+2. Server with URL Rewriting (such as Apache, Nginx, etc.).
+
 ## How to Get Started?
 
 You can get started in a few simple steps:
@@ -20,12 +26,7 @@ You can get started in a few simple steps:
 2. Install `composer` dependencies;
 3. Create your first "Hello World" app.
 
-Also, please note the following prerequisites:
-
-### Prerequisites
-
-1. PHP 8.1+;
-2. Server with URL Rewriting (such as Apache, Nginx, etc.).
+For a complete example, have a look at the [simple dockerized boilerplate](https://github.com/designcise/bitframe-boilerplate).
 
 ### 1. Setup Your Environment
 

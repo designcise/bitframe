@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -21,13 +21,10 @@ use function headers_sent;
  */
 class SapiStreamEmitter extends AbstractSapiEmitter
 {
-    public function __construct(private int $maxBufferLength = 8192)
+    public function __construct(private readonly int $maxBufferLength = 8192)
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function emit(ResponseInterface $response): void
     {
         if (! headers_sent()) {

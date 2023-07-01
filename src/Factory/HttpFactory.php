@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -48,16 +48,13 @@ class HttpFactory
         'GuzzleHttp\Psr7\HttpFactory',
     ];
 
-    /**
-     * Add PSR-17 factory creator object.
-     */
     public static function addFactory(
         RequestFactoryInterface
         & ResponseFactoryInterface
         & ServerRequestFactoryInterface
         & StreamFactoryInterface
         & UploadedFileFactoryInterface
-        &UriFactoryInterface $factory
+        & UriFactoryInterface $factory
     ): void {
         array_unshift(self::$factoriesList, $factory);
     }
@@ -70,27 +67,14 @@ class HttpFactory
         return $factory->createResponse($statusCode, $reasonPhrase);
     }
 
-    /**
-     * @param string $method
-     * @param string|UriInterface $uri
-     *
-     * @return RequestInterface
-     */
     public static function createRequest(string $method, UriInterface|string $uri): RequestInterface
     {
         return self::getFactory()->createRequest($method, $uri);
     }
 
-    /**
-     * @param string $method
-     * @param string|UriInterface $uri
-     * @param array $serverParams
-     *
-     * @return ServerRequestInterface
-     */
     public static function createServerRequest(
         string $method,
-        $uri,
+        UriInterface|string $uri,
         array $serverParams = [],
     ): ServerRequestInterface {
         return self::getFactory()->createServerRequest($method, $uri, $serverParams);
@@ -114,14 +98,18 @@ class HttpFactory
     ): ServerRequestInterface {
         $factory = self::getFactory();
 
-        return ServerRequestBuilder::fromSapi(
-            $server ?: $_SERVER,
-            $factory,
-            $parsedBody ?: $_POST ?: [],
-            $cookies ?: $_COOKIE ?: [],
-            $files ?: $_FILES ?: [],
-            $body ?: file_get_contents('php://input') ?: ''
-        );
+        $builder = new ServerRequestBuilder($server ?: $_SERVER, $factory);
+
+        return $builder
+            ->addMethod()
+            ->addUri()
+            ->addProtocolVersion()
+            ->addHeaders()
+            ->addCookieParams($cookies ?: $_COOKIE ?: [])
+            ->addUploadedFiles($files ?: $_FILES ?: [])
+            ->addParsedBody($parsedBody ?: $_POST ?: [])
+            ->addBody($body ?: file_get_contents('php://input') ?: '')
+            ->build();
     }
 
     public static function createStream(string $content = ''): StreamInterface

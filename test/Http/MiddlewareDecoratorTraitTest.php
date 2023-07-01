@@ -64,7 +64,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function testUnpackingInvalidValues(mixed $value): void
     {
         $this->expectException(TypeError::class);
-        $this->middlewareDecorator->getUnpackedMiddleware($value);
+        $this->middlewareDecorator->unpackMiddleware($value);
     }
 
     public function emptyValuesProvider(): array
@@ -84,7 +84,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
      */
     public function testUnpackingEmptyValues(mixed $value): void
     {
-        $this->assertEmpty($this->middlewareDecorator->getUnpackedMiddleware($value));
+        $this->assertEmpty($this->middlewareDecorator->unpackMiddleware($value));
     }
 
     public function testUnpackingArrayOfMiddlewares(): void
@@ -100,7 +100,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
             [InteropMiddleware::class, 'staticRun'],
         ];
 
-        $unpackedMiddlewares = $this->middlewareDecorator->getUnpackedMiddleware($middlewares);
+        $unpackedMiddlewares = $this->middlewareDecorator->unpackMiddleware($middlewares);
 
         foreach ($unpackedMiddlewares as $middleware) {
             $this->assertInstanceOf(MiddlewareInterface::class, $middleware);
@@ -126,7 +126,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function testGetDecoratedMiddlewareWithUnsupportedMiddlewareType($middleware): void
     {
         $this->expectException(TypeError::class);
-        $this->middlewareDecorator->getDecoratedMiddleware($middleware);
+        $this->middlewareDecorator->createDecoratedMiddleware($middleware);
     }
 
     public function nonExistentMiddlewareProvider(): array
@@ -145,7 +145,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     public function testGetDecoratedMiddlewareWithNonExistentMiddlewareType($middleware): void
     {
         $this->expectException(Error::class);
-        $this->middlewareDecorator->getDecoratedMiddleware($middleware);
+        $this->middlewareDecorator->createDecoratedMiddleware($middleware);
     }
 
     public function middlewareProvider(): array
@@ -171,7 +171,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
     {
         $this->assertInstanceOf(
             MiddlewareInterface::class,
-            $this->middlewareDecorator->getDecoratedMiddleware($middleware)
+            $this->middlewareDecorator->createDecoratedMiddleware($middleware)
         );
     }
 
@@ -193,7 +193,7 @@ class MiddlewareDecoratorTraitTest extends TestCase
      */
     public function testGetDecoratedCallableMiddleware(callable $callable): void
     {
-        $middleware = $this->middlewareDecorator->getDecoratedCallableMiddleware($callable);
+        $middleware = $this->middlewareDecorator->createDecoratedCallableMiddleware($callable);
         $response = $middleware->process($this->request, $this->getRequestHandlerMock());
 
         $this->assertSame('Hello World!', (string) $response->getBody());

@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -12,8 +12,9 @@ declare(strict_types=1);
 
 namespace BitFrame\Http;
 
-use BitFrame\Factory\{PSR17FactoryInterface, HttpFactory};
-use BitFrame\Parser\MediaParserNegotiator;
+use BitFrame\Http\Normalizer\UploadedFilesNormalizer;
+use BitFrame\Http\Parser\MediaParserNegotiator;
+use BitFrame\Http\Parser\{UriParser, HttpCookieParser};
 use Psr\Http\Message\{
     RequestFactoryInterface,
     ResponseFactoryInterface,
@@ -23,7 +24,6 @@ use Psr\Http\Message\{
     UriFactoryInterface,
     ServerRequestInterface,
     StreamInterface,
-    UploadedFileInterface
 };
 use InvalidArgumentException;
 use UnexpectedValueException;
@@ -32,21 +32,14 @@ use function array_keys;
 use function is_array;
 use function is_resource;
 use function is_object;
-use function ltrim;
-use function rtrim;
 use function strtr;
-use function substr;
-use function parse_str;
-use function parse_url;
 use function strtolower;
 use function str_replace;
 use function preg_match_all;
 use function count;
 use function sprintf;
 use function implode;
-use function urldecode;
 
-use const PHP_URL_PORT;
 use const PREG_SET_ORDER;
 
 /**
@@ -63,41 +56,14 @@ class ServerRequestBuilder
 
     private object|null|array $parsedBody;
 
-    public static function fromSapi(
-        array $server,
-        RequestFactoryInterface
-        & ResponseFactoryInterface
-        & ServerRequestFactoryInterface
-        & StreamFactoryInterface
-        & UploadedFileFactoryInterface
-        &UriFactoryInterface $factory,
-        ?array $parsedBody = null,
-        array $cookies = [],
-        array $files = [],
-        $body = '',
-    ): ServerRequestInterface {
-        $builder = new self($server, $factory);
-
-        return $builder
-            ->addMethod()
-            ->addUri()
-            ->addProtocolVersion()
-            ->addHeaders()
-            ->addCookieParams($cookies)
-            ->addUploadedFiles($files)
-            ->addParsedBody($parsedBody)
-            ->addBody($body)
-            ->build();
-    }
-
     public function __construct(
-        private array $server,
-        private RequestFactoryInterface
+        private readonly array $server,
+        private readonly RequestFactoryInterface
         & ResponseFactoryInterface
         & ServerRequestFactoryInterface
         & StreamFactoryInterface
         & UploadedFileFactoryInterface
-        &UriFactoryInterface $factory,
+        & UriFactoryInterface $factory,
     ) {
         $this->request = $factory->createServerRequest('GET', '/', $server);
     }
@@ -125,22 +91,7 @@ class ServerRequestBuilder
 
     public function addUri(): self
     {
-        $uriParts = parse_url($this->server['REQUEST_URI'] ?? '');
-        [$path, $query, $fragment] = $this->extractUriComponents($this->server, $uriParts);
-
-        $baseUri = $this->getUriAuthorityWithScheme();
-
-        if ($path) {
-            $baseUri = rtrim($baseUri, '/') . '/' . ltrim($path, '/');
-        }
-
-        $uri = (
-            ($baseUri ?: '/')
-            . ($query ? ('?' . ltrim($query, '?')) : '')
-            . ($fragment ? "#{$fragment}" : '')
-        );
-
-        parse_str($query, $queryParams);
+        [$uri, $queryParams] = UriParser::parse($this->server);
 
         $this->request = $this->request
             ->withUri($this->factory->createUri($uri))
@@ -160,7 +111,7 @@ class ServerRequestBuilder
 
         if (
             isset($this->server['SERVER_PROTOCOL'])
-            && $this->server['SERVER_PROTOCOL'] !== "HTTP/{$protocolVer}"
+            && $this->server['SERVER_PROTOCOL'] !== "HTTP/$protocolVer"
         ) {
             $protocolVer = strtr((string) $this->server['SERVER_PROTOCOL'], ['HTTP/' => '']);
 
@@ -182,7 +133,7 @@ class ServerRequestBuilder
         $str = implode(' ', array_keys($this->server));
         preg_match_all($pattern, $str, $originalHeaders, PREG_SET_ORDER);
 
-        $pattern = '/(redirect-)?(?:(?:http-)|(content-))([^ ]*)/';
+        $pattern = '/(redirect-)?(?:http-|(content-))([^ ]*)/';
         $str = strtolower(str_replace('_', '-', $str));
         preg_match_all($pattern, $str, $normalizedHeaders, PREG_SET_ORDER);
 
@@ -214,7 +165,7 @@ class ServerRequestBuilder
     public function addCookieParams(array $cookies): self
     {
         if ($cookies === [] && isset($this->server['HTTP_COOKIE'])) {
-            $cookies = $this->parseCookieHeader($this->server['HTTP_COOKIE']);
+            $cookies = HttpCookieParser::parse($this->server['HTTP_COOKIE']);
         }
 
         $this->request = $this->request
@@ -268,170 +219,10 @@ class ServerRequestBuilder
      */
     public function addUploadedFiles(array $files): self
     {
+        $uploadedFilesNormalizer = new UploadedFilesNormalizer($this->factory);
         $this->request = $this->request
-            ->withUploadedFiles($this->normalizeUploadedFiles($files));
+            ->withUploadedFiles($uploadedFilesNormalizer->normalize($files));
 
         return $this;
-    }
-
-    /**
-     * Create and return an UploadedFile instance from a `$_FILES` specification.
-     *
-     * If the specification represents an array of values, this method will loops
-     * through all nested files and return a normalized array of `UploadedFileInterface`
-     * instances.
-     *
-     * @param array $files `$_FILES` struct.
-     *
-     * @return UploadedFileInterface[]|UploadedFileInterface
-     */
-    private function createUploadedFileFromSpec(array $files)
-    {
-        if (is_array($files['tmp_name'])) {
-            $normalizedFiles = [];
-
-            foreach ($files['tmp_name'] as $key => $file) {
-                $normalizedFiles[$key] = $this->createUploadedFileFromSpec([
-                    'tmp_name' => $files['tmp_name'][$key],
-                    'size' => $files['size'][$key],
-                    'error' => $files['error'][$key],
-                    'name' => $files['name'][$key],
-                    'type' => $files['type'][$key],
-                ]);
-            }
-
-            return $normalizedFiles;
-        }
-
-        $stream = ($files['tmp_name'] instanceof StreamInterface)
-            ? $files['tmp_name']
-            : $this->factory->createStreamFromFile($files['tmp_name'], 'r+');
-
-        return $this->factory->createUploadedFile(
-            $stream,
-            $files['size'],
-            (int) $files['error'],
-            $files['name'],
-            $files['type']
-        );
-    }
-
-    /**
-     * Transforms each value into an `UploadedFile` instance, and ensures that nested
-     * arrays are normalized.
-     *
-     * @param array $files
-     *
-     * @return UploadedFileInterface[]
-     *
-     * @throws InvalidArgumentException
-     */
-    private function normalizeUploadedFiles(array $files): array
-    {
-        $normalized = [];
-
-        foreach ($files as $key => $value) {
-            if ($value instanceof UploadedFileInterface) {
-                $normalized[$key] = $value;
-                continue;
-            }
-
-            if (is_array($value)) {
-                $normalized[$key] = (isset($value['tmp_name']))
-                    ? $this->createUploadedFileFromSpec($value)
-                    : $this->normalizeUploadedFiles($value);
-                continue;
-            }
-
-            throw new InvalidArgumentException('Invalid value in files specification');
-        }
-
-        return $normalized;
-    }
-
-    private function getUriAuthorityWithScheme(): string
-    {
-        $server = $this->server;
-        $authority = $server['HTTP_HOST'] ?? $server['SERVER_NAME'] ?? $server['SERVER_ADDR'] ?? '';
-
-        if ($authority) {
-            $scheme = (
-                $server['REQUEST_SCHEME']
-                ?? ('http' . ((isset($server['HTTPS']) && $server['HTTPS'] === 'on') ? 's' : ''))
-            ) . ':';
-
-            $authority = "{$scheme}//{$authority}";
-        }
-
-        if (
-            ! $authority
-            || ! isset($server['SERVER_PORT'])
-            || parse_url($authority, PHP_URL_PORT)
-        ) {
-            return $authority;
-        }
-
-        return (
-            (substr($authority, -1) === '/')
-                ? rtrim($authority, '/') . ":{$server['SERVER_PORT']}/"
-                : "{$authority}:{$server['SERVER_PORT']}"
-        );
-    }
-
-    /**
-     * Parse a cookie header according to RFC-6265.
-     *
-     * PHP will replace special characters in cookie names, which
-     * results in other cookies not being available due to
-     * overwriting. Thus, the server request should take the cookies
-     * from the request header instead.
-     *
-     * @param string $cookieHeader
-     *
-     * @return array key/value cookie pairs.
-     */
-    private function parseCookieHeader(string $cookieHeader): array
-    {
-        preg_match_all('(
-            (?:^\\n?[ \t]*|[;:][ ])
-            (?P<name>[!#$%&\'*+-.0-9A-Z^_`a-z|~]+)
-            =
-            (?P<DQUOTE>"?)
-                (?P<value>[\x21\x23-\x2b\x2d-\x3a\x3c-\x5b\x5d-\x7e]*)
-            (?P=DQUOTE)
-            (?=\\n?[ \t]*$|;[ ])
-        )x', $cookieHeader, $matches, PREG_SET_ORDER);
-
-        $cookies = [];
-
-        foreach ($matches as $match) {
-            $cookies[$match['name']] = urldecode($match['value']);
-        }
-
-        return $cookies;
-    }
-
-    private function extractUriComponents(array $server, array $uriParts): array
-    {
-        $path = '';
-
-        if (! empty($server['PATH_INFO'])) {
-            $path = $server['PATH_INFO'];
-        } elseif (! empty($server['ORIG_PATH_INFO'])) {
-            $path = $server['ORIG_PATH_INFO'];
-        } elseif (! empty($uriParts['path'])) {
-            $path = $uriParts['path'];
-        }
-
-        $query = '';
-
-        if (! empty($server['QUERY_STRING'])) {
-            $query = $server['QUERY_STRING'];
-        } elseif (! empty($uriParts['query'])) {
-            $query = $uriParts['query'];
-        }
-
-        $fragment = (! empty($uriParts['fragment'])) ? $uriParts['fragment'] : '';
-        return [$path, $query, $fragment];
     }
 }

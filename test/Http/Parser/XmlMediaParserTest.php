@@ -10,14 +10,14 @@
 
 declare(strict_types=1);
 
-namespace BitFrame\Test\Parser;
+namespace BitFrame\Test\Http\Parser;
 
 use SimpleXMLElement;
 use PHPUnit\Framework\TestCase;
-use BitFrame\Parser\XmlMediaParser;
+use BitFrame\Http\Parser\XmlMediaParser;
 
 /**
- * @covers \BitFrame\Parser\XmlMediaParser
+ * @covers \BitFrame\Http\Parser\XmlMediaParser
  */
 class XmlMediaParserTest extends TestCase
 {

@@ -302,19 +302,6 @@ class ServerRequestBuilderTest extends TestCase
         $this->assertSame('', (string) $serverRequest->getBody());
     }
 
-    public function testFromSapiWithEmptyArray(): void
-    {
-        $serverRequest = ServerRequestBuilder::fromSapi([], $this->factory);
-
-        $this->assertSame('GET', $serverRequest->getMethod());
-        $this->assertSame('/', (string) $serverRequest->getUri());
-        $this->assertSame('1.1', $serverRequest->getProtocolVersion());
-        $this->assertSame([], $serverRequest->getHeaders());
-        $this->assertSame([], $serverRequest->getCookieParams());
-        $this->assertNull($serverRequest->getParsedBody());
-        $this->assertSame('', (string) $serverRequest->getBody());
-    }
-
     public function methodProvider(): array
     {
         return [

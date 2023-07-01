@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -26,7 +26,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): ResponseInterface|ResponseDecorator
     {
         $new = clone $this;
         $new->setResponse($this->response->withStatus($code, $reasonPhrase));
@@ -36,7 +36,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withHeader($name, $value)
+    public function withHeader($name, $value): ResponseInterface|ResponseDecorator
     {
         $new = clone $this;
         $new->setResponse($this->response->withHeader($name, $value));
@@ -46,7 +46,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value): ResponseInterface|ResponseDecorator
     {
         $new = clone $this;
         $new->setResponse($this->response->withAddedHeader($name, $value));
@@ -56,7 +56,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name): ResponseInterface|ResponseDecorator
     {
         $new = clone $this;
         $new->setResponse($this->response->withoutHeader($name));
@@ -66,7 +66,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): ResponseInterface|ResponseDecorator
     {
         $new = clone $this;
         $new->setResponse($this->response->withProtocolVersion($version));
@@ -76,7 +76,7 @@ class ResponseDecorator implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): ResponseInterface|ResponseDecorator
     {
         $new = clone $this;
         $new->setResponse($this->response->withBody($body));

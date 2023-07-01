@@ -1,0 +1,32 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+      - name: Install dependencies
+        uses: php-actions/composer@v6
+        with:
+          version: 2.5.5
+
+      - name: Test & Coverage
+        uses: paambaati/codeclimate-action@v4.0.0
+        env:
+          CC_TEST_REPORTER_ID: a053ec039e0f1be4176cff6646fe1e9fe4d410a828e30d925ff7db04cb459ef6
+        with:
+          coverageCommand: ./.github/scripts/run-phpunit.sh
+          coverageLocations: coverage.xml:clover
+          debug: true
+
+      - name: Clean up GitHub workspace
+        uses: docker://ubuntu:latest
+        with:
+          args: find /github/workspace/. -name . -o -prune -exec rm -rf -- {} +

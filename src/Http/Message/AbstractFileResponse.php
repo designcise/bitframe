@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -41,11 +41,11 @@ class AbstractFileResponse extends ResponseDecorator
         $isFilePath = is_string($file);
 
         if ($isFilePath && ! file_exists($file)) {
-            throw new InvalidArgumentException("File \"{$file}\" does not exist.");
+            throw new InvalidArgumentException("File \"$file\" does not exist.");
         }
 
         $mimeType = ($isFilePath) ? mime_content_type($file) : self::DEFAULT_MIME_TYPE;
-        $stream = $this->getFileAsStream($file, HttpFactory::getFactory());
+        $stream = $this->createStreamFromFile($file, HttpFactory::getFactory());
 
         return HttpFactory::createResponse()
             ->withHeader('Content-Type', $mimeType)
@@ -58,10 +58,10 @@ class AbstractFileResponse extends ResponseDecorator
      *
      * @return StreamInterface
      */
-    protected function getFileAsStream($file, StreamFactoryInterface $factory): StreamInterface
+    protected function createStreamFromFile($file, StreamFactoryInterface $factory): StreamInterface
     {
         if (is_string($file)) {
-            $file = $factory->createStreamFromFile($file, 'r');
+            $file = $factory->createStreamFromFile($file);
         } elseif (is_resource($file)) {
             $file = $factory->createStreamFromResource($file);
         }

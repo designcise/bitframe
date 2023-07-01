@@ -4,13 +4,13 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
 declare(strict_types=1);
 
-namespace BitFrame\Parser;
+namespace BitFrame\Http\Parser;
 
 use function is_array;
 use function json_decode;

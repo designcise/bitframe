@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -15,7 +15,6 @@ namespace BitFrame\Router;
 use Psr\Http\Server\MiddlewareInterface;
 
 use function ltrim;
-use function substr;
 
 /**
  * Group multiple routes together under the same prefix.
@@ -47,7 +46,7 @@ class RouteGroup extends AbstractRouter
         if ($path === '' || $path === '/') {
             $path = '';
         } else {
-            $path = ((substr($this->prefix, -1) === '/') ? '' : '/')
+            $path = ((str_ends_with($this->prefix, '/')) ? '' : '/')
                 . ltrim($path, '/');
         }
 

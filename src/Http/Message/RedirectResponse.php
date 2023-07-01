@@ -4,7 +4,7 @@
  * BitFrame Framework (https://www.bitframephp.com)
  *
  * @author    Daniyal Hamid
- * @copyright Copyright (c) 2017-2022 Daniyal Hamid (https://designcise.com)
+ * @copyright Copyright (c) 2017-2023 Daniyal Hamid (https://designcise.com)
  * @license   https://bitframephp.com/about/license MIT License
  */
 
@@ -15,12 +15,6 @@ namespace BitFrame\Http\Message;
 use Psr\Http\Message\UriInterface;
 use BitFrame\Factory\HttpFactory;
 use InvalidArgumentException;
-
-use function is_string;
-use function is_object;
-use function sprintf;
-use function get_class;
-use function gettype;
 
 /**
  * Http response for redirect.
