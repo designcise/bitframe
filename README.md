@@ -13,6 +13,11 @@ A highly customizable PSR-15 / PSR-7 compatible middleware-based microframework 
 6. Non-intrusive;
 7. Customizable, modular and easy-to-scale.
 
+## Prerequisites
+
+1. PHP 8.2+;
+2. Server with URL Rewriting (such as Apache, Nginx, etc.).
+
 ## How to Get Started?
 
 You can get started in a few simple steps:
@@ -21,12 +26,7 @@ You can get started in a few simple steps:
 2. Install `composer` dependencies;
 3. Create your first "Hello World" app.
 
-Also, please note the following prerequisites:
-
-### Prerequisites
-
-1. PHP 8.2+;
-2. Server with URL Rewriting (such as Apache, Nginx, etc.).
+For a complete example, have a look at the [simple dockerized boilerplate](https://github.com/designcise/bitframe-boilerplate).
 
 ### 1. Setup Your Environment
 
