@@ -82,7 +82,7 @@ Remember to make changes according to your project setup. For example, ensure th
 You can use `composer require` like so:
 
 ```
-$ composer require "designcise/bitframe":^3.5
+$ composer require "designcise/bitframe":^4.0
 ```
 
 Or, alternatively, you can add the package dependency in your `composer.json` file.
