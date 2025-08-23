@@ -1,6 +1,6 @@
 [![CI](https://github.com/designcise/bitframe/actions/workflows/ci.yml/badge.svg)](https://github.com/designcise/bitframe/actions/workflows/ci.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/b326e89aefecd26e60b8/maintainability)](https://codeclimate.com/github/designcise/bitframe/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/b326e89aefecd26e60b8/test_coverage)](https://codeclimate.com/github/designcise/bitframe/test_coverage)
+[![Maintainability](https://qlty.sh/gh/designcise/projects/bitframe/maintainability.svg)](https://qlty.sh/gh/designcise/projects/bitframe)
+[![Code Coverage](https://qlty.sh/gh/designcise/projects/bitframe/coverage.svg)](https://qlty.sh/gh/designcise/projects/bitframe)
 
 # BitFrame PHP Microframework
 
