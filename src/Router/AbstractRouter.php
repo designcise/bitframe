@@ -96,8 +96,18 @@ abstract class AbstractRouter
         $this->map(['OPTIONS'], $path, $handler);
     }
 
+    public function trace(string $path, callable|string|array $handler): void
+    {
+        $this->map(['TRACE'], $path, $handler);
+    }
+
+    public function connect(string $path, callable|string|array $handler): void
+    {
+        $this->map(['CONNECT'], $path, $handler);
+    }
+
     public function any(string $path, callable|string|array $handler): void
     {
-        $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $path, $handler);
+        $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'], $path, $handler);
     }
 }
