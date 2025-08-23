@@ -17,12 +17,15 @@ jobs:
         with:
           version: 2.5.5
 
-      - name: Test & Coverage
+      - name: Run Tests
+        run: ./.github/scripts/run-phpunit.sh
+
+      - name: Upload coverage
         uses: qltysh/qlty-action/coverage@v2
         with:
           token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
           files: coverage/clover.xml
-          command: ./.github/scripts/run-phpunit.sh
+          command: publish
           verbose: true
 
       - name: Clean up GitHub workspace
