@@ -42,7 +42,7 @@ trait AttributeRouteTrait
         }
     }
 
-    private function registerMethodRoutes($controller, $method): void
+    private function registerMethodRoutes($controller, ReflectionMethod $method): void
     {
         $attributes = $method->getAttributes(Route::class);
 
